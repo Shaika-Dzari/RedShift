@@ -1,0 +1,15 @@
+<resources>
+
+    <string name="app_name">RedShift Web Browser</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="menu_settings">Settings</string>
+    <string name="title_activity_browser">RedShift</string>
+    
+    <!-- Content Description -->
+    <string name="desc_btnBack">Back</string>
+    <string name="desc_btnSetting">Settings</string>
+    
+    <string name="hint_txtUrl">N4:home</string>
+    
+
+</resources>
