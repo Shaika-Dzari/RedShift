@@ -27,20 +27,24 @@
         <activity
             android:name=".HistoryActivity"
             android:label="@string/title_activity_history" >
+            <!-- 
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+             -->
         </activity>
         <activity
             android:name=".BookmarkActivity"
             android:label="@string/title_activity_bookmark" >
+            <!-- 
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+             -->
         </activity>
     </application>
 
