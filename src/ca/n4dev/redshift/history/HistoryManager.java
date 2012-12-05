@@ -9,7 +9,7 @@
  * 
  * @since 2012-11-25
  */ 
-package ca.n4dev.redshift.web;
+package ca.n4dev.redshift.history;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,6 +17,7 @@ import java.util.List;
 
 import android.util.Log;
 
+@Deprecated
 public class HistoryManager {
 	
 	private static final String TAG = "BrowserActivity";

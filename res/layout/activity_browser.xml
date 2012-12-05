@@ -3,13 +3,27 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent" >
 
+    
+	<include layout="@layout/inc_main_content"
+	        	 android:layout_width="fill_parent" />
+	    
+	    <include layout="@layout/inc_main_menu"
+	        	 android:layout_width="fill_parent" />
+    
+    
+    
+    
+    <!-- 
+
+    
+
     <WebView android:id="@+id/webview"
         	 android:layout_alignParentTop="true"
     		 android:layout_alignParentLeft="true"
     		 android:layout_width="fill_parent"
 		     android:layout_height="fill_parent"
 		     android:layout_marginBottom="40dp" />
-    
+		     
     <LinearLayout android:id="@+id/controlbar"
         		  android:layout_width="fill_parent"
 		    	  android:layout_height="40dp"
@@ -23,7 +37,7 @@
             	  android:layout_weight="1"
             	  android:layout_height="match_parent" 
             	  android:hint="@string/hint_txtUrl"
-            	  android:inputType="textUri"
+            	  android:inputType="textUri|textAutoComplete"
             	  android:imeOptions="actionGo"
             	  />
         
@@ -46,5 +60,5 @@
             		
         
     </LinearLayout>
-
+ -->
 </RelativeLayout>

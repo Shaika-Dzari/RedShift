@@ -9,7 +9,7 @@
  * 
  * @since 2012-11-25
  */ 
-package ca.n4dev.redshift.web;
+package ca.n4dev.redshift.history;
 
 public class UrlUtils {
 

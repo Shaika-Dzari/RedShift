@@ -3,46 +3,48 @@ package ca.n4dev.redshift;
 
 
 import ca.n4dev.redshift.R;
-import ca.n4dev.redshift.web.HistoryManager;
-import ca.n4dev.redshift.web.UrlUtils;
+import ca.n4dev.redshift.controller.RsWebController;
+import ca.n4dev.redshift.controller.api.WebController;
 import android.os.Bundle;
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.View;
-import android.view.inputmethod.EditorInfo;
-import android.webkit.WebSettings;
-import android.webkit.WebView;
-import android.webkit.WebViewClient;
-import android.widget.EditText;
-import android.widget.PopupMenu;
-import android.widget.TextView;
-import android.widget.TextView.OnEditorActionListener;
+import android.view.MenuItem;
+import android.support.v4.app.FragmentActivity;
+
 
 @SuppressLint("SetJavaScriptEnabled")
-public class BrowserActivity extends Activity {
+public class BrowserActivity extends FragmentActivity {
 	
 	private static final String TAG = "BrowserActivity";
 	
-	private static final String HOME = "<html><body><div style='margin:0 auto;'><div style='witdh:400px;text-align:center;'><span style='font-weight:1.4em;'>DeltaV Web Browser</span></div></div></body></html>";
+	private WebController webController;
 	
-	private WebView n4webview;
-	private HistoryManager historyManager = new HistoryManager();
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Log.d(TAG, "onCreate()");
         setContentView(R.layout.activity_browser);
         
+        if (this.webController == null) {
+        	
+        	Log.d(TAG, "Creating WebController.");
+        	this.webController = new RsWebController(R.id.fragment_webview, getSupportFragmentManager());
+        	int homeTab = this.webController.newTab();
+        	this.webController.setCurrentTab(homeTab);
+        	this.webController.goTo("file:///android_asset/home.html");
+        }
+        
+        
+        /*
         EditText txtUrl = (EditText) findViewById(R.id.txtUrl);
         txtUrl.setOnEditorActionListener(editTextListener);
         
         this.n4webview = (WebView) findViewById(R.id.webview);
         WebSettings settings = this.n4webview.getSettings();
         
+        settings.setRenderPriority(RenderPriority.HIGH);
         settings.setJavaScriptEnabled(true);
         settings.setBuiltInZoomControls(true);
         settings.setDisplayZoomControls(false);
@@ -55,24 +57,39 @@ public class BrowserActivity extends Activity {
         this.n4webview.setWebViewClient(new N4WebViewClient());
         
         //this.n4webview.loadData(HOME, "text/html", null);
-        this.n4webview.loadUrl("http://www.lapresse.ca/");
+        updateUrlAndGo("file:///android_asset/home.html", true);
+        */
         
+        
+    }
+    
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.activity_browser, menu);
+        return true;
+    }
+    
+    public boolean onOptionsItemSelected(MenuItem item) {
+    	return super.onOptionsItemSelected(item);
     }
     
     
     //-------------------------------------------------------------------------
     // Private class
     //-------------------------------------------------------------------------
+    /*
     private class N4WebViewClient extends WebViewClient {
     	@Override
         public boolean shouldOverrideUrlLoading(WebView view, String url) {
     		Log.d(TAG, "UrlLoading [WebView]: " + url);
-    		
+    		updateUrlAndGo(url, true);
     		historyManager.add(url, true);
     		n4webview.loadUrl(url);
             return true;
         }
     }
+   
+    
     
     
     private OnEditorActionListener editTextListener = new TextView.OnEditorActionListener() {
@@ -86,50 +103,75 @@ public class BrowserActivity extends Activity {
 				historyManager.add(url, true);
 				
 				// Go To
-				n4webview.loadUrl(url);
-				
+				//n4webview.loadUrl(url);
+				updateUrlAndGo(url, true);
 				return true;
 			}
 			return false;
 		}
 	};
 	
+	
 	public void btnshowPopupSetting(View view) {
     	PopupMenu popup = new PopupMenu(this, view);
         MenuInflater inflater = popup.getMenuInflater();
+        popup.setOnMenuItemClickListener(this);
         inflater.inflate(R.menu.activity_browser, popup.getMenu());
         popup.show();
     }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.activity_browser, menu);
-        return true;
-    }
-    
     
     //-------------------------------------------------------------------------
     // Window Events
     //-------------------------------------------------------------------------
     public void onBtnBack(View view) {
-    	if (historyManager.canGoBack()) {
-    		String url = historyManager.getPrevious(true);
-    		//n4WebView.get
-    		n4webview.loadUrl(url);
+    	
+    	if (this.n4webview.canGoBack()) {
+    		this.n4webview.goBack();
+    		updateUrlAndGo(this.n4webview.getOriginalUrl(), false);
+    		return;
     	}
+    	
+    	onBackPressed();
+    	
     }
     
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         // Check if the key event was the Back button and if there's history
         if (keyCode == KeyEvent.KEYCODE_BACK && historyManager.canGoBack()) {
-        	String url = historyManager.getPrevious(true);
-    		//n4WebView.get
-        	n4webview.loadUrl(url);
-            return true;
+        	
+        	if (this.n4webview.canGoBack()) {
+        		this.n4webview.goBack();
+        		return true;
+        	}
+        	
         }
         // If it wasn't the Back key or there's no web page history, bubble up to the default
         // system behavior (probably exit the activity)
         return super.onKeyDown(keyCode, event);
     }
+   
+    
+    //
+    private void updateUrlAndGo(String url, boolean loadIt) {
+    	EditText e = (EditText) findViewById(R.id.txtUrl);
+    	e.setText(url);
+    	if (loadIt)
+    		this.n4webview.loadUrl(url);
+    }
+
+	@Override
+	public boolean onMenuItemClick(MenuItem item) {
+		switch (item.getItemId()) {
+        case R.id.menu_home:
+        	updateUrlAndGo("file:///android_asset/home.html", true);
+            return true;
+        case R.id.menu_settings:
+            
+            return true;
+        default:
+            return super.onOptionsItemSelected(item);
+    	}
+	}
+     */
 }
