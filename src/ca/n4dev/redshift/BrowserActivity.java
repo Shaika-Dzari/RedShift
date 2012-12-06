@@ -8,8 +8,14 @@ import ca.n4dev.redshift.controller.api.WebController;
 import android.os.Bundle;
 import android.annotation.SuppressLint;
 import android.util.Log;
+import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.ContextMenu.ContextMenuInfo;
+import android.widget.Button;
+import android.widget.ImageButton;
+import android.widget.PopupMenu;
 import android.support.v4.app.FragmentActivity;
 
 
@@ -27,46 +33,25 @@ public class BrowserActivity extends FragmentActivity {
         Log.d(TAG, "onCreate()");
         setContentView(R.layout.activity_browser);
         
+        ImageButton b = (ImageButton) findViewById(R.id.btnSetting);
+        registerForContextMenu(b);
+        
+        
         if (this.webController == null) {
-        	
         	Log.d(TAG, "Creating WebController.");
-        	this.webController = new RsWebController(R.id.fragment_webview, getSupportFragmentManager());
+        	this.webController = new RsWebController(R.id.layout_content, getSupportFragmentManager());
         	int homeTab = this.webController.newTab();
         	this.webController.setCurrentTab(homeTab);
         	this.webController.goTo("file:///android_asset/home.html");
         }
-        
-        
-        /*
-        EditText txtUrl = (EditText) findViewById(R.id.txtUrl);
-        txtUrl.setOnEditorActionListener(editTextListener);
-        
-        this.n4webview = (WebView) findViewById(R.id.webview);
-        WebSettings settings = this.n4webview.getSettings();
-        
-        settings.setRenderPriority(RenderPriority.HIGH);
-        settings.setJavaScriptEnabled(true);
-        settings.setBuiltInZoomControls(true);
-        settings.setDisplayZoomControls(false);
-        settings.setGeolocationEnabled(false);
-        settings.setDefaultZoom(WebSettings.ZoomDensity.FAR);
-        settings.setUseWideViewPort(true);
-        settings.setLoadWithOverviewMode(true);
-        //settings.setUserAgentString("N4 Browser");
-        
-        this.n4webview.setWebViewClient(new N4WebViewClient());
-        
-        //this.n4webview.loadData(HOME, "text/html", null);
-        updateUrlAndGo("file:///android_asset/home.html", true);
-        */
-        
-        
     }
     
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.activity_browser, menu);
-        return true;
+    public void showPopup(View v) {
+    	PopupMenu popup = new PopupMenu(this, v);
+        popup.getMenuInflater().inflate(R.menu.activity_browser, popup.getMenu());
+        popup.show();
+        
+        //return true;
     }
     
     public boolean onOptionsItemSelected(MenuItem item) {

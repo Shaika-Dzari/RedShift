@@ -102,7 +102,7 @@ public class RsWebController implements WebController {
 	@Override
 	public void setCurrentTab(int tabId) {
 		this.currentTabView = tabId;
-		//changeWebFragment();
+		changeWebFragment();
 	}
 	
 	private void changeWebFragment() {

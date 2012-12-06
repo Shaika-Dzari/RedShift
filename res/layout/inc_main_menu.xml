@@ -21,16 +21,19 @@
      <ImageButton android:id="@+id/btnListTab"
          		 android:layout_height="match_parent"
          		 android:layout_width="wrap_content"
+         		 android:onClick="onBtnListTab"
          		 android:src="@drawable/img_collectiontab"
          		 android:contentDescription="@string/desc_btnBack"
+         		 style="?android:attr/borderlessButtonStyle"
          />
      
      <ImageButton android:id="@+id/btnNewTab"
          		 android:layout_height="match_parent"
          		 android:layout_width="wrap_content"
          		 android:src="@drawable/img_newtab"
-         		 android:onClick="onBtnBack"
+         		 android:onClick="onBtnNewTab"
          		 android:contentDescription="@string/desc_btnBack"
+         		 style="?android:attr/borderlessButtonStyle"
          />
      
      <!-- 
@@ -48,8 +51,10 @@
          		 android:id="@+id/btnSetting"
          		 android:layout_width="wrap_content"
          	   	 android:layout_height="match_parent"
-         	   	 
          	   	 android:onClick="btnshowPopupSetting" />
+         	   	 style="?android:attr/borderlessButtonStyle"
+         	   	  />
+
          		
      
  </LinearLayout>

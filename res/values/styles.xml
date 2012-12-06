@@ -1,5 +1,5 @@
 <resources>
 
-    <style name="Theme.N4" parent="android:style/Theme.Light" />
+    <style name="Theme.N4" parent="android:style/Theme.Holo.NoActionBar" />
 
 </resources>
