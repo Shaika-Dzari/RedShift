@@ -5,6 +5,7 @@ package ca.n4dev.redshift;
 import ca.n4dev.redshift.R;
 import ca.n4dev.redshift.controller.RsWebController;
 import ca.n4dev.redshift.controller.api.WebController;
+import ca.n4dev.redshift.events.UrlModificationAware;
 import android.os.Bundle;
 import android.annotation.SuppressLint;
 import android.util.Log;
@@ -20,7 +21,7 @@ import android.support.v4.app.FragmentActivity;
 
 
 @SuppressLint("SetJavaScriptEnabled")
-public class BrowserActivity extends FragmentActivity {
+public class BrowserActivity extends FragmentActivity implements UrlModificationAware {
 	
 	private static final String TAG = "BrowserActivity";
 	
@@ -58,6 +59,21 @@ public class BrowserActivity extends FragmentActivity {
     	return super.onOptionsItemSelected(item);
     }
     
+    
+    
+    /* Activity Events */
+    public void onBtnListTab(View v) {
+    	
+    }
+    
+    public void onBtnNewTab(View v) {
+    	
+    }
+
+	@Override
+	public void urlHasChanged(String url) {
+		// TODO Auto-generated method stub
+	}
     
     //-------------------------------------------------------------------------
     // Private class
