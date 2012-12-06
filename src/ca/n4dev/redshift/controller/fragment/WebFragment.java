@@ -48,7 +48,7 @@ public class WebFragment extends Fragment {
 			settings.setRenderPriority(RenderPriority.HIGH);
 			settings.setJavaScriptEnabled(true);
 			settings.setBuiltInZoomControls(true);
-			//settings.setDisplayZoomControls(false);
+			settings.setDisplayZoomControls(false);
 			settings.setGeolocationEnabled(false);
 			settings.setDefaultZoom(WebSettings.ZoomDensity.FAR);
 			settings.setUseWideViewPort(true);
