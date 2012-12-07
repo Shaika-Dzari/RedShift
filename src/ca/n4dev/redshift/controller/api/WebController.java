@@ -12,8 +12,8 @@
 package ca.n4dev.redshift.controller.api;
 
 public interface WebController {
-	public void goBack();
-	public void goForward();
+	public boolean goBack();
+	public boolean goForward();
 	public void goTo(String url);
 	public void refresh();
 	public int newTab();

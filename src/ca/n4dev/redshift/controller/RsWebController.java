@@ -41,18 +41,26 @@ public class RsWebController implements WebController {
 	 * @see ca.n4dev.redshift.controller.api.WebController#goBack()
 	 */
 	@Override
-	public void goBack() {
-		// TODO Auto-generated method stub
-
+	public boolean goBack() {
+		if (getCurrentWebview().getWebview().canGoBack()) {
+			getCurrentWebview().getWebview().goBack();
+			return true;
+		}
+		
+		return false;
 	}
 
 	/* (non-Javadoc)
 	 * @see ca.n4dev.redshift.controller.api.WebController#goForward()
 	 */
 	@Override
-	public void goForward() {
-		// TODO Auto-generated method stub
-
+	public boolean goForward() {
+		if (getCurrentWebview().getWebview().canGoForward()) {
+			getCurrentWebview().getWebview().goForward();
+			return true;
+		}
+			
+		return false;
 	}
 
 	/* (non-Javadoc)

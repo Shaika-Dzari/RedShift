@@ -105,4 +105,11 @@ public class WebFragment extends Fragment {
 	public void setUrl(String url) {
 		this.url = url;
 	}
+
+	/**
+	 * @return the webview
+	 */
+	public WebView getWebview() {
+		return webview;
+	}
 }
