@@ -29,6 +29,7 @@ public class WebFragment extends Fragment {
 	private static final String TAG = "WebFragment";
 	private View view = null;
 	private WebView webview;
+	private WebViewClient webViewClient;
 	
 	private Integer tabId;
 	private boolean privateBrowsing;
@@ -55,7 +56,7 @@ public class WebFragment extends Fragment {
 			settings.setLoadWithOverviewMode(true);
 			//settings.setUserAgentString("N4 Browser");
 			
-			this.webview.setWebViewClient(new WebViewClient());
+			this.webview.setWebViewClient(this.webViewClient);
 			
 			if (this.url != null)
 				this.webview.loadUrl(url);
@@ -111,5 +112,12 @@ public class WebFragment extends Fragment {
 	 */
 	public WebView getWebview() {
 		return webview;
+	}
+
+	/**
+	 * @param webViewClient the webViewClient to set
+	 */
+	public void setWebViewClient(WebViewClient webViewClient) {
+		this.webViewClient = webViewClient;
 	}
 }

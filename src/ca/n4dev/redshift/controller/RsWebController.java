@@ -20,6 +20,8 @@ import android.util.Log;
 
 import ca.n4dev.redshift.controller.api.WebController;
 import ca.n4dev.redshift.controller.fragment.WebFragment;
+import ca.n4dev.redshift.controller.web.RsWebViewClient;
+import ca.n4dev.redshift.events.UrlModificationAware;
 
 public class RsWebController implements WebController {
 	
@@ -29,12 +31,14 @@ public class RsWebController implements WebController {
 	private int currentTabView;
 	private int counter = 0;
 	private FragmentManager fragmentManager;
+	private UrlModificationAware urlModificationAware;
 	private int layoutId;
 	
-	public RsWebController(int layoutId, FragmentManager fragmentManager) {
+	public RsWebController(int layoutId, FragmentManager fragmentManager, UrlModificationAware urlModificationAware) {
 		this.webviews = new HashMap<Integer, WebFragment>();
 		this.layoutId = layoutId;
 		this.fragmentManager = fragmentManager;
+		this.urlModificationAware = urlModificationAware;
 	}
 
 	/* (non-Javadoc)
@@ -44,6 +48,9 @@ public class RsWebController implements WebController {
 	public boolean goBack() {
 		if (getCurrentWebview().getWebview().canGoBack()) {
 			getCurrentWebview().getWebview().goBack();
+			
+			Log.d(TAG, "WebView back. Current url : " + getCurrentWebview().getWebview().getUrl());
+			
 			return true;
 		}
 		
@@ -89,6 +96,7 @@ public class RsWebController implements WebController {
 		int id = ++counter;
 		WebFragment wf = new WebFragment();
 		wf.setTabId(id);
+		wf.setWebViewClient(new RsWebViewClient(this.urlModificationAware));
 		this.webviews.put(id, wf);
 		
 		return id;

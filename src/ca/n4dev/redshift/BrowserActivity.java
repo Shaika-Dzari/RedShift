@@ -16,6 +16,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.PopupMenu;
 import android.support.v4.app.FragmentActivity;
@@ -41,7 +42,7 @@ public class BrowserActivity extends FragmentActivity implements UrlModification
         
         if (this.webController == null) {
         	Log.d(TAG, "Creating WebController.");
-        	this.webController = new RsWebController(R.id.layout_content, getSupportFragmentManager());
+        	this.webController = new RsWebController(R.id.layout_content, getSupportFragmentManager(), this);
         	int homeTab = this.webController.newTab();
         	this.webController.setCurrentTab(homeTab);
         	this.webController.goTo("file:///android_asset/home.html");
@@ -73,7 +74,8 @@ public class BrowserActivity extends FragmentActivity implements UrlModification
 
 	@Override
 	public void urlHasChanged(String url) {
-		// TODO Auto-generated method stub
+		EditText txt = (EditText) findViewById(R.id.txtUrl);
+		txt.setText(url);
 	}
 	
 	@Override

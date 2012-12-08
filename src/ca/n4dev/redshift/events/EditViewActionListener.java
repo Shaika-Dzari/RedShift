@@ -14,7 +14,8 @@ public class EditViewActionListener implements TextView.OnEditorActionListener {
 		if (actionId == EditorInfo.IME_ACTION_GO) {
 			String url = textview.getText().toString();
 			url = UrlUtils.sanitize(url);
-			urlAware.urlHasChanged(url);
+			// TODO: Should not use this interface....
+			//urlAware.urlHasChanged(url);
 			return true;
 		}
 		
