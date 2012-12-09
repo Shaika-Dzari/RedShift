@@ -11,12 +11,21 @@
  */ 
 package ca.n4dev.redshift.controller.api;
 
+import android.os.Bundle;
+import android.util.SparseArray;
+
 public interface WebController {
+	
+	public static final String HOME = "file:///android_asset/home.html";
+	
 	public boolean goBack();
 	public boolean goForward();
 	public void goTo(String url);
 	public void refresh();
-	public int newTab();
+	public int newTab(String url);
+	public SparseArray<String> listTab();
 	public void closeTab(int tabId);
 	public void setCurrentTab(int tabId);
+	public void saveState(Bundle outstate);
+	public void restoreState(Bundle outstate);
 }

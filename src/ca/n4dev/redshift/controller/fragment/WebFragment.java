@@ -13,12 +13,13 @@ package ca.n4dev.redshift.controller.fragment;
 
 import ca.n4dev.redshift.R;
 import android.annotation.SuppressLint;
+import android.app.Fragment;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -28,12 +29,15 @@ public class WebFragment extends Fragment {
 
 	private static final String TAG = "WebFragment";
 	private View view = null;
-	private WebView webview;
-	private WebViewClient webViewClient;
+	private WebView webview = null;
+	private WebViewClient webViewClient = null;
+	private WebChromeClient webChromeClient = null;
+	
+	private Bundle bundle = null;
 	
 	private Integer tabId;
 	private boolean privateBrowsing;
-	private String url;
+	private String initialUrl;
 	
 	@SuppressLint("SetJavaScriptEnabled")
 	@Override
@@ -41,25 +45,33 @@ public class WebFragment extends Fragment {
 		Log.d(TAG, "WebFragment onCreateView");
 		
 		if (view == null) {
+			
 			view = inflater.inflate(R.layout.fragment_webcontainer, container, false);
 			
 			this.webview = (WebView) view.findViewById(R.id.fragment_webview);
-			WebSettings settings = this.webview.getSettings();
 			
-			settings.setRenderPriority(RenderPriority.HIGH);
-			settings.setJavaScriptEnabled(true);
-			settings.setBuiltInZoomControls(true);
-			settings.setDisplayZoomControls(false);
-			settings.setGeolocationEnabled(false);
-			settings.setDefaultZoom(WebSettings.ZoomDensity.FAR);
-			settings.setUseWideViewPort(true);
-			settings.setLoadWithOverviewMode(true);
-			//settings.setUserAgentString("N4 Browser");
-			
-			this.webview.setWebViewClient(this.webViewClient);
-			
-			if (this.url != null)
-				this.webview.loadUrl(url);
+			if (bundle == null) {
+				WebSettings settings = this.webview.getSettings();
+				
+				settings.setRenderPriority(RenderPriority.HIGH);
+				settings.setJavaScriptEnabled(true);
+				settings.setBuiltInZoomControls(true);
+				settings.setDisplayZoomControls(false);
+				settings.setGeolocationEnabled(false);
+				settings.setDefaultZoom(WebSettings.ZoomDensity.FAR);
+				settings.setUseWideViewPort(true);
+				settings.setLoadWithOverviewMode(true);
+				//settings.setUserAgentString("N4 Browser");
+				
+				this.webview.setWebViewClient(this.webViewClient);
+				this.webview.setWebChromeClient(this.webChromeClient);
+				
+				if (this.initialUrl != null)
+					this.webview.loadUrl(initialUrl);
+			} else {
+				
+				this.webview.restoreState(bundle);
+			}
 		}
 		
 		return view;
@@ -96,15 +108,15 @@ public class WebFragment extends Fragment {
 	/**
 	 * @return the url
 	 */
-	public String getUrl() {
-		return url;
+	public String getInitialUrl() {
+		return initialUrl;
 	}
 
 	/**
 	 * @param url the url to set
 	 */
-	public void setUrl(String url) {
-		this.url = url;
+	public void setInitialUrl(String initialUrl) {
+		this.initialUrl = initialUrl;
 	}
 
 	/**
@@ -119,5 +131,26 @@ public class WebFragment extends Fragment {
 	 */
 	public void setWebViewClient(WebViewClient webViewClient) {
 		this.webViewClient = webViewClient;
+	}
+
+	/**
+	 * @param webChromeClient the webChromeClient to set
+	 */
+	public void setWebChromeClient(WebChromeClient webChromeClient) {
+		this.webChromeClient = webChromeClient;
+	}
+
+	/**
+	 * @return the bundle
+	 */
+	public Bundle getBundle() {
+		return bundle;
+	}
+
+	/**
+	 * @param bundle the bundle to set
+	 */
+	public void setBundle(Bundle bundle) {
+		this.bundle = bundle;
 	}
 }

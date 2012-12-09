@@ -7,7 +7,7 @@
 		    	  android:orientation="horizontal"
 			      android:layout_alignParentBottom="true"
 				  android:layout_alignParentLeft="true"
-				  android:background="@drawable/img_bottombar">
+				  style="?android:attr/actionBarStyle">
         
      <EditText android:id="@+id/txtUrl"
          	  android:layout_width="0dp"
@@ -22,7 +22,7 @@
          		 android:layout_height="match_parent"
          		 android:layout_width="wrap_content"
          		 android:onClick="onBtnListTab"
-         		 android:src="@drawable/img_collectiontab"
+         		 android:src="@drawable/img_collectiontab_light"
          		 android:contentDescription="@string/desc_btnBack"
          		 style="?android:attr/borderlessButtonStyle"
          />
@@ -30,28 +30,18 @@
      <ImageButton android:id="@+id/btnNewTab"
          		 android:layout_height="match_parent"
          		 android:layout_width="wrap_content"
-         		 android:src="@drawable/img_newtab"
+         		 android:src="@drawable/img_newtab_light"
          		 android:onClick="onBtnNewTab"
          		 android:contentDescription="@string/desc_btnBack"
          		 style="?android:attr/borderlessButtonStyle"
          />
      
-     <!-- 
-     <ImageButton android:id="@+id/btnBack"
-         		 android:layout_height="match_parent"
-         		 android:layout_width="wrap_content"
-         		 android:src="@drawable/img_back"
-         		 android:onClick="onBtnBack"
-         		 style="?android:attr/borderlessButtonStyle"
-         		 android:contentDescription="@string/desc_btnBack"
-         />
-      -->
-     <ImageButton android:src="@drawable/img_setting"
+     <ImageButton android:src="@drawable/img_setting_light"
          		 android:contentDescription="@string/desc_btnSetting"
          		 android:id="@+id/btnSetting"
          		 android:layout_width="wrap_content"
          	   	 android:layout_height="match_parent"
-         	   	 android:onClick="btnshowPopupSetting" />
+         	   	 android:onClick="onBtnShowPopup"
          	   	 style="?android:attr/borderlessButtonStyle"
          	   	  />
 

@@ -14,31 +14,42 @@ package ca.n4dev.redshift.controller;
 import java.util.HashMap;
 import java.util.Map;
 
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
+import android.os.Bundle;
 import android.util.Log;
+import android.util.SparseArray;
+import android.webkit.WebChromeClient;
+import android.webkit.WebView;
 
 import ca.n4dev.redshift.controller.api.WebController;
 import ca.n4dev.redshift.controller.fragment.WebFragment;
 import ca.n4dev.redshift.controller.web.RsWebViewClient;
+import ca.n4dev.redshift.events.ProgressAware;
 import ca.n4dev.redshift.events.UrlModificationAware;
 
 public class RsWebController implements WebController {
 	
 	private static final String TAG = "RsWebController";
+	public static final String SAVE_KEY = "key";
+	public static final String SAVE_WEBVIEW = "webview";
+	public static final String SAVE_CURRENT = "current";
 	
 	private Map<Integer, WebFragment> webviews;
 	private int currentTabView;
 	private int counter = 0;
 	private FragmentManager fragmentManager;
 	private UrlModificationAware urlModificationAware;
+	private ProgressAware progressAware;
 	private int layoutId;
+	private boolean initialFragment = true;
 	
-	public RsWebController(int layoutId, FragmentManager fragmentManager, UrlModificationAware urlModificationAware) {
+	public RsWebController(int layoutId, FragmentManager fragmentManager, UrlModificationAware urlModificationAware, ProgressAware progressAware) {
 		this.webviews = new HashMap<Integer, WebFragment>();
 		this.layoutId = layoutId;
 		this.fragmentManager = fragmentManager;
 		this.urlModificationAware = urlModificationAware;
+		this.progressAware = progressAware;
 	}
 
 	/* (non-Javadoc)
@@ -46,11 +57,10 @@ public class RsWebController implements WebController {
 	 */
 	@Override
 	public boolean goBack() {
-		if (getCurrentWebview().getWebview().canGoBack()) {
-			getCurrentWebview().getWebview().goBack();
-			
-			Log.d(TAG, "WebView back. Current url : " + getCurrentWebview().getWebview().getUrl());
-			
+		WebFragment wf = getCurrentWebview();
+		if (wf.getWebview().canGoBack()) {
+			wf.getWebview().goBack();
+			notifyUrlChange(wf);
 			return true;
 		}
 		
@@ -62,8 +72,10 @@ public class RsWebController implements WebController {
 	 */
 	@Override
 	public boolean goForward() {
-		if (getCurrentWebview().getWebview().canGoForward()) {
-			getCurrentWebview().getWebview().goForward();
+		WebFragment wf = getCurrentWebview();
+		if (wf.getWebview().canGoForward()) {
+			wf.getWebview().goForward();
+			notifyUrlChange(wf);
 			return true;
 		}
 			
@@ -75,7 +87,7 @@ public class RsWebController implements WebController {
 	 */
 	@Override
 	public void goTo(String url) {
-		getCurrentWebview().setUrl(url);
+		getCurrentWebview().getWebview().loadUrl(url);
 	}
 
 	/* (non-Javadoc)
@@ -83,20 +95,28 @@ public class RsWebController implements WebController {
 	 */
 	@Override
 	public void refresh() {
-		// TODO Auto-generated method stub
-
+		getCurrentWebview().getWebview().reload();
 	}
 
 	/* (non-Javadoc)
 	 * @see ca.n4dev.redshift.controller.api.WebController#newTab()
 	 */
 	@Override
-	public int newTab() {
+	public int newTab(String url) {
 		Log.d(TAG, "Creating a new tab");
 		int id = ++counter;
 		WebFragment wf = new WebFragment();
 		wf.setTabId(id);
+		wf.setInitialUrl(url);
 		wf.setWebViewClient(new RsWebViewClient(this.urlModificationAware));
+		wf.setWebChromeClient(new WebChromeClient() {
+			@Override
+			public void onProgressChanged(WebView view, int progress) {
+				progressAware.hasProgressTo(progress);
+			}
+		});
+		
+		
 		this.webviews.put(id, wf);
 		
 		return id;
@@ -122,12 +142,100 @@ public class RsWebController implements WebController {
 	}
 	
 	private void changeWebFragment() {
+		WebFragment wf = getCurrentWebview();
 		FragmentTransaction trx = this.fragmentManager.beginTransaction();
-		trx.add(layoutId, getCurrentWebview());
+		
+		if (initialFragment) {
+			
+			trx.add(layoutId, wf);	
+			initialFragment = false;
+		} else {
+			trx.replace(layoutId, wf);
+		}
+		
 		trx.commit();
+		notifyUrlChange(wf);
 	}
 	
 	private WebFragment getCurrentWebview() {
 		return this.webviews.get(this.currentTabView);
 	}
+
+	/* (non-Javadoc)
+	 * @see ca.n4dev.redshift.controller.api.WebController#listTab()
+	 */
+	@Override
+	public SparseArray<String> listTab() {
+		
+		SparseArray<String> l = new SparseArray<String>();
+		
+		for (Integer i : this.webviews.keySet()) {
+			String u = this.webviews.get(i).getWebview().getUrl();
+			if (u.length() > 40) {
+				u = u.substring(0, 40) + "...";
+			}
+			
+			l.append(i, u);
+		}
+		
+		return l;
+	}
+	
+	
+	private void notifyUrlChange(WebFragment wf) {
+		// Update url
+		if (wf.getWebview() == null)
+			this.urlModificationAware.urlHasChanged(getCurrentWebview().getInitialUrl());
+		else 
+			this.urlModificationAware.urlHasChanged(getCurrentWebview().getWebview().getUrl());
+	}
+	
+	/* (non-Javadoc)
+	 * @see ca.n4dev.redshift.controller.api.WebController#saveState(android.os.Bundle)
+	 */
+	public void saveState(Bundle outState) {
+		Bundle b;
+		int i = 0;
+		
+		outState.putInt(SAVE_CURRENT, this.currentTabView);
+		
+		int[] bundleKey = new int[this.webviews.size()];
+		
+		for (int k : this.webviews.keySet()) {
+			bundleKey[i] = k;
+			
+			b = new Bundle();
+			//b.putInt(SAVE_KEY, k);
+			this.webviews.get(k).getWebview().saveState(b);
+			
+			outState.putBundle(SAVE_WEBVIEW + "_" + k, b);
+			i++;
+		}
+		
+		outState.putIntArray(SAVE_KEY, bundleKey);
+		
+	}
+
+	/* (non-Javadoc)
+	 * @see ca.n4dev.redshift.controller.api.WebController#restoreState(android.os.Bundle)
+	 */
+	@Override
+	public void restoreState(Bundle outstate) {
+		// Get keys
+		int[] keys = outstate.getIntArray(SAVE_KEY);
+		this.currentTabView = outstate.getInt(SAVE_CURRENT);
+		
+		for (int k : keys) {
+			WebFragment wf = new WebFragment();
+			Bundle b = outstate.getBundle(SAVE_WEBVIEW + "_" + k);
+			wf.setTabId(k);
+			
+			wf.setBundle(b);
+			
+			this.webviews.put(k, wf);
+		}
+		
+		//outstate.ge
+	}
+	
 }
