@@ -21,6 +21,8 @@
     <string name="menu_sort_bydate">By Date</string>
     <string name="menu_search">Search</string>
     
+    <string name="menu_hist_search">Search</string>
+    
 
     <!-- Preference -->
     <string name="pref_history">History</string>

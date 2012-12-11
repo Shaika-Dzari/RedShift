@@ -1,6 +1,13 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/menu_hist_search"
+          android:title="@string/menu_hist_search"
+          android:showAsAction="ifRoom|collapseActionView"
+          android:actionViewClass="android.widget.SearchView"
+         />
+    
     <item android:id="@+id/menu_clearhistory"
         android:title="@string/menu_clearhistory"
+        android:showAsAction="ifRoom|collapseActionView"
         android:orderInCategory="100"
          />
 </menu>
