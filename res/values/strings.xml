@@ -16,6 +16,11 @@
     <string name="menu_addbookmark">Add Bookmark</string>
     <string name="menu_history">History</string>
     <string name="menu_bookmark">Bookmarks</string>
+    
+    <string name="menu_sort_byname">By Name</string>
+    <string name="menu_sort_bydate">By Date</string>
+    <string name="menu_search">Search</string>
+    
 
     <!-- Preference -->
     <string name="pref_history">History</string>

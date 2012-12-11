@@ -18,7 +18,8 @@
         android:theme="@style/Theme.RedShift.Light" >
         <activity
             android:name="ca.n4dev.redshift.BrowserActivity"
-            android:label="@string/title_activity_browser" >
+            android:label="@string/title_activity_browser" 
+            android:theme="@style/Theme.RedShift.Light">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -45,7 +46,8 @@
         </activity>
         <activity
             android:name="ca.n4dev.redshift.BookmarkActivity"
-            android:label="@string/title_activity_bookmark" >
+            android:label="@string/title_activity_bookmark" 
+            android:theme="@android:style/Theme.Holo.Light">
 
             <!--
             <intent-filter>
