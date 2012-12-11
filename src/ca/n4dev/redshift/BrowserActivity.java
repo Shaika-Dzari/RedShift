@@ -3,6 +3,7 @@ package ca.n4dev.redshift;
 
 
 import ca.n4dev.redshift.R;
+import ca.n4dev.redshift.bookmark.BookmarkEditFragment;
 import ca.n4dev.redshift.controller.RsWebController;
 import ca.n4dev.redshift.controller.api.WebController;
 import ca.n4dev.redshift.events.ProgressAware;
@@ -98,6 +99,11 @@ public class BrowserActivity extends FragmentActivity implements UrlModification
     	
     }
     
+    private void startBookmark() {
+    	Intent intent = new Intent(this, BookmarkActivity.class);
+    	startActivity(intent);
+    }
+    
     public void onBtnShowPopup(View v) {
     	PopupMenu popup = new PopupMenu(this, v);
         popup.getMenuInflater().inflate(R.menu.activity_browser, popup.getMenu());
@@ -114,6 +120,9 @@ public class BrowserActivity extends FragmentActivity implements UrlModification
 					case R.id.menu_settings:
 						startPreferenceActivity();
 						return true;
+					case R.id.menu_bookmark:
+						startBookmark();
+			            return true;
 				}
 				
 				return true;

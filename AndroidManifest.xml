@@ -35,31 +35,19 @@
         <activity
             android:name="ca.n4dev.redshift.HistoryActivity"
             android:label="@string/title_activity_history" >
-
-            <!--
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-            -->
         </activity>
         <activity
             android:name="ca.n4dev.redshift.BookmarkActivity"
             android:label="@string/title_activity_bookmark" 
             android:theme="@android:style/Theme.Holo.Light">
-
-            <!--
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-            -->
         </activity>
         <activity
             android:name="ca.n4dev.redshift.SettingsActivity"
             android:label="@string/title_activity_settings" >
+        </activity>
+        <activity
+            android:name="ca.n4dev.redshift.bookmark.BookmarkEditActivity"
+            android:label="@string/title_activity_bookmark" >
         </activity>
     </application>
 
