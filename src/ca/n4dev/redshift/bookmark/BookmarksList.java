@@ -19,20 +19,22 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 public class BookmarksList extends ListFragment {
 	
-	boolean mDualPane;
-    int mCurCheckPosition = 0;
-    BookmarkDbHelper dbHelper = new BookmarkDbHelper(getActivity());
+	private boolean mDualPane;
+	private int mCurCheckPosition = 0;
+	private BookmarkDbHelper dbHelper = new BookmarkDbHelper(getActivity());
+	private SQLiteDatabase db;
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         
-        SQLiteDatabase db = dbHelper.getReadableDatabase();
+        db = dbHelper.getReadableDatabase();
+        dbHelper.insertTestData(db);
+        
         
         Cursor c = db.query(BookmarkDbHelper.BOOKMARK_TABLE_NAME,
         					BookmarkDbHelper.getBookmarkTableColumns(), 
@@ -42,12 +44,7 @@ public class BookmarksList extends ListFragment {
         					null, 
         					BookmarkDbHelper.BOOKMARK_CREATIONDATE + " DESC");
         
-        //String[] b = {"https://duckduckgo.com", "http://dot.kde.org", "http://android-ui-utils.googlecode.com"};
-        
-        //setListAdapter(new ArrayAdapter<String>(getActivity(),
-        //        android.R.layout.simple_list_item_activated_1, b));
-        
-        setListAdapter(new BookmarkAdapter(getActivity(), null));
+        setListAdapter(new BookmarkCursorAdapter(getActivity(), c));
         
         View editFrame = getActivity().findViewById(R.id.frag_bookmarkedit);
         mDualPane = editFrame != null && editFrame.getVisibility() == View.VISIBLE;
@@ -107,5 +104,24 @@ public class BookmarksList extends ListFragment {
             intent.putExtra("index", index);
             startActivity(intent);
         }
+    }
+    
+    
+    @Override
+	public void onResume(){
+        super.onResume();
+        db = dbHelper.getReadableDatabase();
+    }
+    
+    @Override
+	public void onPause(){
+        super.onPause();
+        db.close();
+    }
+
+    @Override
+	public void onDestroy() {
+        super.onDestroy();
+        db.close();
     }
 }

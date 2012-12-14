@@ -72,6 +72,13 @@ public class BookmarkDbHelper extends SQLiteOpenHelper {
 		db.delete(BOOKMARK_TABLE_NAME, BOOKMARK_ID + "=?", new String[]{"" + id});
 	}
 	
+	public void insertTestData(SQLiteDatabase db) {
+		
+		for (int i = 0; i < 10; i ++) {
+			add(db, "Web Title - test data " + i, "http://foo.bar?q=" + i, "Android, Test");			
+		}
+	}
+	
 	
 	public static String[] getBookmarkTableColumns() {
 		String[] s = {BOOKMARK_ID,
