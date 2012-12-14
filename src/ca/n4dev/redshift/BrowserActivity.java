@@ -3,7 +3,6 @@ package ca.n4dev.redshift;
 
 
 import ca.n4dev.redshift.R;
-import ca.n4dev.redshift.bookmark.BookmarkEditFragment;
 import ca.n4dev.redshift.controller.RsWebController;
 import ca.n4dev.redshift.controller.api.WebController;
 import ca.n4dev.redshift.events.ProgressAware;
@@ -18,7 +17,6 @@ import android.util.SparseArray;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
@@ -116,13 +114,16 @@ public class BrowserActivity extends FragmentActivity implements UrlModification
 				switch (item.getItemId()) {
 					case R.id.menu_home:
 						webController.goTo(WebController.HOME);
-						return true;
+						break;
 					case R.id.menu_settings:
 						startPreferenceActivity();
-						return true;
+						break;
 					case R.id.menu_bookmark:
 						startBookmark();
-			            return true;
+						break;
+			        case R.id.menu_quit:
+			        	finish();
+			        	break;
 				}
 				
 				return true;

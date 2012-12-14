@@ -15,6 +15,8 @@ import ca.n4dev.redshift.R;
 import android.app.FragmentTransaction;
 import android.app.ListFragment;
 import android.content.Intent;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -24,15 +26,28 @@ public class BookmarksList extends ListFragment {
 	
 	boolean mDualPane;
     int mCurCheckPosition = 0;
+    BookmarkDbHelper dbHelper = new BookmarkDbHelper(getActivity());
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         
-        String[] b = {"https://duckduckgo.com", "http://dot.kde.org", "http://android-ui-utils.googlecode.com"};
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
         
-        setListAdapter(new ArrayAdapter<String>(getActivity(),
-                android.R.layout.simple_list_item_activated_1, b));
+        Cursor c = db.query(BookmarkDbHelper.BOOKMARK_TABLE_NAME,
+        					BookmarkDbHelper.getBookmarkTableColumns(), 
+        					null, 
+        					null, 
+        					null, 
+        					null, 
+        					BookmarkDbHelper.BOOKMARK_CREATIONDATE + " DESC");
+        
+        //String[] b = {"https://duckduckgo.com", "http://dot.kde.org", "http://android-ui-utils.googlecode.com"};
+        
+        //setListAdapter(new ArrayAdapter<String>(getActivity(),
+        //        android.R.layout.simple_list_item_activated_1, b));
+        
+        setListAdapter(new BookmarkAdapter(getActivity(), null));
         
         View editFrame = getActivity().findViewById(R.id.frag_bookmarkedit);
         mDualPane = editFrame != null && editFrame.getVisibility() == View.VISIBLE;

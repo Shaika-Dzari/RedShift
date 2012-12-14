@@ -21,6 +21,7 @@
     <string name="menu_sort_bydate">By Date</string>
     <string name="menu_search">Search</string>
     
+    <string name="menu_quit">Quit</string>
     <string name="menu_hist_search">Search</string>
     
 
