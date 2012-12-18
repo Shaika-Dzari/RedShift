@@ -30,7 +30,6 @@ public class RsWebViewClient extends WebViewClient {
     public void onPageStarted(WebView view, String url, Bitmap favicon) {
 		loadingPage = true;
 		Log.d(TAG, "onPageStarted: " + url);
-        //SHOW LOADING IF IT ISNT ALREADY VISIBLE  
     }
 
     @Override

@@ -12,6 +12,7 @@
 package ca.n4dev.redshift.bookmark;
 
 import ca.n4dev.redshift.R;
+import ca.n4dev.redshift.events.OnListClickAware;
 import android.app.FragmentTransaction;
 import android.app.ListFragment;
 import android.content.Intent;
@@ -25,15 +26,18 @@ public class BookmarksList extends ListFragment {
 	
 	private boolean mDualPane;
 	private int mCurCheckPosition = 0;
-	private BookmarkDbHelper dbHelper = new BookmarkDbHelper(getActivity());
+	private BookmarkDbHelper dbHelper;
 	private SQLiteDatabase db;
 
+	private OnListClickAware onListClickAware;
+	
+	
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        
+        dbHelper = new BookmarkDbHelper(getActivity());
         db = dbHelper.getReadableDatabase();
-        dbHelper.insertTestData(db);
+        //dbHelper.insertTestData(db);
         
         
         Cursor c = db.query(BookmarkDbHelper.BOOKMARK_TABLE_NAME,
@@ -46,6 +50,7 @@ public class BookmarksList extends ListFragment {
         
         setListAdapter(new BookmarkCursorAdapter(getActivity(), c));
         
+        /*
         View editFrame = getActivity().findViewById(R.id.frag_bookmarkedit);
         mDualPane = editFrame != null && editFrame.getVisibility() == View.VISIBLE;
         
@@ -61,12 +66,28 @@ public class BookmarksList extends ListFragment {
             // Make sure our UI is in the correct state.
             showDetails(mCurCheckPosition);
         }
+        */
     }
     
     @Override
     public void onListItemClick(ListView l, View v, int position, long id) {
-        showDetails(position);
+    	
+    	/*
+    	Intent intent=new Intent();  
+    	intent.putExtra("url", "Hello");
+    	getActivity().setResult(666, intent);
+    	getActivity().finish();
+    	*/
+    	
+    	this.onListClickAware.onListClickEvent(v);
     }
+    
+    public void setListclickAware(OnListClickAware onListClickAware) {
+    	this.onListClickAware = onListClickAware;
+    }
+    
+    
+    
     
     void showDetails(int index) {
         mCurCheckPosition = index;

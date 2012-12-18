@@ -1,4 +1,5 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
+    
     <item android:id="@+id/menu_hist_search"
           android:title="@string/menu_hist_search"
           android:showAsAction="ifRoom|collapseActionView"

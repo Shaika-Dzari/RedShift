@@ -7,11 +7,13 @@
             android:id="@+id/frag_bookmarklist" 
             android:layout_weight="1"
             android:layout_width="0px" 
-            android:layout_height="match_parent" />
+            android:layout_height="match_parent"
+            android:layout_margin="3dp" />
 
     <FrameLayout android:id="@+id/frag_bookmarkedit" 
         		android:layout_weight="1"
-          		android:layout_width="0px" android:layout_height="match_parent"
+          		android:layout_width="0px" 
+          		android:layout_height="match_parent"
             	android:background="?android:attr/detailsElementBackground" />
 
 </LinearLayout>

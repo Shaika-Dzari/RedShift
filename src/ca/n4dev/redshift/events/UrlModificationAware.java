@@ -9,4 +9,5 @@ package ca.n4dev.redshift.events;
  */
 public interface UrlModificationAware {
 	public void urlHasChanged(String url);
+	public void pageReceived(String url, String title);
 }

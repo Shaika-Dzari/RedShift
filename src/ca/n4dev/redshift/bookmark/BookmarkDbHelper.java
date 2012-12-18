@@ -75,7 +75,7 @@ public class BookmarkDbHelper extends SQLiteOpenHelper {
 	public void insertTestData(SQLiteDatabase db) {
 		
 		for (int i = 0; i < 10; i ++) {
-			add(db, "Web Title - test data " + i, "http://foo.bar?q=" + i, "Android, Test");			
+			add(db, "Web Title - test data " + i, "http://www.duckduckgo.com/?q=1+" + i, "Android, Test");			
 		}
 	}
 	

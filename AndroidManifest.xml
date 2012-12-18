@@ -18,28 +18,33 @@
         android:theme="@style/Theme.RedShift.Light" >
         <activity
             android:name="ca.n4dev.redshift.BrowserActivity"
-            android:label="@string/title_activity_browser" 
-            android:theme="@style/Theme.RedShift.Light">
+            android:label="@string/title_activity_browser"
+            android:theme="@style/Theme.RedShift.Light" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-            
             <intent-filter>
-            	<action android:name="android.intent.action.VIEW" />
+                <action android:name="android.intent.action.VIEW" />
+
                 <category android:name="android.intent.category.BROWSABLE" />
-                <category android:name="android.intent.category.DEFAULT"></category>
-            	<data android:scheme="http"></data>
+                <category android:name="android.intent.category.DEFAULT" >
+                </category>
+
+                <data android:scheme="http" >
+                </data>
             </intent-filter>
         </activity>
         <activity
             android:name="ca.n4dev.redshift.HistoryActivity"
-            android:label="@string/title_activity_history" >
+            android:label="@string/title_activity_history" 
+            android:theme="@android:style/Theme.Holo.Light">
         </activity>
         <activity
             android:name="ca.n4dev.redshift.BookmarkActivity"
-            android:label="@string/title_activity_bookmark" 
-            android:theme="@android:style/Theme.Holo.Light">
+            android:label="@string/title_activity_bookmark"
+            android:theme="@android:style/Theme.Holo.Light" >
         </activity>
         <activity
             android:name="ca.n4dev.redshift.SettingsActivity"
@@ -47,8 +52,10 @@
         </activity>
         <activity
             android:name="ca.n4dev.redshift.bookmark.BookmarkEditActivity"
-            android:label="@string/title_activity_bookmark" >
+            android:label="@string/title_activity_bookmark" 
+            >
         </activity>
+        
     </application>
 
 </manifest>

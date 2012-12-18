@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
 
     <string name="app_name">RedShift Web Browser</string>
@@ -16,14 +17,11 @@
     <string name="menu_addbookmark">Add Bookmark</string>
     <string name="menu_history">History</string>
     <string name="menu_bookmark">Bookmarks</string>
-    
     <string name="menu_sort_byname">By Name</string>
     <string name="menu_sort_bydate">By Date</string>
     <string name="menu_search">Search</string>
-    
     <string name="menu_quit">Quit</string>
     <string name="menu_hist_search">Search</string>
-    
 
     <!-- Preference -->
     <string name="pref_history">History</string>
@@ -34,5 +32,7 @@
     <string name="pref_cookie_summary">Allow cookies to be saved and read</string>
     <string name="title_activity_history">History</string>
     <string name="title_activity_bookmark">Bookmark</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="title_activity_test">TestActivity</string>
 
 </resources>

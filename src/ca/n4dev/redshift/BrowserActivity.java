@@ -7,11 +7,13 @@ import ca.n4dev.redshift.controller.RsWebController;
 import ca.n4dev.redshift.controller.api.WebController;
 import ca.n4dev.redshift.events.ProgressAware;
 import ca.n4dev.redshift.events.UrlModificationAware;
+import ca.n4dev.redshift.history.HistoryDbHelper;
 import ca.n4dev.redshift.history.UrlUtils;
 import android.net.Uri;
 import android.os.Bundle;
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 import android.util.SparseArray;
 import android.view.KeyEvent;
@@ -30,15 +32,24 @@ import android.support.v4.app.FragmentActivity;
 public class BrowserActivity extends FragmentActivity implements UrlModificationAware, ProgressAware {
 	
 	private static final String TAG = "BrowserActivity";
+	private static final int BOOKMARK_RESULT_ID = 9990;
+	private static final int HISTORY_RESULT_ID = 9991;
 	
 	private WebController webController;
 	private ProgressBar progressBar;
+	private HistoryDbHelper historyHelper;
+	private SQLiteDatabase historyDatabase;
+	private BrowserActivity browserActivity;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        browserActivity = this;
         Log.d(TAG, "onCreate()");
         setContentView(R.layout.activity_browser);
+        
+        historyHelper = new HistoryDbHelper(this);
+        historyDatabase = historyHelper.getWritableDatabase();
         
         String initUrl = WebController.HOME;
         
@@ -99,7 +110,24 @@ public class BrowserActivity extends FragmentActivity implements UrlModification
     
     private void startBookmark() {
     	Intent intent = new Intent(this, BookmarkActivity.class);
-    	startActivity(intent);
+    	//Intent intent = new Intent(this, TestActivity.class);
+    	//startActivity(intent);
+    	startActivityForResult(intent, 666);
+    }
+    
+    
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    	super.onActivityResult(requestCode, resultCode, data);
+    	String url = null;
+    	if (data != null) {
+    		if (requestCode == BOOKMARK_RESULT_ID || requestCode == HISTORY_RESULT_ID) {
+    			url = data.getStringExtra("url");
+    		
+	    		if (url != null && !"".equals(url))
+	    			webController.goTo(url);
+    		}
+    	}
     }
     
     public void onBtnShowPopup(View v) {
@@ -110,6 +138,7 @@ public class BrowserActivity extends FragmentActivity implements UrlModification
 			
 			@Override
 			public boolean onMenuItemClick(MenuItem item) {
+				Intent intent;
 				
 				switch (item.getItemId()) {
 					case R.id.menu_home:
@@ -119,8 +148,15 @@ public class BrowserActivity extends FragmentActivity implements UrlModification
 						startPreferenceActivity();
 						break;
 					case R.id.menu_bookmark:
-						startBookmark();
+						intent = new Intent(browserActivity, BookmarkActivity.class);
+				    	startActivityForResult(intent, BOOKMARK_RESULT_ID);
 						break;
+						
+					case R.id.menu_history:
+						intent = new Intent(browserActivity, HistoryActivity.class);
+				    	startActivityForResult(intent, HISTORY_RESULT_ID);
+						break;
+						
 			        case R.id.menu_quit:
 			        	finish();
 			        	break;
@@ -217,6 +253,27 @@ public class BrowserActivity extends FragmentActivity implements UrlModification
 		Intent intent = new Intent(this, SettingsActivity.class);
 		startActivity(intent);
 	}
+
+	/* (non-Javadoc)
+	 * @see ca.n4dev.redshift.events.UrlModificationAware#pageReceived(java.lang.String, java.lang.String)
+	 */
+	@Override
+	public void pageReceived(String url, String title) {
+		historyHelper.add(this.historyDatabase, title, url);
+	}
+	
+	@Override
+	public void onPause() {
+		super.onPause();
+		historyDatabase.close();
+	}
+	
+	@Override
+	public void onResume() {
+		super.onResume();
+		historyDatabase = this.historyHelper.getWritableDatabase();
+	}
+	
     
     //-------------------------------------------------------------------------
     // Private class

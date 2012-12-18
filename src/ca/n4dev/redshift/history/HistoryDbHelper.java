@@ -23,12 +23,12 @@ public class HistoryDbHelper extends SQLiteOpenHelper {
 
 	private static final int 	DATABASE_VERSION = 1;
 	private static final String DATABASE_NAME = "redshift.history.db";
-    private static final String HISTORY_TABLE_NAME = "history";
-    private static final String HISTORY_URL = "url";
-    private static final String HISTORY_PRETTYDATE = "prettydate";
-    private static final String HISTORY_CREATIONDATE = "creationdate";
-    private static final String HISTORY_ID = "_id";
-    private static final String HISTORY_TITLE = "title";
+	public static final String HISTORY_TABLE_NAME = "history";
+	public static final String HISTORY_URL = "url";
+	public static final String HISTORY_PRETTYDATE = "prettydate";
+	public static final String HISTORY_CREATIONDATE = "creationdate";
+	public static final String HISTORY_ID = "_id";
+	public static final String HISTORY_TITLE = "title";
     
     private static final String HISTORY_TABLE_CREATE =
             "CREATE TABLE " + HISTORY_TABLE_NAME + " (" +
@@ -81,7 +81,7 @@ public class HistoryDbHelper extends SQLiteOpenHelper {
 
 	}
 
-	public String[] getHistoryTableColumns() {
+	public static String[] getHistoryTableColumns() {
 		String[] s = {HISTORY_ID,
 					  HISTORY_TITLE,
 					  HISTORY_URL,
@@ -96,8 +96,8 @@ public class HistoryDbHelper extends SQLiteOpenHelper {
 		
 		values.put(HISTORY_TITLE, title);
 		values.put(HISTORY_URL, url);
-		values.put(HISTORY_CREATIONDATE, DateFormat.format("yyyyMMddhhmmss", d).toString());
-		values.put(HISTORY_PRETTYDATE, DateFormat.format("yyyy-MM-dd hh:mm:ss", d).toString());
+		values.put(HISTORY_CREATIONDATE, DateFormat.format("yyyyMMddkkmmss", d).toString());
+		values.put(HISTORY_PRETTYDATE, DateFormat.format("yyyy-MM-dd kk:mm:ss", d).toString());
 		
 		return db.insert(HISTORY_TABLE_NAME, null, values);
 	}
@@ -105,4 +105,5 @@ public class HistoryDbHelper extends SQLiteOpenHelper {
 	public void delete(SQLiteDatabase db, long id) {
 		db.delete(HISTORY_TABLE_NAME, HISTORY_ID + "=?", new String[]{"" + id});
 	}
+	
 }

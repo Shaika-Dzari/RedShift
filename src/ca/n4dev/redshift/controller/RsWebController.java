@@ -114,6 +114,16 @@ public class RsWebController implements WebController {
 			public void onProgressChanged(WebView view, int progress) {
 				progressAware.hasProgressTo(progress);
 			}
+			
+			@Override
+            public void onReceivedTitle(WebView view, String title) {
+				Log.d("WebChromeClient", "title: " + title);
+				Log.d("WebChromeClient", "url" + view.getUrl());
+				
+				urlModificationAware.pageReceived(view.getUrl(), title);
+				
+			}
+			
 		});
 		
 		

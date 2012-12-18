@@ -11,30 +11,14 @@
  */ 
 package ca.n4dev.redshift.history;
 
-@Deprecated
+
 public class HistoryItem {
 
-	private String url;
-	private int previousIdx;
+	public String url;
+	public String title;
 	
-	public HistoryItem(String url, int previousIdx) {
+	public HistoryItem(String title, String url) {
+		this.title = title;
 		this.url = url;
-		this.previousIdx = previousIdx;
 	}
-
-	/**
-	 * @return the url
-	 */
-	public String getUrl() {
-		return url;
-	}
-
-	/**
-	 * @return the previousIdx
-	 */
-	public int getPreviousIdx() {
-		return previousIdx;
-	}
-	
-	
 }

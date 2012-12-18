@@ -36,6 +36,7 @@ public class HistoryManager {
 			this.history = new ArrayList<HistoryItem>();
 	}
 
+	/*
 	public void add(String url, boolean isGoingTo) {
 		Log.d(TAG, "Adding url: " + url);
 		
@@ -56,7 +57,7 @@ public class HistoryManager {
 			
 		return this.history.get(previous).getUrl();
 	}
-	
+	*/
 	public HistoryItem getCurrent() {
 		return this.history.get(idx);
 	}
