@@ -9,7 +9,10 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.TextView;
 
 public class HistoryActivity extends Activity {
 	
@@ -26,6 +29,22 @@ public class HistoryActivity extends Activity {
         historyDatabase = historyHelper.getReadableDatabase();
         
         ListView lv = (ListView) findViewById(R.id.lstHistory);
+        
+        
+        
+        lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
+			@Override
+			public void onItemClick(AdapterView<?> arg0, View view, int position,	long id) {
+				TextView t = (TextView) view.findViewById(R.id.li_txt_hist_url);
+				String url = t.getText().toString();
+				Intent intent = new Intent();  
+		    	intent.putExtra("url", url);
+		    	setResult(RESULT_OK, intent);
+		    	finish();
+			}
+		
+        });
         
         Cursor c = this.historyDatabase.query(
         					HistoryDbHelper.HISTORY_TABLE_NAME, 
@@ -73,4 +92,5 @@ public class HistoryActivity extends Activity {
 		super.onResume();
 		historyDatabase = this.historyHelper.getReadableDatabase();
 	}
+	
 }

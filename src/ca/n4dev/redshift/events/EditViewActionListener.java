@@ -1,6 +1,6 @@
 package ca.n4dev.redshift.events;
 
-import ca.n4dev.redshift.history.UrlUtils;
+import ca.n4dev.redshift.utils.UrlUtils;
 import android.view.KeyEvent;
 import android.view.inputmethod.EditorInfo;
 import android.widget.TextView;

@@ -9,7 +9,7 @@
  * 
  * @since 2012-11-25
  */ 
-package ca.n4dev.redshift.history;
+package ca.n4dev.redshift.utils;
 
 public class UrlUtils {
 
@@ -18,5 +18,10 @@ public class UrlUtils {
 			return "http://" + url;
 		}
 		return url;
+	}
+	
+	public static boolean externalHandling(String url) {
+		
+		return false;
 	}
 }

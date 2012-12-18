@@ -8,7 +8,7 @@ import ca.n4dev.redshift.controller.api.WebController;
 import ca.n4dev.redshift.events.ProgressAware;
 import ca.n4dev.redshift.events.UrlModificationAware;
 import ca.n4dev.redshift.history.HistoryDbHelper;
-import ca.n4dev.redshift.history.UrlUtils;
+import ca.n4dev.redshift.utils.UrlUtils;
 import android.net.Uri;
 import android.os.Bundle;
 import android.annotation.SuppressLint;
@@ -108,14 +108,6 @@ public class BrowserActivity extends FragmentActivity implements UrlModification
     	
     }
     
-    private void startBookmark() {
-    	Intent intent = new Intent(this, BookmarkActivity.class);
-    	//Intent intent = new Intent(this, TestActivity.class);
-    	//startActivity(intent);
-    	startActivityForResult(intent, 666);
-    }
-    
-    
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
     	super.onActivityResult(requestCode, resultCode, data);
@@ -124,8 +116,10 @@ public class BrowserActivity extends FragmentActivity implements UrlModification
     		if (requestCode == BOOKMARK_RESULT_ID || requestCode == HISTORY_RESULT_ID) {
     			url = data.getStringExtra("url");
     		
-	    		if (url != null && !"".equals(url))
+	    		if (url != null && !"".equals(url)) {
+	    			urlHasChanged(url);
 	    			webController.goTo(url);
+	    		}
     		}
     	}
     }
@@ -158,6 +152,21 @@ public class BrowserActivity extends FragmentActivity implements UrlModification
 						break;
 						
 			        case R.id.menu_quit:
+			        	finish();
+			        	break;
+			        	
+			        case R.id.menu_share:
+			        	
+			        	intent = new Intent(android.content.Intent.ACTION_SEND);
+			        	intent.setType("text/plain");
+			        	intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
+			        	intent.putExtra(Intent.EXTRA_SUBJECT, "Sharing URL");
+			        	intent.putExtra(Intent.EXTRA_TEXT, webController.currentUrl());
+			        	startActivity(Intent.createChooser(intent, "Sharing URL"));
+			        	
+			        	break;
+			        	
+			        case R.id.menu_addbookmark:
 			        	finish();
 			        	break;
 				}

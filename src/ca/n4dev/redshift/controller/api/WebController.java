@@ -22,10 +22,12 @@ public interface WebController {
 	public boolean goForward();
 	public void goTo(String url);
 	public void refresh();
+	public String currentUrl();
 	public int newTab(String url);
 	public SparseArray<String> listTab();
 	public void closeTab(int tabId);
 	public void setCurrentTab(int tabId);
 	public void saveState(Bundle outstate);
 	public void restoreState(Bundle outstate);
+	
 }

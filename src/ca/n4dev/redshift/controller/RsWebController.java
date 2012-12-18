@@ -247,5 +247,18 @@ public class RsWebController implements WebController {
 		
 		//outstate.ge
 	}
+
+	/* (non-Javadoc)
+	 * @see ca.n4dev.redshift.controller.api.WebController#currentUrl()
+	 */
+	@Override
+	public String currentUrl() {
+		
+		WebFragment wf = getCurrentWebview();
+		if (wf.getWebview() == null)
+			return wf.getInitialUrl();
+		else 
+			return wf.getWebview().getUrl();
+	}
 	
 }
