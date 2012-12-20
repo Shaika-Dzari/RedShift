@@ -1,25 +1,5 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     
-    <item android:id="@+id/menu_share"
-        android:title="@string/menu_share"
-        android:orderInCategory="100"
-         />
-    
-    <item android:id="@+id/menu_history"
-        android:title="@string/menu_history"
-        android:orderInCategory="100"
-         />
-    
-    <item android:id="@+id/menu_bookmark"
-        android:title="@string/menu_bookmark"
-        android:orderInCategory="100"
-         />
-    
-    <item android:id="@+id/menu_addbookmark"
-        android:title="@string/menu_addbookmark"
-        android:orderInCategory="100"
-         />
-    
     <item android:id="@+id/menu_quit"
         android:title="@string/menu_quit"
         android:orderInCategory="100"
@@ -30,8 +10,13 @@
         android:orderInCategory="100"
          />
     
-    <item android:id="@+id/menu_home"
-        android:title="@string/menu_home"
+    <item android:id="@+id/menu_history"
+        android:title="@string/menu_history"
+        android:orderInCategory="100"
+         />
+    
+    <item android:id="@+id/menu_bookmark"
+        android:title="@string/menu_bookmark"
         android:orderInCategory="100"
          />
     

@@ -11,8 +11,11 @@
  */ 
 package ca.n4dev.redshift.controller.api;
 
+import java.util.List;
+
+import ca.n4dev.redshift.controller.container.RsWebView;
+
 import android.os.Bundle;
-import android.util.SparseArray;
 
 public interface WebController {
 	
@@ -23,11 +26,11 @@ public interface WebController {
 	public void goTo(String url);
 	public void refresh();
 	public String currentUrl();
+	public int currentId();
 	public int newTab();
-	public SparseArray<String> listTab();
+	public List<RsWebView> listTab();
 	public void closeTab(int tabId);
 	public void setCurrentTab(int tabId);
 	public void saveState(Bundle outstate);
 	public void restoreState(Bundle outstate);
-	
 }

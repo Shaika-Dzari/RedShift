@@ -12,8 +12,10 @@
 package ca.n4dev.redshift.controller;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
+import android.annotation.SuppressLint;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.os.Bundle;
@@ -23,11 +25,13 @@ import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 
 import ca.n4dev.redshift.controller.api.WebController;
+import ca.n4dev.redshift.controller.container.RsWebView;
 import ca.n4dev.redshift.controller.fragment.WebFragment;
 import ca.n4dev.redshift.controller.web.RsWebViewClient;
 import ca.n4dev.redshift.events.ProgressAware;
 import ca.n4dev.redshift.events.UrlModificationAware;
 
+@SuppressLint("UseSparseArrays")
 public class RsWebController implements WebController {
 	
 	private static final String TAG = "RsWebController";
@@ -175,20 +179,9 @@ public class RsWebController implements WebController {
 	 * @see ca.n4dev.redshift.controller.api.WebController#listTab()
 	 */
 	@Override
-	public SparseArray<String> listTab() {
+	public List<RsWebView> listTab() {
 		
-		SparseArray<String> l = new SparseArray<String>();
-		
-		for (Integer i : this.webviews.keySet()) {
-			String u = this.webviews.get(i).getWebview().getUrl();
-			if (u.length() > 40) {
-				u = u.substring(0, 40) + "...";
-			}
-			
-			l.append(i, u);
-		}
-		
-		return l;
+		return null;
 	}
 	
 	
@@ -259,6 +252,14 @@ public class RsWebController implements WebController {
 			return wf.getInitialUrl();
 		else 
 			return wf.getWebview().getUrl();
+	}
+
+	/* (non-Javadoc)
+	 * @see ca.n4dev.redshift.controller.api.WebController#currentId()
+	 */
+	@Override
+	public int currentId() {
+		return this.currentTabView;
 	}
 	
 }

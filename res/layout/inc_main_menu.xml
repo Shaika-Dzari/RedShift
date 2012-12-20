@@ -7,7 +7,7 @@
 		    	  android:orientation="horizontal"
 			      android:layout_alignParentBottom="true"
 				  android:layout_alignParentLeft="true"
-				  style="?android:attr/actionBarStyle">
+				  style="@style/Theme.RedShift.MenuBar">
         
      <EditText android:id="@+id/txtUrl"
          	  android:layout_width="0dp"
@@ -23,11 +23,11 @@
          		 android:layout_height="match_parent"
          		 android:layout_width="wrap_content"
          		 android:onClick="onBtnListTab"
-         		 android:src="@drawable/img_collectiontab_light"
+         		 android:src="@drawable/img_collectiontab"
          		 android:contentDescription="@string/desc_btnBack"
          		 style="?android:attr/borderlessButtonStyle"
          />
-     
+     <!-- 
      <ImageButton android:id="@+id/btnNewTab"
          		 android:layout_height="match_parent"
          		 android:layout_width="wrap_content"
@@ -36,8 +36,8 @@
          		 android:contentDescription="@string/desc_btnBack"
          		 style="?android:attr/borderlessButtonStyle"
          />
-     
-     <ImageButton android:src="@drawable/img_setting_light"
+      -->
+     <ImageButton android:src="@drawable/img_setting"
          		 android:contentDescription="@string/desc_btnSetting"
          		 android:id="@+id/btnSetting"
          		 android:layout_width="wrap_content"

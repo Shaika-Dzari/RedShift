@@ -1,13 +1,13 @@
 package ca.n4dev.redshift;
 
-
-
 import ca.n4dev.redshift.R;
 import ca.n4dev.redshift.controller.RsWebViewController;
 import ca.n4dev.redshift.controller.api.WebController;
+import ca.n4dev.redshift.controller.container.RsWebView;
 import ca.n4dev.redshift.events.ProgressAware;
 import ca.n4dev.redshift.events.UrlModificationAware;
 import ca.n4dev.redshift.history.HistoryDbHelper;
+import ca.n4dev.redshift.utils.TabListAdapter;
 import ca.n4dev.redshift.utils.UrlUtils;
 import android.net.Uri;
 import android.os.Bundle;
@@ -15,14 +15,16 @@ import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
-import android.util.SparseArray;
 import android.view.KeyEvent;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.FrameLayout;
+import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.PopupMenu;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -41,6 +43,14 @@ public class BrowserActivity extends FragmentActivity implements UrlModification
 	private HistoryDbHelper historyHelper;
 	private SQLiteDatabase historyDatabase;
 	private BrowserActivity browserActivity;
+	private ListView tabList = null;
+	private LinearLayout tabLayout = null;
+	
+	private boolean tabLayoutVisible = false;
+	
+	private enum LayoutVisibility {
+		VISIBLE, GONE, TOGGLE
+	}
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -138,9 +148,7 @@ public class BrowserActivity extends FragmentActivity implements UrlModification
 				Intent intent;
 				
 				switch (item.getItemId()) {
-					case R.id.menu_home:
-						webController.goTo(WebController.HOME);
-						break;
+					
 					case R.id.menu_settings:
 						startPreferenceActivity();
 						break;
@@ -157,22 +165,7 @@ public class BrowserActivity extends FragmentActivity implements UrlModification
 			        case R.id.menu_quit:
 			        	finish();
 			        	break;
-			        	
-			        case R.id.menu_share:
-			        	
-			        	intent = new Intent(android.content.Intent.ACTION_SEND);
-			        	intent.setType("text/plain");
-			        	intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
-			        	intent.putExtra(Intent.EXTRA_SUBJECT, "Sharing URL");
-			        	intent.putExtra(Intent.EXTRA_TEXT, webController.currentUrl());
-			        	startActivity(Intent.createChooser(intent, "Sharing URL"));
-			        	
-			        	break;
-			        	
-			        case R.id.menu_addbookmark:
-			        
-			        	
-			        	break;
+			 
 				}
 				
 				return true;
@@ -192,38 +185,82 @@ public class BrowserActivity extends FragmentActivity implements UrlModification
     
     /* Activity Events */
     public void onBtnListTab(View v) {
-    	PopupMenu popup = new PopupMenu(this, v);
-    	popup.getMenuInflater().inflate(R.menu.menu_tab, popup.getMenu());
-    	SparseArray<String> lst = this.webController.listTab();
-    	int s = lst.size();
-    	int key;
-    	String url;
+    	
+    	if (tabList == null) {
+    		
+    		tabList = (ListView) findViewById(R.id.list_tab);
+    		tabLayout = (LinearLayout) findViewById(R.id.layout_tabmenu);
+    		
+    		tabList.setAdapter(new TabListAdapter(this, this.webController.listTab()));
+    		tabList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
-    	for (int i = 0; i < s; i++) {
-    		key = lst.keyAt(i);
-    		url = lst.get(key);
-    		popup.getMenu().add(Menu.NONE, key, i, url);
+				@Override
+				public void onItemClick(AdapterView<?> arg0, View view, int position,	long id) {
+					RsWebView r = (RsWebView) tabList.getItemAtPosition(position);
+					webController.setCurrentTab(r.getTabId());
+					toggleTabLayout(LayoutVisibility.GONE);
+				}
+    			
+    		});
+    		
     	}
-
-    	//popup.getMenu().add(Menu.NONE, itemId, order, title)
     	
-    	popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-			
-			@Override
-			public boolean onMenuItemClick(MenuItem item) {
-				int id = item.getItemId();
-				webController.setCurrentTab(id);
-				return true;
-			}
-		});
+    	((ArrayAdapter)tabList.getAdapter()).notifyDataSetChanged();
     	
-    	popup.show();
+    	toggleTabLayout(LayoutVisibility.TOGGLE);
     }
+    
+    
     
     public void onBtnNewTab(View v) {
     	int newTab = this.webController.newTab();
     	this.webController.setCurrentTab(newTab);
     	this.webController.goTo(WebController.HOME);
+    	((ArrayAdapter)tabList.getAdapter()).notifyDataSetChanged();
+    	toggleTabLayout(LayoutVisibility.GONE);
+    }
+    
+    public void onBtnCloseTab(View v) {
+    	this.webController.closeTab(this.webController.currentId());
+    	
+    	if (this.webController.currentId() == -1) {
+    		finish();
+    	} else {
+    		((ArrayAdapter)tabList.getAdapter()).notifyDataSetChanged();
+    	}
+    }
+    
+    public void onBtnShare(View v) {
+    	Intent intent = new Intent(android.content.Intent.ACTION_SEND);
+    	intent.setType("text/plain");
+    	intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
+    	intent.putExtra(Intent.EXTRA_SUBJECT, "Sharing URL");
+    	intent.putExtra(Intent.EXTRA_TEXT, webController.currentUrl());
+    	startActivity(Intent.createChooser(intent, "Sharing URL"));
+    }
+    
+    public void onBtnAddBookmark(View v) {
+    	
+    }
+
+    public void onBtnHome(View v) {
+    	webController.goTo(WebController.HOME);
+    }
+    
+    
+    private void toggleTabLayout(LayoutVisibility visibility) {
+    	
+    	if (visibility == LayoutVisibility.VISIBLE && !tabLayoutVisible) {
+    		tabLayout.setVisibility(View.VISIBLE);
+    		tabLayoutVisible = true;
+    	} else if (visibility == LayoutVisibility.GONE && tabLayoutVisible) {
+    		tabLayout.setVisibility(View.GONE);
+    		tabLayoutVisible = false;
+    	} else {
+    		// Toggle
+    		tabLayout.setVisibility((tabLayoutVisible) ? View.GONE : View.VISIBLE);
+    		tabLayoutVisible = !tabLayoutVisible;
+    	}
     }
 
 	@Override
@@ -288,105 +325,4 @@ public class BrowserActivity extends FragmentActivity implements UrlModification
 		historyDatabase = this.historyHelper.getWritableDatabase();
 	}
 	
-    
-    //-------------------------------------------------------------------------
-    // Private class
-    //-------------------------------------------------------------------------
-    /*
-    private class N4WebViewClient extends WebViewClient {
-    	@Override
-        public boolean shouldOverrideUrlLoading(WebView view, String url) {
-    		Log.d(TAG, "UrlLoading [WebView]: " + url);
-    		updateUrlAndGo(url, true);
-    		historyManager.add(url, true);
-    		n4webview.loadUrl(url);
-            return true;
-        }
-    }
-   
-    
-    
-    
-    private OnEditorActionListener editTextListener = new TextView.OnEditorActionListener() {
-		@Override
-		public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-			if (actionId == EditorInfo.IME_ACTION_GO) {
-				String url = v.getText().toString();
-				url = UrlUtils.sanitize(url);
-				Log.d(TAG, "UrlLoading [Action]: " + url);
-
-				historyManager.add(url, true);
-				
-				// Go To
-				//n4webview.loadUrl(url);
-				updateUrlAndGo(url, true);
-				return true;
-			}
-			return false;
-		}
-	};
-	
-	
-	public void btnshowPopupSetting(View view) {
-    	PopupMenu popup = new PopupMenu(this, view);
-        MenuInflater inflater = popup.getMenuInflater();
-        popup.setOnMenuItemClickListener(this);
-        inflater.inflate(R.menu.activity_browser, popup.getMenu());
-        popup.show();
-    }
-    
-    //-------------------------------------------------------------------------
-    // Window Events
-    //-------------------------------------------------------------------------
-    public void onBtnBack(View view) {
-    	
-    	if (this.n4webview.canGoBack()) {
-    		this.n4webview.goBack();
-    		updateUrlAndGo(this.n4webview.getOriginalUrl(), false);
-    		return;
-    	}
-    	
-    	onBackPressed();
-    	
-    }
-    
-    @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
-        // Check if the key event was the Back button and if there's history
-        if (keyCode == KeyEvent.KEYCODE_BACK && historyManager.canGoBack()) {
-        	
-        	if (this.n4webview.canGoBack()) {
-        		this.n4webview.goBack();
-        		return true;
-        	}
-        	
-        }
-        // If it wasn't the Back key or there's no web page history, bubble up to the default
-        // system behavior (probably exit the activity)
-        return super.onKeyDown(keyCode, event);
-    }
-   
-    
-    //
-    private void updateUrlAndGo(String url, boolean loadIt) {
-    	EditText e = (EditText) findViewById(R.id.txtUrl);
-    	e.setText(url);
-    	if (loadIt)
-    		this.n4webview.loadUrl(url);
-    }
-
-	@Override
-	public boolean onMenuItemClick(MenuItem item) {
-		switch (item.getItemId()) {
-        case R.id.menu_home:
-        	updateUrlAndGo("file:///android_asset/home.html", true);
-            return true;
-        case R.id.menu_settings:
-            
-            return true;
-        default:
-            return super.onOptionsItemSelected(item);
-    	}
-	}
-     */
 }

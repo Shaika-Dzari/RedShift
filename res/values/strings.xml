@@ -9,6 +9,7 @@
     <string name="desc_btnBack">Back</string>
     <string name="desc_btnSetting">Settings</string>
     <string name="hint_txtUrl">about:home</string>
+    <string name="separator">separator</string>
 
     <!-- Menu -->
     <string name="menu_settings">Settings</string>
@@ -23,6 +24,12 @@
     <string name="menu_search">Search</string>
     <string name="menu_quit">Quit</string>
     <string name="menu_hist_search">Search</string>
+    
+    <string name="btn_newtab">New</string>
+    <string name="btn_closetab">Close</string>
+    <string name="btn_sharetab">Share</string>
+    <string name="btn_booktab">Bookmark</string>
+    <string name="btn_home">Home</string>
 
     <!-- Preference -->
     <string name="pref_cat_general">General</string>

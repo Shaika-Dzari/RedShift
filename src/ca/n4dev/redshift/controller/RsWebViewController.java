@@ -12,6 +12,13 @@
 package ca.n4dev.redshift.controller;
 
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
+import android.annotation.SuppressLint;
 import android.app.FragmentManager;
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -32,6 +39,7 @@ import ca.n4dev.redshift.controller.web.RsWebViewClient;
 import ca.n4dev.redshift.events.ProgressAware;
 import ca.n4dev.redshift.events.UrlModificationAware;
 
+@SuppressLint("UseSparseArrays")
 public class RsWebViewController implements WebController {
 	
 	private static final String TAG = "RsWebViewController";
@@ -43,13 +51,12 @@ public class RsWebViewController implements WebController {
 	public static final String SAVE_CURRENT = "current";
 	
 	
-	private SparseArray<RsWebView> webviews;
+	private List<RsWebView> webviews;
 	private int currentTabView;
 	private int counter = 0;
 	private UrlModificationAware urlModificationAware;
 	private ProgressAware progressAware;
 	private FrameLayout parentLayout;
-	private boolean initialFragment = true;
 	private Context context;
 	private SharedPreferences preferences;
 	
@@ -66,7 +73,7 @@ public class RsWebViewController implements WebController {
 		this.preferences = PreferenceManager.getDefaultSharedPreferences(context);
 		this.withCookie = preferences.getBoolean("pref_cookie", true);
 		this.withJs = preferences.getBoolean("pref_js", true);
-		this.webviews = new SparseArray<RsWebView>();
+		this.webviews = new ArrayList<RsWebView>();
 		
 		syncManager = CookieSyncManager.createInstance(context);
 		cookieManager = CookieManager.getInstance();
@@ -161,7 +168,7 @@ public class RsWebViewController implements WebController {
 									withJs);
 		w.setTabId(id);
 		
-		this.webviews.append(id, w);
+		this.webviews.add(w);
 		
 		return id;
 	}
@@ -170,12 +177,8 @@ public class RsWebViewController implements WebController {
 	 * @see ca.n4dev.redshift.controller.api.WebController#listTab()
 	 */
 	@Override
-	public SparseArray<String> listTab() {
-		SparseArray<String> lst = new SparseArray<String>();
-		for (int i = 0; i < this.webviews.size(); i++) {
-			lst.append(this.webviews.keyAt(i), this.webviews.valueAt(i).getUrl());
-		}
-		return lst;
+	public List<RsWebView> listTab() {
+		return this.webviews;
 	}
 
 	/* (non-Javadoc)
@@ -183,7 +186,27 @@ public class RsWebViewController implements WebController {
 	 */
 	@Override
 	public void closeTab(int tabId) {
-		this.webviews.delete(tabId);
+		boolean hasRemoved = false;
+		Iterator<RsWebView> it = this.webviews.iterator();
+		
+		while (it.hasNext() && !hasRemoved) {
+			RsWebView r = it.next();
+			if (r.getTabId() == tabId) {
+				it.remove();
+				hasRemoved = true;
+			}
+		}
+		
+		if (tabId == currentTabView && hasRemoved) {
+			
+			if (this.webviews.size() > 0) {
+				currentTabView = this.webviews.get(0).getTabId();
+				swapView(this.webviews.get(0));
+			} else {
+				currentTabView = -1;
+			}
+		}
+		
 	}
 
 	/* (non-Javadoc)
@@ -191,6 +214,7 @@ public class RsWebViewController implements WebController {
 	 */
 	@Override
 	public void setCurrentTab(int tabId) {
+		
 		this.currentTabView = tabId;
 		swapView();
 	}
@@ -214,8 +238,12 @@ public class RsWebViewController implements WebController {
 	}
 	
 	private void swapView() {
+		swapView(getCurrentView());
+	}
+	
+	private void swapView(RsWebView view) {
 		parentLayout.removeAllViews();
-		parentLayout.addView(getCurrentView());
+		parentLayout.addView(view);
 	}
 	
 	private void notifyUrlChange(RsWebView w) {
@@ -223,7 +251,31 @@ public class RsWebViewController implements WebController {
 	}
 	
 	private RsWebView getCurrentView() {
-		return this.webviews.get(currentTabView);
+		
+		boolean hasFound = false;
+		Iterator<RsWebView> it = this.webviews.iterator();
+		RsWebView r = null;
+		
+		while (it.hasNext() && !hasFound) {
+			r = it.next();
+			if (r.getTabId() == currentTabView) {
+				hasFound = true;
+			}
+		}
+		
+		return (hasFound) ? r : null;
 	}
+	
 
+	/* (non-Javadoc)
+	 * @see ca.n4dev.redshift.controller.api.WebController#currentId()
+	 */
+	@Override
+	public int currentId() {
+		return currentTabView;
+	}
+	
+	public void setFirstTab() {
+		
+	}
 }

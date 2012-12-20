@@ -19,7 +19,7 @@
         <activity
             android:name="ca.n4dev.redshift.BrowserActivity"
             android:label="@string/title_activity_browser"
-            android:theme="@style/Theme.RedShift.Light" >
+            android:theme="@style/Theme.RedShift" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -39,17 +39,17 @@
         <activity
             android:name="ca.n4dev.redshift.HistoryActivity"
             android:label="@string/title_activity_history" 
-            android:theme="@android:style/Theme.Holo.Light">
+            android:theme="@android:style/Theme.Holo">
         </activity>
         <activity
             android:name="ca.n4dev.redshift.BookmarkActivity"
             android:label="@string/title_activity_bookmark"
-            android:theme="@android:style/Theme.Holo.Light" >
+            android:theme="@android:style/Theme.Holo" >
         </activity>
         <activity
             android:name="ca.n4dev.redshift.SettingsActivity"
             android:label="@string/title_activity_settings" 
-            android:theme="@android:style/Theme.Holo.Light">
+            android:theme="@android:style/Theme.Holo">
         </activity>
         <activity
             android:name="ca.n4dev.redshift.bookmark.BookmarkEditActivity"
