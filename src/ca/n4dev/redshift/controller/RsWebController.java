@@ -102,12 +102,12 @@ public class RsWebController implements WebController {
 	 * @see ca.n4dev.redshift.controller.api.WebController#newTab()
 	 */
 	@Override
-	public int newTab(String url) {
+	public int newTab() {
 		Log.d(TAG, "Creating a new tab");
 		int id = ++counter;
 		WebFragment wf = new WebFragment();
 		wf.setTabId(id);
-		wf.setInitialUrl(url);
+		wf.setInitialUrl(HOME);
 		wf.setWebViewClient(new RsWebViewClient(this.urlModificationAware));
 		wf.setWebChromeClient(new WebChromeClient() {
 			@Override

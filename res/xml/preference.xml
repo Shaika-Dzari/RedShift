@@ -1,25 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
-    <CheckBoxPreference
-	      android:key="pref_history"
-	      android:title="@string/pref_history"
-	      android:summary="@string/pref_history_summary"
-	      android:defaultValue="true"
-	    />
     
-    <CheckBoxPreference
-	      android:key="pref_history"
-	      android:title="@string/pref_js"
-	      android:summary="@string/pref_js_summary"
-	      android:defaultValue="true"
-	    />
+    <PreferenceCategory 
+        android:title="@string/pref_cat_general"
+        android:key="pref_cat_general">
+        
+        <EditTextPreference 
+            android:key="pref_homepage"
+            android:title="@string/pref_homepage"
+		    android:summary="@string/pref_homepage_summary"
+		    android:defaultValue="about:home"/>
+	    
+    </PreferenceCategory>
     
-    <CheckBoxPreference
-	      android:key="pref_history"
-	      android:title="@string/pref_cookie"
-	      android:summary="@string/pref_cookie_summary"
-	      android:defaultValue="true"
-	    />
-    
+    <PreferenceCategory 
+        android:title="@string/pref_cat_privacy"
+        android:key="pref_cat_privacy">
+        
+	    <CheckBoxPreference
+		      android:key="pref_history"
+		      android:title="@string/pref_history"
+		      android:summary="@string/pref_history_summary"
+		      android:defaultValue="true" />
+	    
+	    <CheckBoxPreference
+		      android:key="pref_js"
+		      android:title="@string/pref_js"
+		      android:summary="@string/pref_js_summary"
+		      android:defaultValue="true" />
+	    
+	    <CheckBoxPreference
+		      android:key="pref_cookie"
+		      android:title="@string/pref_cookie"
+		      android:summary="@string/pref_cookie_summary"
+		      android:defaultValue="true" />
+	    
+    </PreferenceCategory>
 
 </PreferenceScreen>

@@ -3,7 +3,7 @@ package ca.n4dev.redshift;
 
 
 import ca.n4dev.redshift.R;
-import ca.n4dev.redshift.controller.RsWebController;
+import ca.n4dev.redshift.controller.RsWebViewController;
 import ca.n4dev.redshift.controller.api.WebController;
 import ca.n4dev.redshift.events.ProgressAware;
 import ca.n4dev.redshift.events.UrlModificationAware;
@@ -22,6 +22,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.PopupMenu;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -88,11 +89,13 @@ public class BrowserActivity extends FragmentActivity implements UrlModification
         
         if (this.webController == null) {
         	Log.d(TAG, "Creating WebController.");
-        	this.webController = new RsWebController(R.id.layout_content, getFragmentManager(), this, this);
+        	//this.webController = new RsWebController(R.id.layout_content, getFragmentManager(), this, this);
+        	this.webController = new RsWebViewController(this, (FrameLayout) findViewById(R.id.layout_content), this, this);
         	
         	if (savedInstanceState == null) {
-        		int homeTab = this.webController.newTab(initUrl);
-        		this.webController.setCurrentTab(homeTab);        		
+        		int homeTab = this.webController.newTab();
+        		this.webController.setCurrentTab(homeTab);        	
+        		this.webController.goTo(initUrl);
         	} else {
         		this.webController.restoreState(savedInstanceState);
         	}
@@ -167,7 +170,8 @@ public class BrowserActivity extends FragmentActivity implements UrlModification
 			        	break;
 			        	
 			        case R.id.menu_addbookmark:
-			        	finish();
+			        
+			        	
 			        	break;
 				}
 				
@@ -217,8 +221,9 @@ public class BrowserActivity extends FragmentActivity implements UrlModification
     }
     
     public void onBtnNewTab(View v) {
-    	int newTab = this.webController.newTab(WebController.HOME);
+    	int newTab = this.webController.newTab();
     	this.webController.setCurrentTab(newTab);
+    	this.webController.goTo(WebController.HOME);
     }
 
 	@Override

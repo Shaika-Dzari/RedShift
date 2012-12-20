@@ -3,6 +3,7 @@
 
     <string name="app_name">RedShift Web Browser</string>
     <string name="title_activity_browser">RedShift</string>
+    <string name="title_activity_settings">Settings</string>
 
     <!-- Content Description -->
     <string name="desc_btnBack">Back</string>
@@ -24,6 +25,8 @@
     <string name="menu_hist_search">Search</string>
 
     <!-- Preference -->
+    <string name="pref_cat_general">General</string>
+    <string name="pref_cat_privacy">Privacy</string>
     <string name="pref_history">History</string>
     <string name="pref_history_summary">Remember browsing history</string>
     <string name="pref_js">Javascript</string>
@@ -34,5 +37,7 @@
     <string name="title_activity_bookmark">Bookmark</string>
     <string name="hello_world">Hello world!</string>
     <string name="title_activity_test">TestActivity</string>
+    <string name="pref_homepage">Home page</string>
+    <string name="pref_homepage_summary">Set your browser home page</string>
 
 </resources>
