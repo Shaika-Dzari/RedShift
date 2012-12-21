@@ -1,7 +1,11 @@
 package ca.n4dev.redshift;
 
+import java.util.Date;
+
 import ca.n4dev.redshift.history.HistoryAdapter;
 import ca.n4dev.redshift.history.HistoryDbHelper;
+import ca.n4dev.redshift.utils.PeriodUtils;
+import ca.n4dev.redshift.utils.PeriodUtils.Period;
 import android.os.Bundle;
 import android.app.Activity;
 import android.content.Intent;
@@ -18,6 +22,8 @@ public class HistoryActivity extends Activity {
 	
 	private HistoryDbHelper historyHelper;
 	private SQLiteDatabase historyDatabase;
+	private ListView lv;
+	
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -28,7 +34,7 @@ public class HistoryActivity extends Activity {
         historyHelper = new HistoryDbHelper(this);
         historyDatabase = historyHelper.getReadableDatabase();
         
-        ListView lv = (ListView) findViewById(R.id.lstHistory);
+        lv = (ListView) findViewById(R.id.lstHistory);
         
         
         
@@ -46,16 +52,16 @@ public class HistoryActivity extends Activity {
 		
         });
         
-        Cursor c = this.historyDatabase.query(
+        Cursor historyCursor = this.historyDatabase.query(
         					HistoryDbHelper.HISTORY_TABLE_NAME, 
         					HistoryDbHelper.getHistoryTableColumns(), 
-        					null, 
-        					null, 
+        					HistoryDbHelper.HISTORY_CREATIONDATE + " >= ?", 
+        					new String[] { PeriodUtils.getDateStringFrom(new Date(), Period.YESTERDAY) }, 
         					null, 
         					null, 
         					HistoryDbHelper.HISTORY_CREATIONDATE + " DESC");
         
-        lv.setAdapter(new HistoryAdapter(this, c));
+        lv.setAdapter(new HistoryAdapter(this, historyCursor));
     }
 
     @Override
@@ -74,6 +80,19 @@ public class HistoryActivity extends Activity {
                 startActivity(intent);
                 return true;
            
+            case R.id.menu_clearhistory:
+            	historyHelper.clear(historyDatabase);
+            	Cursor c = this.historyDatabase.query(
+    					HistoryDbHelper.HISTORY_TABLE_NAME, 
+    					HistoryDbHelper.getHistoryTableColumns(), 
+    					HistoryDbHelper.HISTORY_CREATIONDATE + " >= ?", 
+    					new String[] { PeriodUtils.getDateStringFrom(new Date(), Period.YESTERDAY) }, 
+    					null, 
+    					null, 
+    					HistoryDbHelper.HISTORY_CREATIONDATE + " DESC");
+            	((HistoryAdapter)lv.getAdapter()).changeCursor(c);
+            	
+            
             default:
                 return super.onOptionsItemSelected(item);
         }

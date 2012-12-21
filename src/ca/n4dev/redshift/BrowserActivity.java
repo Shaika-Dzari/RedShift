@@ -1,6 +1,7 @@
 package ca.n4dev.redshift;
 
 import ca.n4dev.redshift.R;
+import ca.n4dev.redshift.bookmark.AddBookmarkDialog;
 import ca.n4dev.redshift.controller.RsWebViewController;
 import ca.n4dev.redshift.controller.api.WebController;
 import ca.n4dev.redshift.controller.container.RsWebView;
@@ -12,6 +13,7 @@ import ca.n4dev.redshift.utils.UrlUtils;
 import android.net.Uri;
 import android.os.Bundle;
 import android.annotation.SuppressLint;
+import android.app.DialogFragment;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
@@ -213,14 +215,15 @@ public class BrowserActivity extends FragmentActivity implements UrlModification
     
     
     public void onBtnNewTab(View v) {
+    	toggleTabLayout(LayoutVisibility.GONE);
     	int newTab = this.webController.newTab();
     	this.webController.setCurrentTab(newTab);
     	this.webController.goTo(WebController.HOME);
     	((ArrayAdapter)tabList.getAdapter()).notifyDataSetChanged();
-    	toggleTabLayout(LayoutVisibility.GONE);
     }
     
     public void onBtnCloseTab(View v) {
+    	toggleTabLayout(LayoutVisibility.GONE);
     	this.webController.closeTab(this.webController.currentId());
     	
     	if (this.webController.currentId() == -1) {
@@ -231,6 +234,7 @@ public class BrowserActivity extends FragmentActivity implements UrlModification
     }
     
     public void onBtnShare(View v) {
+    	toggleTabLayout(LayoutVisibility.GONE);
     	Intent intent = new Intent(android.content.Intent.ACTION_SEND);
     	intent.setType("text/plain");
     	intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
@@ -240,10 +244,17 @@ public class BrowserActivity extends FragmentActivity implements UrlModification
     }
     
     public void onBtnAddBookmark(View v) {
+    	toggleTabLayout(LayoutVisibility.GONE);
+    	AddBookmarkDialog dialog = new AddBookmarkDialog();
     	
+    	dialog.setTitle(this.webController.currentTitle());
+    	dialog.setUrl(this.webController.currentUrl());
+    	
+    	dialog.show(getFragmentManager(), "AddBookmarkDialog");
     }
 
     public void onBtnHome(View v) {
+    	toggleTabLayout(LayoutVisibility.GONE);
     	webController.goTo(WebController.HOME);
     }
     

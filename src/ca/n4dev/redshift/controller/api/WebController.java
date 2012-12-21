@@ -26,6 +26,7 @@ public interface WebController {
 	public void goTo(String url);
 	public void refresh();
 	public String currentUrl();
+	public String currentTitle();
 	public int currentId();
 	public int newTab();
 	public List<RsWebView> listTab();

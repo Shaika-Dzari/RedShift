@@ -135,14 +135,6 @@ public class RsWebViewController implements WebController {
 	}
 
 	/* (non-Javadoc)
-	 * @see ca.n4dev.redshift.controller.api.WebController#currentUrl()
-	 */
-	@Override
-	public String currentUrl() {
-		return getCurrentView().getUrl();
-	}
-
-	/* (non-Javadoc)
 	 * @see ca.n4dev.redshift.controller.api.WebController#newTab(java.lang.String)
 	 */
 	@Override
@@ -275,7 +267,19 @@ public class RsWebViewController implements WebController {
 		return currentTabView;
 	}
 	
-	public void setFirstTab() {
-		
+	/* (non-Javadoc)
+	 * @see ca.n4dev.redshift.controller.api.WebController#currentUrl()
+	 */
+	@Override
+	public String currentUrl() {
+		return getCurrentView().getUrl();
+	}
+	
+	/* (non-Javadoc)
+	 * @see ca.n4dev.redshift.controller.api.WebController#currentUrl()
+	 */
+	@Override
+	public String currentTitle() {
+		return getCurrentView().getTitle();
 	}
 }

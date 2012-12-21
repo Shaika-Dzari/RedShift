@@ -5,6 +5,7 @@ package ca.n4dev.redshift.history;
 
 import java.util.Date;
 
+import ca.n4dev.redshift.controller.api.WebController;
 import ca.n4dev.redshift.utils.PeriodUtils;
 import ca.n4dev.redshift.utils.PeriodUtils.Period;
 
@@ -91,6 +92,9 @@ public class HistoryDbHelper extends SQLiteOpenHelper {
 	}
 	
 	public long add(SQLiteDatabase db, String title, String url) {
+		if (url.equalsIgnoreCase(WebController.HOME))
+			return -1;
+		
 		ContentValues values = new ContentValues();
 		Date d = new Date();
 		
@@ -104,6 +108,10 @@ public class HistoryDbHelper extends SQLiteOpenHelper {
 	
 	public void delete(SQLiteDatabase db, long id) {
 		db.delete(HISTORY_TABLE_NAME, HISTORY_ID + "=?", new String[]{"" + id});
+	}
+	
+	public void clear(SQLiteDatabase db) {
+		db.delete(HISTORY_TABLE_NAME, null, null);
 	}
 	
 }

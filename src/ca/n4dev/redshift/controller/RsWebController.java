@@ -261,5 +261,14 @@ public class RsWebController implements WebController {
 	public int currentId() {
 		return this.currentTabView;
 	}
+
+	/* (non-Javadoc)
+	 * @see ca.n4dev.redshift.controller.api.WebController#currentTitle()
+	 */
+	@Override
+	public String currentTitle() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 	
 }

@@ -25,6 +25,7 @@
     <string name="menu_quit">Quit</string>
     <string name="menu_hist_search">Search</string>
     
+    <!-- Tab Menu -->
     <string name="btn_newtab">New</string>
     <string name="btn_closetab">Close</string>
     <string name="btn_sharetab">Share</string>
@@ -46,5 +47,15 @@
     <string name="title_activity_test">TestActivity</string>
     <string name="pref_homepage">Home page</string>
     <string name="pref_homepage_summary">Set your browser home page</string>
+    
+    <!-- Dialog -->
+    <string name="dia_addbookmark_title">Add Bookmark</string>
+    <string name="dia_txt_title_hint">title</string>
+    <string name="dia_txt_url_hint">URL</string>
+    <string name="dia_txt_tag_hint">Tags</string>
+    <string name="dia_txt_title">Title</string>
+    <string name="dia_txt_url">URL</string>
+    <string name="dia_txt_tag">Tags</string>
+    
 
 </resources>

@@ -12,7 +12,7 @@ public class PeriodUtils {
     }
 	
 	public static String getDateStringFrom(Date d, Period period) {
-		SimpleDateFormat formater = new SimpleDateFormat("yyyyMMddHHmiss", Locale.US);
+		SimpleDateFormat formater = new SimpleDateFormat("yyyyMMddkkmmss", Locale.US);
 		Calendar c = Calendar.getInstance();
 		c.setTimeInMillis(d.getTime());
 		c.set(Calendar.HOUR, 0);
