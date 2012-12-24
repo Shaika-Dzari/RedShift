@@ -15,11 +15,10 @@
         android:hardwareAccelerated="true"
         android:icon="@drawable/img_launcher"
         android:label="@string/app_name"
-        android:theme="@style/Theme.RedShift.Light" >
+        android:theme="@style/Theme.RedShift.Dark" >
         <activity
             android:name="ca.n4dev.redshift.BrowserActivity"
-            android:label="@string/title_activity_browser"
-            android:theme="@style/Theme.RedShift" >
+            android:label="@string/title_activity_browser" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -38,25 +37,24 @@
         </activity>
         <activity
             android:name="ca.n4dev.redshift.HistoryActivity"
-            android:label="@string/title_activity_history" 
-            android:theme="@android:style/Theme.Holo">
+            android:label="@string/title_activity_history" >
         </activity>
         <activity
             android:name="ca.n4dev.redshift.BookmarkActivity"
-            android:label="@string/title_activity_bookmark"
-            android:theme="@android:style/Theme.Holo" >
+            android:label="@string/title_activity_bookmark" >
         </activity>
         <activity
             android:name="ca.n4dev.redshift.SettingsActivity"
-            android:label="@string/title_activity_settings" 
-            android:theme="@android:style/Theme.Holo">
+            android:label="@string/title_activity_settings" >
         </activity>
         <activity
             android:name="ca.n4dev.redshift.bookmark.BookmarkEditActivity"
-            android:label="@string/title_activity_bookmark" 
-            >
+            android:label="@string/title_activity_bookmark" >
         </activity>
-        
+        <activity
+            android:name="ca.n4dev.redshift.AboutActivity"
+            android:label="@string/title_activity_about" >
+        </activity>
     </application>
 
 </manifest>

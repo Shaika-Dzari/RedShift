@@ -5,17 +5,24 @@ package ca.n4dev.redshift.bookmark;
 
 import java.util.Date;
 
+import ca.n4dev.redshift.events.Searchable;
+import ca.n4dev.redshift.history.HistoryDbHelper;
+import ca.n4dev.redshift.utils.PeriodUtils;
+import ca.n4dev.redshift.utils.PeriodUtils.Period;
+
 import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.text.format.DateFormat;
+import android.util.Log;
 
 /**
  * @author rguillemette
  *
  */
-public class BookmarkDbHelper extends SQLiteOpenHelper {
+public class BookmarkDbHelper extends SQLiteOpenHelper implements Searchable {
 
 	private static final int DATABASE_VERSION = 1;
 	private static final String DATABASE_NAME = "redshift.bookmark.db";
@@ -26,6 +33,10 @@ public class BookmarkDbHelper extends SQLiteOpenHelper {
     public static final String BOOKMARK_TITLE = "title";
     public static final String BOOKMARK_CREATIONDATE = "creationdate";
     public static final String BOOKMARK_PRETTYDATE = "prettydate";
+    
+    public enum Sort {
+    	BYTITLE, BYURL, BYDATE
+    }
     
     private static final String BOOKMARK_TABLE_CREATE =
                 "CREATE TABLE " + BOOKMARK_TABLE_NAME + " (" +
@@ -62,8 +73,8 @@ public class BookmarkDbHelper extends SQLiteOpenHelper {
 		values.put(BOOKMARK_TITLE, title);
 		values.put(BOOKMARK_TAG, tags);
 		values.put(BOOKMARK_URL, url);
-		values.put(BOOKMARK_CREATIONDATE, DateFormat.format("yyyyMMddhhmmss", d).toString());
-		values.put(BOOKMARK_PRETTYDATE, DateFormat.format("yyyy-MM-dd hh:mm:ss", d).toString());
+		values.put(BOOKMARK_CREATIONDATE, DateFormat.format("yyyyMMddkkmmss", d).toString());
+		values.put(BOOKMARK_PRETTYDATE, DateFormat.format("yyyy-MM-dd kk:mm:ss", d).toString());
 		
 		return db.insert(BOOKMARK_TABLE_NAME, null, values);
 	}
@@ -89,5 +100,59 @@ public class BookmarkDbHelper extends SQLiteOpenHelper {
 					  BOOKMARK_CREATIONDATE};
 		
 		return s;
+	}
+	
+	public Cursor queryAll(SQLiteDatabase db, Sort sort) {
+		
+		String sortClause;
+		
+		if (sort == Sort.BYTITLE)
+			sortClause = "lower(" + BOOKMARK_TITLE + ") ASC";
+		else if (sort == Sort.BYURL)
+			sortClause = "lower(" + BOOKMARK_URL + ") ASC";
+		else
+			sortClause = BOOKMARK_CREATIONDATE + " DESC";
+		
+		return db.query(BookmarkDbHelper.BOOKMARK_TABLE_NAME,
+				BookmarkDbHelper.getBookmarkTableColumns(), 
+				null, 
+				null, 
+				null, 
+				null, 
+				sortClause);
+	}
+	
+	public Cursor queryAll(SQLiteDatabase db) {
+		return queryAll(db, Sort.BYDATE);
+	}
+	
+
+	/* (non-Javadoc)
+	 * @see ca.n4dev.redshift.events.Searchable#search(java.lang.String, ca.n4dev.redshift.utils.PeriodUtils.Period)
+	 */
+	@Override
+	public Cursor search(SQLiteDatabase db, String query, Period period) {
+		String whereClause = BOOKMARK_CREATIONDATE + " >= ? " +
+							" and (" + BOOKMARK_TAG + " like ? or " +
+									   BOOKMARK_TITLE + " like ? or " +
+									   BOOKMARK_URL  + " like ? )";
+		
+		return db.query(BOOKMARK_TABLE_NAME, 
+						 getBookmarkTableColumns(), 
+						 whereClause, 
+						 new String[] {
+							PeriodUtils.getDateStringFrom(new Date(), period), 
+							"%" + query + "%", 
+							"%" + query + "%", 
+							"%" + query + "%"  
+						 }, 
+						 null, 
+						 null, 
+						 BOOKMARK_CREATIONDATE + " DESC");
+		
+	}
+	
+	public void delete(SQLiteDatabase db, Long bookmarkId) {
+		db.delete(BOOKMARK_TABLE_NAME, BOOKMARK_ID + " = ?", new String[]{"" + bookmarkId});
 	}
 }

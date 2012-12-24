@@ -1,5 +1,5 @@
 /*
- * UrlUtils.java
+ * Searchable.java
  * 
  * This program is free software. It comes without any warranty, to
  * the extent permitted by applicable law. You can redistribute it
@@ -7,21 +7,14 @@
  * To Public License, Version 2, as published by Sam Hocevar. 
  * See http://sam.zoy.org/wtfpl/COPYING for more details. 
  * 
- * @since 2012-11-25
+ * @since 2012-12-21
  */ 
-package ca.n4dev.redshift.utils;
+package ca.n4dev.redshift.events;
 
-public class UrlUtils {
+import ca.n4dev.redshift.utils.PeriodUtils.Period;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 
-	public static String sanitize(String url) {
-		if (!url.startsWith("http://") && !url.startsWith("https://")) {
-			return "http://" + url;
-		}
-		return url;
-	}
-	
-	public static boolean externalHandling(String url) {
-		
-		return false;
-	}
+public interface Searchable {
+	public Cursor search(SQLiteDatabase db, String query, Period period);
 }

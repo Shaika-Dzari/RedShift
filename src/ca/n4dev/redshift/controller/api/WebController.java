@@ -15,6 +15,7 @@ import java.util.List;
 
 import ca.n4dev.redshift.controller.container.RsWebView;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
 
 public interface WebController {
@@ -34,4 +35,5 @@ public interface WebController {
 	public void setCurrentTab(int tabId);
 	public void saveState(Bundle outstate);
 	public void restoreState(Bundle outstate);
+	public void loadWebSettings();
 }

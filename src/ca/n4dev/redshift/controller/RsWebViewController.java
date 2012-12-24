@@ -13,36 +13,35 @@ package ca.n4dev.redshift.controller;
 
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
 import android.annotation.SuppressLint;
-import android.app.FragmentManager;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
-import android.util.SparseArray;
-import android.view.View;
 import android.webkit.CookieManager;
 import android.webkit.CookieSyncManager;
 import android.webkit.WebChromeClient;
+import android.webkit.WebSettings;
+import android.webkit.WebSettings.RenderPriority;
 import android.webkit.WebView;
 import android.widget.FrameLayout;
-import ca.n4dev.redshift.R;
+import ca.n4dev.redshift.SettingsActivity;
 import ca.n4dev.redshift.controller.api.WebController;
 import ca.n4dev.redshift.controller.container.RsWebView;
 import ca.n4dev.redshift.controller.web.RsWebViewClient;
 import ca.n4dev.redshift.events.ProgressAware;
 import ca.n4dev.redshift.events.UrlModificationAware;
+import ca.n4dev.redshift.utils.UserAgent;
 
-@SuppressLint("UseSparseArrays")
+@SuppressLint({ "UseSparseArrays", "SetJavaScriptEnabled" })
 public class RsWebViewController implements WebController {
 	
 	private static final String TAG = "RsWebViewController";
+	private static final int MAX_OPEN_TAB = 5;
 	
 	private CookieSyncManager syncManager;
 	private CookieManager cookieManager;
@@ -58,10 +57,28 @@ public class RsWebViewController implements WebController {
 	private ProgressAware progressAware;
 	private FrameLayout parentLayout;
 	private Context context;
-	private SharedPreferences preferences;
 	
-	private boolean withCookie;
-	private boolean withJs;
+	// Web Preferences
+	private SharedPreferences preferences;
+	private boolean prefCookie;
+	private boolean prefJavascript;
+	private boolean prefFormdata;
+	private boolean prefSavePasswd;
+	private boolean prefLoadImage;
+	private WebSettings.PluginState prefPlugin;
+	private UserAgent prefUserAgent;
+	
+	
+	/*
+	 public static final String KEY_HISTORY = "pref_history"; 
+	public static final String KEY_COOKIE = "pref_cookie"; 
+	public static final String KEY_COOKIEEXIT = "pref_cookie_exit"; 
+	public static final String KEY_FORMDATA = "pref_save_formdata"; 
+	public static final String KEY_SAVEPASSWD = "pref_save_passwd"; 
+	public static final String KEY_JAVASCRIPT = "pref_js"; 
+	public static final String KEY_LOADIMAGE = "pref_image"; 
+	public static final String KEY_PLUGIN = "pref_plugin"; 
+	 */
 	
 	
 	
@@ -70,16 +87,19 @@ public class RsWebViewController implements WebController {
 		this.urlModificationAware = urlModificationAware;
 		this.progressAware = progressAware;
 		this.context = context;
-		this.preferences = PreferenceManager.getDefaultSharedPreferences(context);
-		this.withCookie = preferences.getBoolean("pref_cookie", true);
-		this.withJs = preferences.getBoolean("pref_js", true);
 		this.webviews = new ArrayList<RsWebView>();
+		this.preferences = PreferenceManager.getDefaultSharedPreferences(context);
+
+		loadWebSettings();
+		
+		//this.withCookie = preferences.getBoolean("pref_cookie", true);
+		//this.withJs = preferences.getBoolean("pref_js", true);
 		
 		syncManager = CookieSyncManager.createInstance(context);
 		cookieManager = CookieManager.getInstance();
-		cookieManager.setAcceptCookie(this.withCookie);
+		cookieManager.setAcceptCookie(this.prefCookie);
 	
-		if (this.withCookie) {
+		if (this.prefCookie) {
 			syncManager.startSync();
 		}
 		
@@ -156,9 +176,9 @@ public class RsWebViewController implements WebController {
 											urlModificationAware.pageReceived(view.getUrl(), title);
 										}
 										
-									}, 
-									withJs);
+									});
 		w.setTabId(id);
+		setupWebSettings(w);
 		
 		this.webviews.add(w);
 		
@@ -216,8 +236,24 @@ public class RsWebViewController implements WebController {
 	 */
 	@Override
 	public void saveState(Bundle outstate) {
-		// TODO Auto-generated method stub
-
+		outstate.putInt("redshift.currentTabView", currentTabView);
+		
+		Iterator<RsWebView> it = this.webviews.iterator();
+		RsWebView r = null;
+		Bundle webviewBundles = new Bundle();
+		Bundle b;
+		
+		while (it.hasNext()) {
+			b = new Bundle();
+			r = it.next();
+			r.saveState(b);
+			
+			b.putInt("redshift.tabId", r.getTabId());
+			
+			webviewBundles.putBundle("redshift.www" + r.getTabId(), b);
+		}
+		
+		outstate.putBundle("redshift.wwwBundle", webviewBundles);
 	}
 
 	/* (non-Javadoc)
@@ -225,8 +261,40 @@ public class RsWebViewController implements WebController {
 	 */
 	@Override
 	public void restoreState(Bundle outstate) {
-		// TODO Auto-generated method stub
-
+		currentTabView = outstate.getInt("redshift.currentTabView");
+		
+		Bundle webviewBundles = outstate.getBundle("redshift.wwwBundle");
+		Bundle b;
+		RsWebView w;
+		
+		for (String k : webviewBundles.keySet()) {
+			if (k.startsWith("redshift.www")) {
+				b = webviewBundles.getBundle(k);
+				
+				
+				w = new RsWebView(context, 
+						new RsWebViewClient(this.urlModificationAware), 
+						new WebChromeClient() {
+							@Override
+							public void onProgressChanged(WebView view, int progress) {
+								progressAware.hasProgressTo(progress);
+							}
+							
+							@Override
+				            public void onReceivedTitle(WebView view, String title) {
+								Log.d("WebChromeClient", "title: " + title);
+								Log.d("WebChromeClient", "url" + view.getUrl());
+								
+								urlModificationAware.pageReceived(view.getUrl(), title);
+							}
+							
+						});
+				w.setTabId(b.getInt("redshift.tabId"));
+				w.restoreState(b);
+				this.webviews.add(w);
+			}
+		}
+		
 	}
 	
 	private void swapView() {
@@ -281,5 +349,93 @@ public class RsWebViewController implements WebController {
 	@Override
 	public String currentTitle() {
 		return getCurrentView().getTitle();
+	}
+
+
+
+
+	/* (non-Javadoc)
+	 * @see ca.n4dev.redshift.controller.api.WebController#loadWebSettings()
+	 */
+	@Override
+	public void loadWebSettings() {
+		/*
+		 * private SharedPreferences preferences;
+	private boolean prefCookie;
+	private boolean prefJavascript;
+	private boolean prefFormdata;
+	private boolean prefSavePasswd;
+	private boolean prefLoadImage;
+	private boolean prefPlugin;
+	
+	
+	 public static final String KEY_HISTORY = "pref_history"; 
+	public static final String KEY_COOKIE = "pref_cookie"; 
+	public static final String KEY_COOKIEEXIT = "pref_cookie_exit"; 
+	public static final String KEY_FORMDATA = "pref_save_formdata"; 
+	public static final String KEY_SAVEPASSWD = "pref_save_passwd"; 
+	public static final String KEY_JAVASCRIPT = "pref_js"; 
+	public static final String KEY_LOADIMAGE = "pref_image"; 
+	public static final String KEY_PLUGIN = "pref_plugin"; 
+	
+	
+	*/
+		if (this.preferences != null) {
+			prefCookie = preferences.getBoolean(SettingsActivity.KEY_COOKIE, true);
+			prefJavascript = preferences.getBoolean(SettingsActivity.KEY_JAVASCRIPT, true);
+			prefFormdata = preferences.getBoolean(SettingsActivity.KEY_FORMDATA, true);
+			prefSavePasswd = preferences.getBoolean(SettingsActivity.KEY_SAVEPASSWD, true);
+			prefLoadImage = preferences.getBoolean(SettingsActivity.KEY_LOADIMAGE, true);
+			
+			// Plug-ins
+			String plugin = preferences.getString(SettingsActivity.KEY_PLUGIN, "On Demand");
+			
+			if (plugin.equalsIgnoreCase("on demand")) {
+				prefPlugin = WebSettings.PluginState.ON_DEMAND;
+			} else if (plugin.equalsIgnoreCase("enable")) {
+				prefPlugin = WebSettings.PluginState.ON;
+			} else {
+				prefPlugin = WebSettings.PluginState.OFF;
+			}
+			
+			// User Agent
+			prefUserAgent = UserAgent.from(preferences.getString(SettingsActivity.KEY_USERAGENT, "Android"));
+			
+		}
+	}
+	
+	private void setupWebSettings(WebView view) {
+		WebSettings settings = view.getSettings();
+		settings.setRenderPriority(RenderPriority.HIGH);
+		settings.setJavaScriptEnabled(prefJavascript);
+		settings.setBuiltInZoomControls(true);
+		settings.setDisplayZoomControls(false);
+		settings.setGeolocationEnabled(false);
+		settings.setDefaultZoom(WebSettings.ZoomDensity.FAR);
+		settings.setUseWideViewPort(true);
+		settings.setLoadWithOverviewMode(true);
+		settings.setLoadsImagesAutomatically(prefLoadImage);
+		settings.setPluginState(prefPlugin);
+		settings.setSaveFormData(prefFormdata);
+		settings.setSavePassword(prefSavePasswd);
+		
+		if (prefUserAgent == UserAgent.ANDROID)
+			settings.setUserAgentString(settings.getUserAgentString() + " " + UserAgent.ANDROID.getString());
+		else if (prefUserAgent == UserAgent.DESKTOP) {
+			String u = settings.getUserAgentString();
+			u = u.replace("Mobile", "") + " " + UserAgent.ANDROID.getString();
+			settings.setUserAgentString(u);
+		} else {
+			settings.setUserAgentString(prefUserAgent.getString());
+		}
+		
+	}
+	
+	public void stopCookieSync() {
+		this.syncManager.stopSync();
+	}
+	
+	public void startCookieSync() {
+		this.syncManager.startSync();
 	}
 }

@@ -1,44 +1,65 @@
 <resources xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <style name="Theme.RedShift.Light" parent="@android:style/Theme.Holo.Light.NoActionBar">
-        
+    <style name="Theme.RedShift.Light" parent="@android:style/Theme.Holo.Light">
     </style>
     
-    <style name="Theme.RedShift" parent="@android:style/Theme.Holo.NoActionBar">
-        
+    <style name="Theme.RedShift.Dark" parent="@android:style/Theme.Holo">
+        <item name="android:actionBarStyle">@style/ActionBarTabStyle</item>
     </style>
     
+    <style name="BaseLayout">
+        <item name="android:background">#181818</item>
+        <item name="android:paddingRight">5dp</item>
+        <item name="android:paddingLeft">5dp</item>
+    </style>
     
-    <style name="Theme.RedShift.MenuBar">
-        <item name="android:background">@drawable/holo_menubar_dark</item>
+    <style name="ActionBarTabStyle" parent="@android:style/Widget.ActionBar">
+        <item name="android:background">#181818</item>
+    </style>
+    
+    <style name="MenuBar" parent="Theme.RedShift.Dark">
+        <item name="android:background">@drawable/redshift_menubar_dark</item>
         <item name="android:textColor">@android:color/primary_text_light</item>
     </style>
     
-    <style name="Theme.RedShift.TabMenu">
-        <item name="android:background">@drawable/holo_menubar_dark</item>
+    <style name="TabMenu" parent="Theme.RedShift.Dark">
+        <item name="android:background">@drawable/redshift_tabmenu_layout_dark</item>
         <item name="android:textColor">@android:color/primary_text_light</item>
+        <item name="android:padding">2dp</item>
     </style>
     
-    <style name="Theme.RedShift.Button">
+    <style name="ListItem" parent="Theme.RedShift.Dark">
+        <item name="android:background">@drawable/redshift_tabmenu_layout_dark</item>
+        <item name="android:textColor">@android:color/primary_text_light</item>
+        <item name="android:padding">2dp</item>
+    </style>
+    
+    <style name="Button" parent="Theme.RedShift.Dark">
         <item name="android:textSize">12sp</item>
         <item name="android:textColor">@android:color/primary_text_dark</item>
         <item name="android:background">@drawable/redshift_button_dark</item>
         <item name="android:gravity">left|center_vertical</item>
     </style>
     
-    <style name="txt_urllink">
-        <item name="android:textSize">11sp</item>
+    <style name="Borderless" parent="Theme.RedShift.Dark">
+        <item name="android:background">?android:attr/selectableItemBackground</item>
+        <item name="android:paddingLeft">9dp</item>
+        <item name="android:paddingRight">9dp</item>
+    </style>
+    
+    <style name="TextLink" parent="Theme.RedShift.Dark">
+        <!-- <item name="android:textSize">11sp</item>  -->
         <item name="android:textColor">@android:color/holo_blue_dark</item>
     </style>
     
-    <style name="txt_title">
-        <item name="android:textSize">14sp</item>
+    <style name="TextTitle" parent="Theme.RedShift.Dark">
+        <!-- <item name="android:textSize">14sp</item>  -->
         <item name="android:textColor">@android:color/primary_text_dark</item>
         <item name="android:textStyle">bold</item>
     </style>
     
-    <style name="txt_lightinfo">
-        <item name="android:textSize">11sp</item>
+    <style name="TextLightInfo" parent="Theme.RedShift.Dark">
+        <!-- <item name="android:textSize">11sp</item>  -->
         <item name="android:textColor">@android:color/primary_text_dark</item>
     </style>
     

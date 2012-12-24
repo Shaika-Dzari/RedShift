@@ -12,20 +12,31 @@
 package ca.n4dev.redshift.bookmark;
 
 import ca.n4dev.redshift.R;
+import ca.n4dev.redshift.bookmark.BookmarkDbHelper.Sort;
 import ca.n4dev.redshift.events.OnListClickAware;
-import android.app.FragmentTransaction;
+import ca.n4dev.redshift.history.HistoryDbHelper;
+import ca.n4dev.redshift.utils.PeriodUtils.Period;
+import android.app.AlertDialog;
 import android.app.ListFragment;
-import android.content.Intent;
+import android.app.AlertDialog.Builder;
+import android.content.DialogInterface;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.ContextMenu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.PopupMenu;
+import android.widget.Toast;
 
 public class BookmarksList extends ListFragment {
 	
-	private boolean mDualPane;
-	private int mCurCheckPosition = 0;
+	private static final String TAG = "BookmarksList";
+	
 	private BookmarkDbHelper dbHelper;
 	private SQLiteDatabase db;
 
@@ -35,50 +46,86 @@ public class BookmarksList extends ListFragment {
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        registerForContextMenu(getListView());
+                
         dbHelper = new BookmarkDbHelper(getActivity());
         db = dbHelper.getReadableDatabase();
-        //dbHelper.insertTestData(db);
-        
-        
-        Cursor c = db.query(BookmarkDbHelper.BOOKMARK_TABLE_NAME,
-        					BookmarkDbHelper.getBookmarkTableColumns(), 
-        					null, 
-        					null, 
-        					null, 
-        					null, 
-        					BookmarkDbHelper.BOOKMARK_CREATIONDATE + " DESC");
+        Cursor c = dbHelper.queryAll(db);
         
         setListAdapter(new BookmarkCursorAdapter(getActivity(), c));
-        
-        /*
-        View editFrame = getActivity().findViewById(R.id.frag_bookmarkedit);
-        mDualPane = editFrame != null && editFrame.getVisibility() == View.VISIBLE;
-        
-        if (savedInstanceState != null) {
-            // Restore last state for checked position.
-            mCurCheckPosition = savedInstanceState.getInt("curChoice", 0);
+     
+    }
+    
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+    	MenuInflater inflater = getActivity().getMenuInflater();
+    	inflater.inflate(R.menu.menu_bookmarklongclick, menu);
+    }
+    
+    @Override
+    public boolean onContextItemSelected(MenuItem item) {
+        AdapterView.AdapterContextMenuInfo info;
+        try {
+            info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
+            
+        } catch (ClassCastException e) {
+            Log.e(TAG, "bad menuInfo", e);
+            return false;
         }
+     
+        switch (item.getItemId()) {
+			case R.id.menu_bo_edit:
+				Log.d(TAG, "menu_bo_edit");
+				showEditBookmark( (Cursor)getListView().getItemAtPosition(info.position) );
+				break;
+	
+			case R.id.menu_bo_delete:
+				showDeleteBookmark((Cursor)getListView().getItemAtPosition(info.position));
+				break;
+		}
         
         
-        if (mDualPane) {
-            // In dual-pane mode, the list view highlights the selected item.
-            getListView().setChoiceMode(ListView.CHOICE_MODE_SINGLE);
-            // Make sure our UI is in the correct state.
-            showDetails(mCurCheckPosition);
-        }
-        */
+        return true;
+    }
+    
+    private void showEditBookmark(Cursor citem) {
+    	AddBookmarkDialog dialog = new AddBookmarkDialog();
+		
+		dialog.setBookmarkId(citem.getLong(citem.getColumnIndex(BookmarkDbHelper.BOOKMARK_ID)));
+		dialog.setUrl(citem.getString(citem.getColumnIndex(BookmarkDbHelper.BOOKMARK_URL)));
+		dialog.setTitle(citem.getString(citem.getColumnIndex(BookmarkDbHelper.BOOKMARK_TITLE)));
+		dialog.setTags(citem.getString(citem.getColumnIndex(BookmarkDbHelper.BOOKMARK_TAG)));
+		
+		dialog.show(getFragmentManager(), "AddBookmarkDialog");
+    }
+    
+    private boolean showDeleteBookmark(Cursor citem) {
+    	
+    	final Long bookmarkId = citem.getLong(citem.getColumnIndex(BookmarkDbHelper.BOOKMARK_ID));
+    	String url = citem.getString(citem.getColumnIndex(BookmarkDbHelper.BOOKMARK_URL));
+    	
+    	if (url.length() > 25)
+    		url = url.substring(0, 25) + "...";
+    	
+    	Builder builder = new AlertDialog.Builder(getActivity());
+		builder.setTitle("Delete " + url + "?");
+		
+		builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+	           public void onClick(DialogInterface dialog, int id) {
+	              dbHelper.delete(db, bookmarkId);
+	           }
+	       });
+		
+		builder.setNegativeButton(android.R.string.cancel, null);
+		
+		AlertDialog dialog = builder.create();
+		dialog.show();
+		
+    	return false;
     }
     
     @Override
     public void onListItemClick(ListView l, View v, int position, long id) {
-    	
-    	/*
-    	Intent intent=new Intent();  
-    	intent.putExtra("url", "Hello");
-    	getActivity().setResult(666, intent);
-    	getActivity().finish();
-    	*/
-    	
     	this.onListClickAware.onListClickEvent(v);
     }
     
@@ -86,47 +133,15 @@ public class BookmarksList extends ListFragment {
     	this.onListClickAware = onListClickAware;
     }
     
+    public void filterSearchResult(String query) {
+		Cursor c = this.dbHelper.search(db, query, Period.INFINITY);
+		((BookmarkCursorAdapter)getListAdapter()).changeCursor(c);
+	}
     
-    
-    
-    void showDetails(int index) {
-        mCurCheckPosition = index;
-
-        if (mDualPane) {
-            // We can display everything in-place with fragments, so update
-            // the list to highlight the selected item and show the data.
-            getListView().setItemChecked(index, true);
-
-            // Check what fragment is currently shown, replace if needed.
-            BookmarkEditFragment details = (BookmarkEditFragment) getFragmentManager().findFragmentById(R.id.frag_bookmarkedit);
-            if (details == null || details.getShownIndex() != index) {
-                // Make new fragment to show this selection.
-                details = BookmarkEditFragment.newInstance(index);
-
-                // Execute a transaction, replacing any existing fragment
-                // with this one inside the frame.
-                FragmentTransaction ft = getFragmentManager().beginTransaction();
-                if (index == 0) {
-                    ft.replace(R.id.frag_bookmarkedit, details);
-                /*
-                } else {
-                    ft.replace(R.id.a_item, details);
-                    */
-                }
-                ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
-                ft.commit();
-            }
-
-        } else {
-            // Otherwise we need to launch a new activity to display
-            // the dialog fragment with selected text.
-            Intent intent = new Intent();
-            intent.setClass(getActivity(), BookmarkEditActivity.class);
-            intent.putExtra("index", index);
-            startActivity(intent);
-        }
+    public void sortData(Sort sort) {
+    	Cursor c = dbHelper.queryAll(db, sort);
+    	((BookmarkCursorAdapter)getListAdapter()).changeCursor(c);
     }
-    
     
     @Override
 	public void onResume(){

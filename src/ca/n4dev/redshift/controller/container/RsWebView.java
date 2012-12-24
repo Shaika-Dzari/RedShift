@@ -14,6 +14,7 @@ package ca.n4dev.redshift.controller.container;
 import ca.n4dev.redshift.utils.Logger;
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.os.Bundle;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
@@ -32,13 +33,14 @@ public class RsWebView extends WebView {
 	 * @param context
 	 */
 	@SuppressLint("SetJavaScriptEnabled")
-	public RsWebView(Context context, WebViewClient webViewClient, WebChromeClient webChromeClient, boolean withJs) {
+	public RsWebView(Context context, WebViewClient webViewClient, WebChromeClient webChromeClient) {
 		super(context);
 		Logger.log(TAG, "Creating new RsWebView");
 		
 		this.setWebChromeClient(webChromeClient);
 		this.setWebViewClient(webViewClient);
 		
+		/*
 		WebSettings settings = this.getSettings();
 		settings.setRenderPriority(RenderPriority.HIGH);
 		settings.setJavaScriptEnabled(withJs);
@@ -50,6 +52,7 @@ public class RsWebView extends WebView {
 		settings.setLoadWithOverviewMode(true);
 		
 		settings.setUserAgentString(settings.getUserAgentString() + " RedShift/1.0");
+		*/
 	}
 	
 

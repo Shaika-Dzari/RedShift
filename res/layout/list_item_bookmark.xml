@@ -1,25 +1,19 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     		  android:orientation="vertical"
     		  android:layout_width="fill_parent"
-    		  android:layout_height="match_parent"
-    		  >
-    		  
+    		  android:layout_height="wrap_content"
+    		  android:padding="4dp">
+    
     <!-- title, url, tag, date -->
     <TextView android:id="@+id/li_txt_title"
         	  android:layout_width="fill_parent" 
         	  android:layout_height="wrap_content" 
-        	  style="@style/txt_title"
-        	  />
+        	  style="@style/TextTitle" />
     
     <TextView android:id="@+id/li_txt_url"
         	  android:layout_width="fill_parent"
         	  android:layout_height="wrap_content"
-        	  style="@style/txt_urllink"
-        	   />
-  		  
-    <TextView android:id="@+id/li_txt_date"
-           	  android:layout_width="wrap_content"
-           	  android:layout_height="wrap_content" />
-      
+        	  style="@style/TextLink" />
+  	
 </LinearLayout>
     

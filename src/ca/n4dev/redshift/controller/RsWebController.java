@@ -18,6 +18,7 @@ import java.util.Map;
 import android.annotation.SuppressLint;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.util.SparseArray;
@@ -269,6 +270,15 @@ public class RsWebController implements WebController {
 	public String currentTitle() {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	/* (non-Javadoc)
+	 * @see ca.n4dev.redshift.controller.api.WebController#loadWebSettings()
+	 */
+	@Override
+	public void loadWebSettings() {
+		// TODO Auto-generated method stub
+		
 	}
 	
 }

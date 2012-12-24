@@ -2,13 +2,38 @@
     
     <item android:id="@+id/menu_hist_search"
           android:title="@string/menu_hist_search"
+          android:icon="@drawable/img_search"
           android:showAsAction="ifRoom|collapseActionView"
           android:actionViewClass="android.widget.SearchView"
          />
     
     <item android:id="@+id/menu_clearhistory"
         android:title="@string/menu_clearhistory"
-        android:showAsAction="ifRoom|collapseActionView"
+        android:showAsAction="ifRoom"
+        android:orderInCategory="100"
+         />
+    
+     <item android:id="@+id/menu_history_yesterday"
+        android:title="@string/menu_history_yesterday"
+        android:showAsAction="ifRoom"
+        android:orderInCategory="100"
+         />
+     
+      <item android:id="@+id/menu_history_last7days"
+        android:title="@string/menu_history_last7days"
+        android:showAsAction="ifRoom"
+        android:orderInCategory="100"
+         />
+      
+      <item android:id="@+id/menu_history_thismonth"
+        android:title="@string/menu_history_thismonth"
+        android:showAsAction="ifRoom"
+        android:orderInCategory="100"
+         />
+       
+      <item android:id="@+id/menu_history_infinity"
+        android:title="@string/menu_history_infinity"
+        android:showAsAction="ifRoom"
         android:orderInCategory="100"
          />
 </menu>

@@ -15,6 +15,7 @@ import ca.n4dev.redshift.R;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
+import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
@@ -26,11 +27,20 @@ public class AddBookmarkDialog extends DialogFragment {
 	
 	private String title = null;
 	private String url = null;
+	private Long bookmarkId = null;
+	private String tags = null;
 	private View view;
+	
+	private BookmarkDbHelper dbHelper;
+	private SQLiteDatabase db;
 	
 	
 	@Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
+		
+		dbHelper = new BookmarkDbHelper(getActivity());
+		db = dbHelper.getWritableDatabase();
+		
 		// Use the Builder class for convenient dialog construction
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         LayoutInflater inflater = getActivity().getLayoutInflater();
@@ -47,8 +57,13 @@ public class AddBookmarkDialog extends DialogFragment {
         }
         
         if (url != null) {
-        	EditText urlTitle = (EditText) view.findViewById(R.id.txt_ab_url);
-        	urlTitle.setText(url);
+        	EditText txtUrl = (EditText) view.findViewById(R.id.txt_ab_url);
+        	txtUrl.setText(url);
+        }
+        
+        if (tags != null) {
+        	EditText txtTags = (EditText) view.findViewById(R.id.txt_ab_tag);
+        	txtTags.setText(tags);
         }
         
         
@@ -61,16 +76,26 @@ public class AddBookmarkDialog extends DialogFragment {
             @Override
             public void onClick(DialogInterface dialog, int id) {
             	
-                BookmarkDbHelper dbHelper = new BookmarkDbHelper(getActivity());
                 String t = ((EditText) view.findViewById(R.id.txt_ab_title)).getText().toString();
             	String u = ((EditText) view.findViewById(R.id.txt_ab_url)).getText().toString();
             	String a = ((EditText) view.findViewById(R.id.txt_ab_tag)).getText().toString();
             	
-            	dbHelper.add(dbHelper.getWritableDatabase(), t, u, a);
+            	if (bookmarkId == null)
+            		dbHelper.add(dbHelper.getWritableDatabase(), t, u, a); // insert
+            	else {
+            		ContentValues values = new ContentValues();
+            		values.put(BookmarkDbHelper.BOOKMARK_TITLE, t);
+            		values.put(BookmarkDbHelper.BOOKMARK_TAG, a);
+            		values.put(BookmarkDbHelper.BOOKMARK_URL, u);
+            		
+            		db.update(BookmarkDbHelper.BOOKMARK_TABLE_NAME, values, BookmarkDbHelper.BOOKMARK_ID + " = ?", new String[]{"" + bookmarkId});
+            	}
+            	close();
             }
         })
         .setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
+            	close();
             	AddBookmarkDialog.this.getDialog().cancel();
             }
         });
@@ -78,6 +103,13 @@ public class AddBookmarkDialog extends DialogFragment {
         return builder.create();
 	}
 
+	
+	
+	public void close() {
+		db.close();
+		db = null;
+		dbHelper = null;
+	}
 
 	/**
 	 * @return the title
@@ -108,5 +140,37 @@ public class AddBookmarkDialog extends DialogFragment {
 	 */
 	public void setUrl(String url) {
 		this.url = url;
+	}
+
+
+	/**
+	 * @return the id
+	 */
+	public Long getBookmarkId() {
+		return bookmarkId;
+	}
+
+
+	/**
+	 * @param id the id to set
+	 */
+	public void setBookmarkId(Long bookmarkId) {
+		this.bookmarkId = bookmarkId;
+	}
+
+
+	/**
+	 * @return the tags
+	 */
+	public String getTags() {
+		return tags;
+	}
+
+
+	/**
+	 * @param tags the tags to set
+	 */
+	public void setTags(String tags) {
+		this.tags = tags;
 	}
 }

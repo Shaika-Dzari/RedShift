@@ -9,7 +9,16 @@
             android:key="pref_homepage"
             android:title="@string/pref_homepage"
 		    android:summary="@string/pref_homepage_summary"
-		    android:defaultValue="about:home"/>
+		    android:defaultValue="redshift:home" />
+        
+        <ListPreference
+	      android:key="pref_useragent"
+	      android:title="@string/pref_useragent"
+	      android:summary="@string/pref_useragent_summary"
+	      android:entries="@array/pref_useragent_list"
+	      android:entryValues="@array/pref_useragent_list"
+	      android:dialogTitle="@string/pref_useragent" 
+	      android:defaultValue="Android"/>
 	    
     </PreferenceCategory>
     
@@ -24,17 +33,64 @@
 		      android:defaultValue="true" />
 	    
 	    <CheckBoxPreference
-		      android:key="pref_js"
-		      android:title="@string/pref_js"
-		      android:summary="@string/pref_js_summary"
-		      android:defaultValue="true" />
-	    
-	    <CheckBoxPreference
 		      android:key="pref_cookie"
 		      android:title="@string/pref_cookie"
 		      android:summary="@string/pref_cookie_summary"
 		      android:defaultValue="true" />
 	    
+	    <CheckBoxPreference
+		      android:key="pref_cookie_exit"
+		      android:title="@string/pref_cookie_exit"
+		      android:summary="@string/pref_cookie_exit_summary"
+		      android:defaultValue="true" />
+	    
+	    <Preference android:title="@string/pref_clearcookie" android:key="pref_clearcookie" />
+	    
+	    <CheckBoxPreference
+		      android:key="pref_save_formdata"
+		      android:title="@string/pref_save_formdata"
+		      android:summary="@string/pref_save_formdata_summary"
+		      android:defaultValue="true" />
+	    
+	    <CheckBoxPreference
+		      android:key="pref_save_passwd"
+		      android:title="@string/pref_save_passwd"
+		      android:summary="@string/pref_save_passwd_summary"
+		      android:defaultValue="true" />
+	    
     </PreferenceCategory>
+    
+    <PreferenceCategory 
+        android:title="@string/pref_cat_advanced"
+        android:key="pref_cat_advanced">
+        
+        <CheckBoxPreference
+		      android:key="pref_js"
+		      android:title="@string/pref_js"
+		      android:summary="@string/pref_js_summary"
+		      android:defaultValue="true" />
+        
+        <CheckBoxPreference
+		      android:key="pref_image"
+		      android:title="@string/pref_image"
+		      android:summary="@string/pref_image_summary"
+		      android:defaultValue="true" />
+        
+        <ListPreference
+	      android:key="pref_plugin"
+	      android:title="@string/pref_plugin"
+	      android:summary="@string/pref_plugin_summary"
+	      android:entries="@array/pref_plugin_list"
+	      android:entryValues="@array/pref_plugin_list"
+	      android:dialogTitle="@string/pref_plugin"
+	      android:defaultValue="On Demand" />
+	    
+    </PreferenceCategory>
+    
+    <Preference android:title="@string/pref_about">
+        <intent android:action="android.intent.action.MAIN"
+        		android:targetPackage="ca.n4dev.redshift"
+        		android:targetClass="ca.n4dev.redshift.AboutActivity" />
+    </Preference>
 
 </PreferenceScreen>

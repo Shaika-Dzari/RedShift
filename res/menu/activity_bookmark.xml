@@ -2,20 +2,28 @@
     
     <item android:id="@+id/menu_search"
           android:title="@string/menu_search"
-          android:showAsAction="ifRoom|collapseActionView"
+          android:icon="@drawable/img_search"
+          android:showAsAction="always|collapseActionView"
           android:actionViewClass="android.widget.SearchView"
          />
     
-    <item android:id="@+id/menu_sort_byname"
-        android:title="@string/menu_sort_byname"
+    <item android:id="@+id/menu_add_bookmark"
+        android:title="@string/menu_addbookmark"
+        android:icon="@drawable/img_newtab"
         android:orderInCategory="100"
-        android:showAsAction="ifRoom"
+        android:showAsAction="always"
+         />
+    
+    <item android:id="@+id/menu_sort_bytitle"
+        android:title="@string/menu_sort_bytitle"
+        android:orderInCategory="100"
+        android:showAsAction="always"
          />
     
     <item android:id="@+id/menu_sort_bydate"
         android:title="@string/menu_sort_bydate"
         android:orderInCategory="100"
-        android:showAsAction="ifRoom"
+        android:showAsAction="always"
          />
     
 </menu>

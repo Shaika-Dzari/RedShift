@@ -5,6 +5,7 @@ import ca.n4dev.redshift.bookmark.AddBookmarkDialog;
 import ca.n4dev.redshift.controller.RsWebViewController;
 import ca.n4dev.redshift.controller.api.WebController;
 import ca.n4dev.redshift.controller.container.RsWebView;
+import ca.n4dev.redshift.events.OnListClickAware;
 import ca.n4dev.redshift.events.ProgressAware;
 import ca.n4dev.redshift.events.UrlModificationAware;
 import ca.n4dev.redshift.history.HistoryDbHelper;
@@ -12,9 +13,12 @@ import ca.n4dev.redshift.utils.TabListAdapter;
 import ca.n4dev.redshift.utils.UrlUtils;
 import android.net.Uri;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.annotation.SuppressLint;
+import android.app.ActionBar;
 import android.app.DialogFragment;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -34,7 +38,7 @@ import android.support.v4.app.FragmentActivity;
 
 
 @SuppressLint("SetJavaScriptEnabled")
-public class BrowserActivity extends FragmentActivity implements UrlModificationAware, ProgressAware {
+public class BrowserActivity extends FragmentActivity implements UrlModificationAware, ProgressAware, OnListClickAware {
 	
 	private static final String TAG = "BrowserActivity";
 	private static final int BOOKMARK_RESULT_ID = 9990;
@@ -47,6 +51,11 @@ public class BrowserActivity extends FragmentActivity implements UrlModification
 	private BrowserActivity browserActivity;
 	private ListView tabList = null;
 	private LinearLayout tabLayout = null;
+	private SharedPreferences preferences;
+	
+	// Some preferences
+	private String webHome = null;
+	private boolean prefHistory;
 	
 	private boolean tabLayoutVisible = false;
 	
@@ -57,30 +66,39 @@ public class BrowserActivity extends FragmentActivity implements UrlModification
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        browserActivity = this;
         Log.d(TAG, "onCreate()");
+        browserActivity = this;
         setContentView(R.layout.activity_browser);
+                
+        // No ActionBar in browser
+        getActionBar().hide();
         
+        preferences = PreferenceManager.getDefaultSharedPreferences(this);
         historyHelper = new HistoryDbHelper(this);
         historyDatabase = historyHelper.getWritableDatabase();
         
-        String initUrl = WebController.HOME;
+        // Setup homepage
+        webHome = preferences.getString(SettingsActivity.KEY_HOMEPAGE, "redshift:home");
         
+        if (webHome.equals("redshift:home"))
+        	webHome = WebController.HOME;
+        	
+        String initUrl = null;
         Intent intent = getIntent();
         String action = intent.getAction();
         Uri data = intent.getData();
         
+        // Are we coming from another app with intent ?
         if (data != null && action.equalsIgnoreCase("android.intent.action.VIEW")) {
         	initUrl = data.toString();
+        } else {
+        	initUrl = webHome;
         }
         
-        
-        /*
-        ImageButton b = (ImageButton) findViewById(R.id.btnSetting);
-        registerForContextMenu(b);
-        */
+        // Get progress bar to provide loading feedback
         progressBar = (ProgressBar) findViewById(R.id.browser_progressbar);
         
+        // Set submit event on edittext
         EditText txt = (EditText) findViewById(R.id.txtUrl);
         txt.setOnEditorActionListener(new TextView.OnEditorActionListener() {
 			@Override
@@ -98,7 +116,7 @@ public class BrowserActivity extends FragmentActivity implements UrlModification
 			}
 		});
         
-        
+        // create WebController
         if (this.webController == null) {
         	Log.d(TAG, "Creating WebController.");
         	//this.webController = new RsWebController(R.id.layout_content, getFragmentManager(), this, this);
@@ -109,18 +127,24 @@ public class BrowserActivity extends FragmentActivity implements UrlModification
         		this.webController.setCurrentTab(homeTab);        	
         		this.webController.goTo(initUrl);
         	} else {
-        		this.webController.restoreState(savedInstanceState);
+        		Log.d(TAG, "onCreate#restoreState");
+            	this.webController.restoreState(savedInstanceState);
+            	this.webController.setCurrentTab(this.webController.currentId());
         	}
-        	
         }
     }
     
     @Override
     protected void onSaveInstanceState (Bundle outState) {
     	super.onSaveInstanceState(outState);
-    	
+    	Log.d(TAG, "onSaveInstanceState");
     	this.webController.saveState(outState);
     	
+    }
+    
+    protected void onRestoreInstanceState (Bundle savedInstanceState) {
+    	super.onRestoreInstanceState(savedInstanceState);
+    	Log.d(TAG, "onRestoreInstanceState");
     }
     
     @Override
@@ -193,7 +217,7 @@ public class BrowserActivity extends FragmentActivity implements UrlModification
     		tabList = (ListView) findViewById(R.id.list_tab);
     		tabLayout = (LinearLayout) findViewById(R.id.layout_tabmenu);
     		
-    		tabList.setAdapter(new TabListAdapter(this, this.webController.listTab()));
+    		tabList.setAdapter(new TabListAdapter(this, this.webController.listTab(), this));
     		tabList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
 				@Override
@@ -218,19 +242,8 @@ public class BrowserActivity extends FragmentActivity implements UrlModification
     	toggleTabLayout(LayoutVisibility.GONE);
     	int newTab = this.webController.newTab();
     	this.webController.setCurrentTab(newTab);
-    	this.webController.goTo(WebController.HOME);
+    	this.webController.goTo(webHome);
     	((ArrayAdapter)tabList.getAdapter()).notifyDataSetChanged();
-    }
-    
-    public void onBtnCloseTab(View v) {
-    	toggleTabLayout(LayoutVisibility.GONE);
-    	this.webController.closeTab(this.webController.currentId());
-    	
-    	if (this.webController.currentId() == -1) {
-    		finish();
-    	} else {
-    		((ArrayAdapter)tabList.getAdapter()).notifyDataSetChanged();
-    	}
     }
     
     public void onBtnShare(View v) {
@@ -255,7 +268,7 @@ public class BrowserActivity extends FragmentActivity implements UrlModification
 
     public void onBtnHome(View v) {
     	toggleTabLayout(LayoutVisibility.GONE);
-    	webController.goTo(WebController.HOME);
+    	webController.goTo(this.webHome);
     }
     
     
@@ -321,19 +334,46 @@ public class BrowserActivity extends FragmentActivity implements UrlModification
 	 */
 	@Override
 	public void pageReceived(String url, String title) {
-		historyHelper.add(this.historyDatabase, title, url);
+		if (prefHistory)
+			historyHelper.add(this.historyDatabase, title, url);
 	}
 	
 	@Override
 	public void onPause() {
 		super.onPause();
+		Log.d(TAG, "onPause()");
 		historyDatabase.close();
+		((RsWebViewController)this.webController).stopCookieSync();
 	}
 	
 	@Override
 	public void onResume() {
 		super.onResume();
+		Log.d(TAG, "onResume()");
 		historyDatabase = this.historyHelper.getWritableDatabase();
+		this.webController.loadWebSettings();
+		((RsWebViewController)this.webController).startCookieSync();
+		
+		webHome = preferences.getString(SettingsActivity.KEY_HOMEPAGE, "redshift:home");
+		if (webHome.equals("redshift:home"))
+        	webHome = WebController.HOME;
+		
+		prefHistory = preferences.getBoolean(SettingsActivity.KEY_HISTORY, true);
+	}
+
+	/* (non-Javadoc)
+	 * @see ca.n4dev.redshift.events.OnListClickAware#onListClickEvent(android.view.View)
+	 */
+	@Override
+	public void onListClickEvent(View v) {
+		String id = v.getTag().toString();
+		this.webController.closeTab(Integer.parseInt(id));
+		
+    	if (this.webController.currentId() == -1) {
+    		finish();
+    	} else {
+    		((ArrayAdapter)tabList.getAdapter()).notifyDataSetChanged();
+    	}
 	}
 	
 }

@@ -5,7 +5,9 @@ package ca.n4dev.redshift.history;
 
 import java.util.Date;
 
+import ca.n4dev.redshift.bookmark.BookmarkDbHelper.Sort;
 import ca.n4dev.redshift.controller.api.WebController;
+import ca.n4dev.redshift.events.Searchable;
 import ca.n4dev.redshift.utils.PeriodUtils;
 import ca.n4dev.redshift.utils.PeriodUtils.Period;
 
@@ -20,7 +22,7 @@ import android.text.format.DateFormat;
  * @author rguillemette
  *
  */
-public class HistoryDbHelper extends SQLiteOpenHelper {
+public class HistoryDbHelper extends SQLiteOpenHelper implements Searchable {
 
 	private static final int 	DATABASE_VERSION = 1;
 	private static final String DATABASE_NAME = "redshift.history.db";
@@ -112,6 +114,52 @@ public class HistoryDbHelper extends SQLiteOpenHelper {
 	
 	public void clear(SQLiteDatabase db) {
 		db.delete(HISTORY_TABLE_NAME, null, null);
+	}
+
+	public Cursor query(SQLiteDatabase db, Period period, Sort sort) {
+		String sortClause;
+		
+		if (sort == Sort.BYTITLE)
+			sortClause = "lower(" + HISTORY_TITLE + ") ASC";
+		else if (sort == Sort.BYURL)
+			sortClause = "lower(" + HISTORY_URL + ") ASC";
+		else
+			sortClause = HISTORY_CREATIONDATE + " DESC";
+		
+		return db.query(
+				HISTORY_TABLE_NAME, 
+				getHistoryTableColumns(), 
+				HISTORY_CREATIONDATE + " >= ?", 
+				new String[] { 
+					PeriodUtils.getDateStringFrom(new Date(), period)
+				}, 
+				null, 
+				null, 
+				sortClause);
+	}
+
+	/* (non-Javadoc)
+	 * @see ca.n4dev.redshift.events.Searchable#search(java.lang.String, ca.n4dev.redshift.utils.PeriodUtils.Period)
+	 */
+	@Override
+	public Cursor search(SQLiteDatabase db, String query, Period period) {
+		
+		String whereClause = HISTORY_CREATIONDATE + " >= ? " +
+						" and ( " + HISTORY_TITLE + " like ? or " + HISTORY_URL + " like ? )";
+		
+		return db.query(
+				HISTORY_TABLE_NAME, 
+				getHistoryTableColumns(), 
+				whereClause, 
+				new String[] { 
+					PeriodUtils.getDateStringFrom(new Date(), period), 
+					"%" + query + "%", 
+					"%" + query + "%" 
+				}, 
+				null, 
+				null, 
+				HISTORY_CREATIONDATE + " DESC");
+		
 	}
 	
 }

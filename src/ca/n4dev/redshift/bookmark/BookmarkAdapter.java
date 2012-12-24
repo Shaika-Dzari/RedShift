@@ -13,6 +13,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 /**
@@ -30,16 +31,17 @@ public class BookmarkAdapter extends ArrayAdapter<Bookmark> {
 		
 		if (convertView == null) {
 			convertView = ((Activity)getContext()).getLayoutInflater().inflate(R.layout.list_item_bookmark, parent, false);
+			convertView.setBackgroundResource(R.drawable.redshift_tabmenu_item_dark);
 		}
 		
 		Bookmark b = getItem(position);
 		TextView title = (TextView) convertView.findViewById(R.id.li_txt_title);
 		TextView url = (TextView) convertView.findViewById(R.id.li_txt_url);
-		TextView prettydate = (TextView) convertView.findViewById(R.id.li_txt_date);
 		
 		title.setText(b.title);
 		url.setText(b.url);
-		prettydate.setText(b.prettyDate);
+		
+		
 		
 		return convertView;
 	}

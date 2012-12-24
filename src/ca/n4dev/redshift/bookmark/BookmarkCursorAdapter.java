@@ -32,21 +32,20 @@ public class BookmarkCursorAdapter extends CursorAdapter {
 		if (titleIdx == -1) {
 			titleIdx = cursor.getColumnIndex(BookmarkDbHelper.BOOKMARK_TITLE);
 			urlIdx = cursor.getColumnIndex(BookmarkDbHelper.BOOKMARK_URL);
-			//tagIdx = cursor.getColumnIndex(BookmarkDbHelper.BOOKMARK_TAG);
 			dateIdx = cursor.getColumnIndex(BookmarkDbHelper.BOOKMARK_PRETTYDATE);
 		}
 		
 		((TextView)view.findViewById(R.id.li_txt_title)).setText(cursor.getString(titleIdx));
 		((TextView)view.findViewById(R.id.li_txt_url)).setText(cursor.getString(urlIdx));
-		((TextView)view.findViewById(R.id.li_txt_date)).setText(cursor.getString(dateIdx));
-	
+		
 	}
 
 	@Override
 	public View newView(Context context, Cursor cursor, ViewGroup parent) {
 		LayoutInflater inflater = LayoutInflater.from(context);
 		View v = inflater.inflate(R.layout.list_item_bookmark, parent, false);
-	
+		v.setBackgroundResource(R.drawable.redshift_tabmenu_item_dark);
+		
 		return v;
 	}
 
