@@ -30,7 +30,6 @@ import android.webkit.WebSettings.RenderPriority;
 import android.webkit.WebView;
 import android.widget.FrameLayout;
 import ca.n4dev.redshift.SettingsActivity;
-import ca.n4dev.redshift.controller.api.WebController;
 import ca.n4dev.redshift.controller.container.RsWebView;
 import ca.n4dev.redshift.controller.web.RsWebViewClient;
 import ca.n4dev.redshift.events.ProgressAware;
@@ -38,9 +37,10 @@ import ca.n4dev.redshift.events.UrlModificationAware;
 import ca.n4dev.redshift.utils.UserAgent;
 
 @SuppressLint({ "UseSparseArrays", "SetJavaScriptEnabled" })
-public class RsWebViewController implements WebController {
+public class RsWebViewController {
 	
 	private static final String TAG = "RsWebViewController";
+	public static final String HOME = "file:///android_asset/home.html";
 	private static final int MAX_OPEN_TAB = 5;
 	
 	private CookieSyncManager syncManager;
@@ -105,13 +105,6 @@ public class RsWebViewController implements WebController {
 		
 	}
 	
-	
-	
-
-	/* (non-Javadoc)
-	 * @see ca.n4dev.redshift.controller.api.WebController#goBack()
-	 */
-	@Override
 	public boolean goBack() {
 		RsWebView w = getCurrentView();
 		if (w.canGoBack()) {
@@ -123,10 +116,7 @@ public class RsWebViewController implements WebController {
 		return false;
 	}
 
-	/* (non-Javadoc)
-	 * @see ca.n4dev.redshift.controller.api.WebController#goForward()
-	 */
-	@Override
+	
 	public boolean goForward() {
 		RsWebView w = getCurrentView();
 		if (w.canGoForward()) {
@@ -138,26 +128,15 @@ public class RsWebViewController implements WebController {
 		return false;
 	}
 
-	/* (non-Javadoc)
-	 * @see ca.n4dev.redshift.controller.api.WebController#goTo(java.lang.String)
-	 */
-	@Override
+	
 	public void goTo(String url) {
 		getCurrentView().loadUrl(url);
 	}
 
-	/* (non-Javadoc)
-	 * @see ca.n4dev.redshift.controller.api.WebController#refresh()
-	 */
-	@Override
 	public void refresh() {
 		getCurrentView().reload();
 	}
 
-	/* (non-Javadoc)
-	 * @see ca.n4dev.redshift.controller.api.WebController#newTab(java.lang.String)
-	 */
-	@Override
 	public int newTab() {
 		int id = ++counter;
 		RsWebView w = new RsWebView(context, 
@@ -185,18 +164,10 @@ public class RsWebViewController implements WebController {
 		return id;
 	}
 
-	/* (non-Javadoc)
-	 * @see ca.n4dev.redshift.controller.api.WebController#listTab()
-	 */
-	@Override
 	public List<RsWebView> listTab() {
 		return this.webviews;
 	}
 
-	/* (non-Javadoc)
-	 * @see ca.n4dev.redshift.controller.api.WebController#closeTab(int)
-	 */
-	@Override
 	public void closeTab(int tabId) {
 		boolean hasRemoved = false;
 		Iterator<RsWebView> it = this.webviews.iterator();
@@ -221,20 +192,12 @@ public class RsWebViewController implements WebController {
 		
 	}
 
-	/* (non-Javadoc)
-	 * @see ca.n4dev.redshift.controller.api.WebController#setCurrentTab(int)
-	 */
-	@Override
 	public void setCurrentTab(int tabId) {
 		
 		this.currentTabView = tabId;
 		swapView();
 	}
 
-	/* (non-Javadoc)
-	 * @see ca.n4dev.redshift.controller.api.WebController#saveState(android.os.Bundle)
-	 */
-	@Override
 	public void saveState(Bundle outstate) {
 		outstate.putInt("redshift.currentTabView", currentTabView);
 		
@@ -256,10 +219,6 @@ public class RsWebViewController implements WebController {
 		outstate.putBundle("redshift.wwwBundle", webviewBundles);
 	}
 
-	/* (non-Javadoc)
-	 * @see ca.n4dev.redshift.controller.api.WebController#restoreState(android.os.Bundle)
-	 */
-	@Override
 	public void restoreState(Bundle outstate) {
 		currentTabView = outstate.getInt("redshift.currentTabView");
 		
@@ -326,60 +285,22 @@ public class RsWebViewController implements WebController {
 		return (hasFound) ? r : null;
 	}
 	
-
-	/* (non-Javadoc)
-	 * @see ca.n4dev.redshift.controller.api.WebController#currentId()
-	 */
-	@Override
 	public int currentId() {
 		return currentTabView;
 	}
 	
-	/* (non-Javadoc)
-	 * @see ca.n4dev.redshift.controller.api.WebController#currentUrl()
-	 */
-	@Override
 	public String currentUrl() {
 		return getCurrentView().getUrl();
 	}
 	
-	/* (non-Javadoc)
-	 * @see ca.n4dev.redshift.controller.api.WebController#currentUrl()
-	 */
-	@Override
 	public String currentTitle() {
 		return getCurrentView().getTitle();
 	}
 
 
 
-
-	/* (non-Javadoc)
-	 * @see ca.n4dev.redshift.controller.api.WebController#loadWebSettings()
-	 */
-	@Override
 	public void loadWebSettings() {
-		/*
-		 * private SharedPreferences preferences;
-	private boolean prefCookie;
-	private boolean prefJavascript;
-	private boolean prefFormdata;
-	private boolean prefSavePasswd;
-	private boolean prefLoadImage;
-	private boolean prefPlugin;
-	
-	
-	 public static final String KEY_HISTORY = "pref_history"; 
-	public static final String KEY_COOKIE = "pref_cookie"; 
-	public static final String KEY_COOKIEEXIT = "pref_cookie_exit"; 
-	public static final String KEY_FORMDATA = "pref_save_formdata"; 
-	public static final String KEY_SAVEPASSWD = "pref_save_passwd"; 
-	public static final String KEY_JAVASCRIPT = "pref_js"; 
-	public static final String KEY_LOADIMAGE = "pref_image"; 
-	public static final String KEY_PLUGIN = "pref_plugin"; 
-	
-	
-	*/
+		
 		if (this.preferences != null) {
 			prefCookie = preferences.getBoolean(SettingsActivity.KEY_COOKIE, true);
 			prefJavascript = preferences.getBoolean(SettingsActivity.KEY_JAVASCRIPT, true);

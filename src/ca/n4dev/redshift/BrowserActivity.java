@@ -3,7 +3,6 @@ package ca.n4dev.redshift;
 import ca.n4dev.redshift.R;
 import ca.n4dev.redshift.bookmark.AddBookmarkDialog;
 import ca.n4dev.redshift.controller.RsWebViewController;
-import ca.n4dev.redshift.controller.api.WebController;
 import ca.n4dev.redshift.controller.container.RsWebView;
 import ca.n4dev.redshift.events.OnListClickAware;
 import ca.n4dev.redshift.events.ProgressAware;
@@ -15,8 +14,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.annotation.SuppressLint;
-import android.app.ActionBar;
-import android.app.DialogFragment;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.sqlite.SQLiteDatabase;
@@ -44,7 +41,7 @@ public class BrowserActivity extends FragmentActivity implements UrlModification
 	private static final int BOOKMARK_RESULT_ID = 9990;
 	private static final int HISTORY_RESULT_ID = 9991;
 	
-	private WebController webController;
+	private RsWebViewController webController;
 	private ProgressBar progressBar;
 	private HistoryDbHelper historyHelper;
 	private SQLiteDatabase historyDatabase;
@@ -81,7 +78,7 @@ public class BrowserActivity extends FragmentActivity implements UrlModification
         webHome = preferences.getString(SettingsActivity.KEY_HOMEPAGE, "redshift:home");
         
         if (webHome.equals("redshift:home"))
-        	webHome = WebController.HOME;
+        	webHome = RsWebViewController.HOME;
         	
         String initUrl = null;
         Intent intent = getIntent();
@@ -356,7 +353,7 @@ public class BrowserActivity extends FragmentActivity implements UrlModification
 		
 		webHome = preferences.getString(SettingsActivity.KEY_HOMEPAGE, "redshift:home");
 		if (webHome.equals("redshift:home"))
-        	webHome = WebController.HOME;
+        	webHome = RsWebViewController.HOME;
 		
 		prefHistory = preferences.getBoolean(SettingsActivity.KEY_HISTORY, true);
 	}

@@ -6,7 +6,7 @@ package ca.n4dev.redshift.history;
 import java.util.Date;
 
 import ca.n4dev.redshift.bookmark.BookmarkDbHelper.Sort;
-import ca.n4dev.redshift.controller.api.WebController;
+import ca.n4dev.redshift.controller.RsWebViewController;
 import ca.n4dev.redshift.events.Searchable;
 import ca.n4dev.redshift.utils.PeriodUtils;
 import ca.n4dev.redshift.utils.PeriodUtils.Period;
@@ -94,7 +94,7 @@ public class HistoryDbHelper extends SQLiteOpenHelper implements Searchable {
 	}
 	
 	public long add(SQLiteDatabase db, String title, String url) {
-		if (url.equalsIgnoreCase(WebController.HOME))
+		if (url.equalsIgnoreCase(RsWebViewController.HOME))
 			return -1;
 		
 		ContentValues values = new ContentValues();
