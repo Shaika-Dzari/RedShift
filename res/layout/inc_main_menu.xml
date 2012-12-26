@@ -1,51 +1,50 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     		  xmlns:tools="http://schemas.android.com/tools"
-    			android:id="@+id/controlbar"
-        		  android:layout_width="fill_parent"
-		    	  android:layout_height="40dp"
+    		  android:layout_width="fill_parent"
+		      android:layout_height="42dp"
+		      android:orientation="vertical"
+			  android:layout_alignParentBottom="true"
+			  android:layout_alignParentLeft="true">
+    
+    <ProgressBar android:id="@+id/browser_progressbar"
+        style="@android:style/Widget.ProgressBar.Horizontal"
+    	android:layout_width="fill_parent"
+    	android:layout_height="2dp"
+    	android:minHeight="2dp"
+    	android:maxHeight="2dp" />
+    
+    <LinearLayout android:layout_width="fill_parent"
+        		  android:id="@+id/controlbar"
+        		  android:layout_height="40dp"
 		    	  android:orientation="horizontal"
-			      android:layout_alignParentBottom="true"
-				  android:layout_alignParentLeft="true"
 				  style="@style/MenuBar">
         
-     <EditText android:id="@+id/txtUrl"
-         	  android:layout_width="0dp"
-         	  android:layout_weight="1"
-         	  android:layout_height="match_parent" 
-         	  android:hint="@string/hint_txtUrl"
-         	  android:inputType="textUri|textAutoComplete"
-         	  android:imeOptions="actionGo"
-         	  android:selectAllOnFocus="true"
-         	  />
-     
-     <ImageButton android:id="@+id/btnListTab"
-         		 android:layout_height="match_parent"
-         		 android:layout_width="wrap_content"
-         		 android:onClick="onBtnListTab"
-         		 android:src="@drawable/img_collectiontab"
-         		 android:contentDescription="@string/desc_btnBack"
-         		 style="@style/Borderless"
-         />
-     <!-- 
-     <ImageButton android:id="@+id/btnNewTab"
-         		 android:layout_height="match_parent"
-         		 android:layout_width="wrap_content"
-         		 android:src="@drawable/img_newtab_light"
-         		 android:onClick="onBtnNewTab"
-         		 android:contentDescription="@string/desc_btnBack"
-         		 style="?android:attr/borderlessButtonStyle"
-         />
-      -->
-     <ImageButton android:src="@drawable/img_setting"
-         		 android:contentDescription="@string/desc_btnSetting"
-         		 android:id="@+id/btnSetting"
-         		 android:layout_width="wrap_content"
-         	   	 android:layout_height="match_parent"
-         	   	 android:onClick="onBtnShowPopup"
-         	   	 style="@style/Borderless"
-         	   	  />
+	     <EditText android:id="@+id/txtUrl"
+	         	  android:layout_width="0dp"
+	         	  android:layout_weight="1"
+	         	  android:layout_height="match_parent" 
+	         	  android:hint="@string/hint_txtUrl"
+	         	  android:inputType="textUri|textAutoComplete"
+	         	  android:imeOptions="actionGo"
+	         	  android:selectAllOnFocus="true" />
+	     
+	     <ImageButton android:id="@+id/btnListTab"
+	         		 android:layout_height="match_parent"
+	         		 android:layout_width="wrap_content"
+	         		 android:onClick="onBtnListTab"
+	         		 android:src="@drawable/img_collectiontab"
+	         		 android:contentDescription="@string/desc_btnBack"
+	         		 style="@style/Borderless" />
+	     
+	     <ImageButton android:src="@drawable/img_setting"
+	         		 android:contentDescription="@string/desc_btnSetting"
+	         		 android:id="@+id/btnSetting"
+	         		 android:layout_width="wrap_content"
+	         	   	 android:layout_height="match_parent"
+	         	   	 android:onClick="onBtnShowPopup"
+	         	   	 style="@style/Borderless" />
 
-         		
-     
- </LinearLayout>
+	</LinearLayout>
+</LinearLayout>
+
