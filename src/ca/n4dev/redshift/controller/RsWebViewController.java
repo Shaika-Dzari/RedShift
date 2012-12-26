@@ -17,6 +17,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -30,6 +31,10 @@ import android.webkit.WebSettings.RenderPriority;
 import android.webkit.WebView;
 import android.widget.FrameLayout;
 import ca.n4dev.redshift.SettingsActivity;
+import ca.n4dev.redshift.controller.api.NavigationController;
+import ca.n4dev.redshift.controller.api.TabController;
+import ca.n4dev.redshift.controller.api.TooManyTabException;
+import ca.n4dev.redshift.controller.api.WebController;
 import ca.n4dev.redshift.controller.container.RsWebView;
 import ca.n4dev.redshift.controller.web.RsWebViewClient;
 import ca.n4dev.redshift.events.ProgressAware;
@@ -37,11 +42,11 @@ import ca.n4dev.redshift.events.UrlModificationAware;
 import ca.n4dev.redshift.utils.UserAgent;
 
 @SuppressLint({ "UseSparseArrays", "SetJavaScriptEnabled" })
-public class RsWebViewController {
+public class RsWebViewController implements WebController {
 	
 	private static final String TAG = "RsWebViewController";
 	public static final String HOME = "file:///android_asset/home.html";
-	private static final int MAX_OPEN_TAB = 5;
+	private static final int MAX_OPEN_TAB = 6;
 	
 	private CookieSyncManager syncManager;
 	private CookieManager cookieManager;
@@ -68,20 +73,6 @@ public class RsWebViewController {
 	private WebSettings.PluginState prefPlugin;
 	private UserAgent prefUserAgent;
 	
-	
-	/*
-	 public static final String KEY_HISTORY = "pref_history"; 
-	public static final String KEY_COOKIE = "pref_cookie"; 
-	public static final String KEY_COOKIEEXIT = "pref_cookie_exit"; 
-	public static final String KEY_FORMDATA = "pref_save_formdata"; 
-	public static final String KEY_SAVEPASSWD = "pref_save_passwd"; 
-	public static final String KEY_JAVASCRIPT = "pref_js"; 
-	public static final String KEY_LOADIMAGE = "pref_image"; 
-	public static final String KEY_PLUGIN = "pref_plugin"; 
-	 */
-	
-	
-	
 	public RsWebViewController(Context context, FrameLayout parentLayout, UrlModificationAware urlModificationAware, ProgressAware progressAware) {
 		this.parentLayout = parentLayout;
 		this.urlModificationAware = urlModificationAware;
@@ -105,6 +96,7 @@ public class RsWebViewController {
 		
 	}
 	
+	@Override
 	public boolean goBack() {
 		RsWebView w = getCurrentView();
 		if (w.canGoBack()) {
@@ -116,7 +108,7 @@ public class RsWebViewController {
 		return false;
 	}
 
-	
+	@Override
 	public boolean goForward() {
 		RsWebView w = getCurrentView();
 		if (w.canGoForward()) {
@@ -128,16 +120,22 @@ public class RsWebViewController {
 		return false;
 	}
 
-	
+	@Override
 	public void goTo(String url) {
 		getCurrentView().loadUrl(url);
 	}
 
+	@Override
 	public void refresh() {
 		getCurrentView().reload();
 	}
 
-	public int newTab() {
+	@Override
+	public int newTab(Activity activity, boolean privateBrowsing) throws TooManyTabException {
+		
+		if (this.webviews.size() + 1 > MAX_OPEN_TAB)
+			throw new TooManyTabException();
+		
 		int id = ++counter;
 		RsWebView w = new RsWebView(context, 
 									new RsWebViewClient(this.urlModificationAware), 
@@ -155,19 +153,23 @@ public class RsWebViewController {
 											urlModificationAware.pageReceived(view.getUrl(), title);
 										}
 										
-									});
+									}, privateBrowsing);
 		w.setTabId(id);
 		setupWebSettings(w);
+		
+		activity.registerForContextMenu(w);
 		
 		this.webviews.add(w);
 		
 		return id;
 	}
 
+	@Override
 	public List<RsWebView> listTab() {
 		return this.webviews;
 	}
 
+	@Override
 	public void closeTab(int tabId) {
 		boolean hasRemoved = false;
 		Iterator<RsWebView> it = this.webviews.iterator();
@@ -192,6 +194,7 @@ public class RsWebViewController {
 		
 	}
 
+	@Override
 	public void setCurrentTab(int tabId) {
 		
 		this.currentTabView = tabId;
@@ -297,7 +300,9 @@ public class RsWebViewController {
 		return getCurrentView().getTitle();
 	}
 
-
+	public boolean isCurrentTabPrivate() {
+		return getCurrentView().isPrivateBrowsing();
+	}
 
 	public void loadWebSettings() {
 		

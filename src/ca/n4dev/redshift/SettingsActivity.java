@@ -19,7 +19,10 @@ public class SettingsActivity extends PreferenceActivity {
 	public static final String KEY_SAVEPASSWD = "pref_save_passwd"; 
 	public static final String KEY_JAVASCRIPT = "pref_js"; 
 	public static final String KEY_LOADIMAGE = "pref_image"; 
-	public static final String KEY_PLUGIN = "pref_plugin"; 
+	public static final String KEY_PLUGIN = "pref_plugin";
+	
+	public static final String KEY_CLEARCOOKIE = "pref_clearcookie";
+	public static final String KEY_CLEARCACHE = "pref_clearcache";
 	
 	@Override
     public void onCreate(Bundle savedInstanceState) {

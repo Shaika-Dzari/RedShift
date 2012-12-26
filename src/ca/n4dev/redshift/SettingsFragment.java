@@ -30,13 +30,40 @@ public class SettingsFragment extends PreferenceFragment {
         // Load the preferences from an XML resource
         addPreferencesFromResource(R.xml.preference);
         
-        Preference clearCookiePref = (Preference) findPreference("pref_clearcookie");
+        Preference clearCookiePref = (Preference) findPreference(SettingsActivity.KEY_CLEARCOOKIE);
         clearCookiePref.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
 			
 			@Override
 			public boolean onPreferenceClick(Preference preference) {
 				Builder builder = new AlertDialog.Builder(getActivity());
 				builder.setTitle("Delete all cookies?");
+				
+				builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+			           public void onClick(DialogInterface dialog, int id) {
+			              Log.d(TAG, "delete all!");
+			           }
+			       });
+				
+				builder.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+			           public void onClick(DialogInterface dialog, int id) {
+			               
+			           }
+			       });
+				
+				AlertDialog dialog = builder.create();
+				dialog.show();
+				
+				return true;
+			}
+        });
+        
+        Preference clearCachePref = (Preference) findPreference(SettingsActivity.KEY_CLEARCACHE);
+        clearCachePref.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+			
+			@Override
+			public boolean onPreferenceClick(Preference preference) {
+				Builder builder = new AlertDialog.Builder(getActivity());
+				builder.setTitle("Delete cache?");
 				
 				builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
 			           public void onClick(DialogInterface dialog, int id) {

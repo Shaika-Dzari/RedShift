@@ -12,14 +12,10 @@
 package ca.n4dev.redshift.controller.container;
 
 import ca.n4dev.redshift.utils.Logger;
-import android.annotation.SuppressLint;
 import android.content.Context;
-import android.os.Bundle;
 import android.webkit.WebChromeClient;
-import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
-import android.webkit.WebSettings.RenderPriority;
 
 
 public class RsWebView extends WebView {
@@ -29,30 +25,19 @@ public class RsWebView extends WebView {
 	private Integer tabId;
 	private boolean privateBrowsing;
 	
-	/**
-	 * @param context
-	 */
-	@SuppressLint("SetJavaScriptEnabled")
+	
 	public RsWebView(Context context, WebViewClient webViewClient, WebChromeClient webChromeClient) {
-		super(context);
-		Logger.log(TAG, "Creating new RsWebView");
+		this(context, webViewClient, webChromeClient, false);
+	}
+	
+	public RsWebView(Context context, WebViewClient webViewClient, WebChromeClient webChromeClient, boolean privateBrowsing) {
+		//super(context);
+		super(context, null, android.R.attr.webViewStyle, privateBrowsing);
 		
+		this.privateBrowsing = privateBrowsing;		
 		this.setWebChromeClient(webChromeClient);
 		this.setWebViewClient(webViewClient);
 		
-		/*
-		WebSettings settings = this.getSettings();
-		settings.setRenderPriority(RenderPriority.HIGH);
-		settings.setJavaScriptEnabled(withJs);
-		settings.setBuiltInZoomControls(true);
-		settings.setDisplayZoomControls(false);
-		settings.setGeolocationEnabled(false);
-		settings.setDefaultZoom(WebSettings.ZoomDensity.FAR);
-		settings.setUseWideViewPort(true);
-		settings.setLoadWithOverviewMode(true);
-		
-		settings.setUserAgentString(settings.getUserAgentString() + " RedShift/1.0");
-		*/
 	}
 	
 

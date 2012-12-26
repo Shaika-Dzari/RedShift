@@ -1,13 +1,17 @@
 package ca.n4dev.redshift;
 
+
 import ca.n4dev.redshift.R;
 import ca.n4dev.redshift.bookmark.AddBookmarkDialog;
 import ca.n4dev.redshift.controller.RsWebViewController;
+import ca.n4dev.redshift.controller.api.TooManyTabException;
 import ca.n4dev.redshift.controller.container.RsWebView;
 import ca.n4dev.redshift.events.OnListClickAware;
 import ca.n4dev.redshift.events.ProgressAware;
 import ca.n4dev.redshift.events.UrlModificationAware;
+import ca.n4dev.redshift.events.WebViewOnMenuItemClickListener;
 import ca.n4dev.redshift.history.HistoryDbHelper;
+import ca.n4dev.redshift.utils.DownloadRequest;
 import ca.n4dev.redshift.utils.TabListAdapter;
 import ca.n4dev.redshift.utils.UrlUtils;
 import android.net.Uri;
@@ -18,10 +22,12 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
+import android.view.ContextMenu;
 import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
+import android.webkit.WebView.HitTestResult;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
@@ -31,6 +37,7 @@ import android.widget.ListView;
 import android.widget.PopupMenu;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 import android.support.v4.app.FragmentActivity;
 
 
@@ -40,6 +47,7 @@ public class BrowserActivity extends FragmentActivity implements UrlModification
 	private static final String TAG = "BrowserActivity";
 	private static final int BOOKMARK_RESULT_ID = 9990;
 	private static final int HISTORY_RESULT_ID = 9991;
+	public static final boolean LOG_ENABLE = true;
 	
 	private RsWebViewController webController;
 	private ProgressBar progressBar;
@@ -49,6 +57,7 @@ public class BrowserActivity extends FragmentActivity implements UrlModification
 	private ListView tabList = null;
 	private LinearLayout tabLayout = null;
 	private SharedPreferences preferences;
+	
 	
 	// Some preferences
 	private String webHome = null;
@@ -69,6 +78,7 @@ public class BrowserActivity extends FragmentActivity implements UrlModification
                 
         // No ActionBar in browser
         getActionBar().hide();
+        
         
         preferences = PreferenceManager.getDefaultSharedPreferences(this);
         historyHelper = new HistoryDbHelper(this);
@@ -120,15 +130,26 @@ public class BrowserActivity extends FragmentActivity implements UrlModification
         	this.webController = new RsWebViewController(this, (FrameLayout) findViewById(R.id.layout_content), this, this);
         	
         	if (savedInstanceState == null) {
-        		int homeTab = this.webController.newTab();
-        		this.webController.setCurrentTab(homeTab);        	
-        		this.webController.goTo(initUrl);
+        		int homeTab;
+				try {
+					homeTab = this.webController.newTab(this, false);
+					this.webController.setCurrentTab(homeTab);        	
+					this.webController.goTo(initUrl);
+				} catch (TooManyTabException e) {
+					showToastMessage("Too Many Tabs");
+				}
         	} else {
         		Log.d(TAG, "onCreate#restoreState");
             	this.webController.restoreState(savedInstanceState);
             	this.webController.setCurrentTab(this.webController.currentId());
         	}
         }
+    }
+    
+    private void showToastMessage(String msg) {
+    	int duration = Toast.LENGTH_LONG;
+    	Toast t = Toast.makeText(this, msg, duration);
+    	t.show();
     }
     
     @Override
@@ -205,6 +226,39 @@ public class BrowserActivity extends FragmentActivity implements UrlModification
     }
     
     
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+    	super.onCreateContextMenu(menu, v, menuInfo);
+    	HitTestResult result = ((RsWebView)v).getHitTestResult();
+    	
+    	if (result.getType() == HitTestResult.SRC_ANCHOR_TYPE) {
+    		menu.setHeaderTitle(result.getExtra());
+    		
+    		menu.add(0, 0, 1, "Open new Tab")
+    			.setOnMenuItemClickListener(
+    					new WebViewOnMenuItemClickListener(this, this.webController, result.getExtra()));
+    		
+    		menu.add(0, 1, 2, "Open new Private Tab")
+    			.setOnMenuItemClickListener(
+    					new WebViewOnMenuItemClickListener(this, this.webController, result.getExtra(), true));
+    	
+    	} else if (result.getType() == HitTestResult.IMAGE_TYPE || result.getType() == HitTestResult.SRC_IMAGE_ANCHOR_TYPE) {
+    		final DownloadRequest downloadRequest = new DownloadRequest(browserActivity, result.getExtra());
+    		menu.setHeaderTitle(result.getExtra());
+    		menu.add(0, 0, 1, "Save image")
+			.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+				
+				@Override
+				public boolean onMenuItemClick(MenuItem item) {
+					downloadRequest.start();
+					return true;
+				}
+			});
+		
+    	}
+    	
+    }
+    
     
     /* Activity Events */
     public void onBtnListTab(View v) {
@@ -237,10 +291,16 @@ public class BrowserActivity extends FragmentActivity implements UrlModification
     
     public void onBtnNewTab(View v) {
     	toggleTabLayout(LayoutVisibility.GONE);
-    	int newTab = this.webController.newTab();
-    	this.webController.setCurrentTab(newTab);
-    	this.webController.goTo(webHome);
-    	((ArrayAdapter)tabList.getAdapter()).notifyDataSetChanged();
+    	int newTab;
+		try {
+			newTab = this.webController.newTab(this, false);
+			this.webController.setCurrentTab(newTab);
+			this.webController.goTo(webHome);
+			((ArrayAdapter)tabList.getAdapter()).notifyDataSetChanged();
+			
+		} catch (TooManyTabException e) {
+			showToastMessage("Too many tab.");
+		}
     }
     
     public void onBtnShare(View v) {
@@ -331,7 +391,7 @@ public class BrowserActivity extends FragmentActivity implements UrlModification
 	 */
 	@Override
 	public void pageReceived(String url, String title) {
-		if (prefHistory)
+		if (prefHistory && !url.equalsIgnoreCase(webHome) && !this.webController.isCurrentTabPrivate())
 			historyHelper.add(this.historyDatabase, title, url);
 	}
 	

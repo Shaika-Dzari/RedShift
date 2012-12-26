@@ -46,6 +46,8 @@
 	    
 	    <Preference android:title="@string/pref_clearcookie" android:key="pref_clearcookie" />
 	    
+	    <Preference android:title="@string/pref_clearcache" android:key="pref_clearcache" />
+	    
 	    <CheckBoxPreference
 		      android:key="pref_save_formdata"
 		      android:title="@string/pref_save_formdata"

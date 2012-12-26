@@ -14,7 +14,7 @@ package ca.n4dev.redshift.utils;
 public class UrlUtils {
 
 	public static String sanitize(String url) {
-		if (!url.startsWith("http://") && !url.startsWith("https://")) {
+		if (!url.startsWith("http://") && !url.startsWith("https://") && !url.startsWith("file://")) {
 			return "http://" + url;
 		}
 		return url;
