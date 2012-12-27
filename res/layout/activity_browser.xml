@@ -8,56 +8,5 @@
 	    
 	<include layout="@layout/inc_main_menu"
 	         android:layout_width="fill_parent" />
-    
-    
-    
-    
-    <!-- 
-
-    
-
-    <WebView android:id="@+id/webview"
-        	 android:layout_alignParentTop="true"
-    		 android:layout_alignParentLeft="true"
-    		 android:layout_width="fill_parent"
-		     android:layout_height="fill_parent"
-		     android:layout_marginBottom="40dp" />
-		     
-    <LinearLayout android:id="@+id/controlbar"
-        		  android:layout_width="fill_parent"
-		    	  android:layout_height="40dp"
-		    	  android:orientation="horizontal"
-			      android:layout_alignParentBottom="true"
-				  android:layout_alignParentLeft="true"
-				  android:background="@drawable/img_bottombar">
-        
-        <EditText android:id="@+id/txtUrl"
-            	  android:layout_width="0dp"
-            	  android:layout_weight="1"
-            	  android:layout_height="match_parent" 
-            	  android:hint="@string/hint_txtUrl"
-            	  android:inputType="textUri|textAutoComplete"
-            	  android:imeOptions="actionGo"
-            	  />
-        
-        <ImageButton android:id="@+id/btnBack"
-            		 android:layout_height="match_parent"
-            		 android:layout_width="wrap_content"
-            		 android:src="@drawable/img_back"
-            		 android:onClick="onBtnBack"
-            		 style="?android:attr/borderlessButtonStyle"
-            		 android:contentDescription="@string/desc_btnBack"
-            />
-        
-        <ImageButton android:src="@drawable/img_setting"
-            		 android:contentDescription="@string/desc_btnSetting"
-            		 android:id="@+id/btnSetting"
-            		 android:layout_width="wrap_content"
-            	   	 android:layout_height="match_parent"
-            	   	 style="?android:attr/borderlessButtonStyle"
-            	   	 android:onClick="btnshowPopupSetting" />
-            		
-        
-    </LinearLayout>
- -->
+   
 </RelativeLayout>

@@ -3,7 +3,7 @@
     			android:id="@+id/layout_tabmenu"
             	  android:layout_width="fill_parent"
             	  android:layout_height="wrap_content"
-            	  android:orientation="horizontal"
+            	  android:orientation="vertical"
             	  android:layout_gravity="center_horizontal|bottom"
             	  android:gravity="bottom|center"
             	  android:visibility="gone"
@@ -11,56 +11,60 @@
             	  style="@style/TabMenu">
             		  
     	<ListView android:id="@+id/list_tab" 
-    	    	  android:layout_width="0dp"
+    	    	  android:layout_width="fill_parent"
     	    	  android:layout_height="wrap_content"
-    	    	  android:layout_weight="1" 
     	    	  />
     	
-    	<LinearLayout android:layout_width="wrap_content"
+    	<LinearLayout android:layout_width="fill_parent"
             	  	  android:layout_height="wrap_content"
-            	  	  android:orientation="vertical"
+            	  	  android:orientation="horizontal"
             	  	  android:background="@drawable/redshift_tabmenu_layout_dark"
-            	  	  android:layout_margin="2dp">
-    	    
-    	    <ImageButton android:id="@+id/btn_sharetab"
+            	  	  android:layout_marginTop="2dp">
+            	  	  
+    	    <ImageButton android:id="@+id/btn_home"
     	        	android:layout_width="wrap_content"
 				    android:layout_height="wrap_content"
-				    android:layout_margin="2dp"
-				    android:onClick="onBtnShare"
-				    android:contentDescription="@string/btn_sharetab"
-				    android:src="@drawable/img_share"
+				    android:layout_weight="1"
+				    android:onClick="onBtnHome"
+				    android:contentDescription="@string/btn_home"
+				    android:src="@drawable/img_home"
 				    style="@style/Borderless" />
     	    
     	    <ImageButton android:id="@+id/btn_booktab"
     	        	android:layout_width="wrap_content"
 				    android:layout_height="wrap_content"
-				    android:layout_margin="2dp"
+				    android:layout_weight="1"
 				    android:onClick="onBtnAddBookmark"
 				    android:contentDescription="@string/btn_booktab"
 				    android:src="@drawable/img_bookmark_add"
-				    style="@style/Borderless"
-				    />
+				    style="@style/Borderless" />
+    	    
+    	    <ImageButton android:id="@+id/btn_sharetab"
+    	        	android:layout_width="wrap_content"
+				    android:layout_height="wrap_content"
+				    android:layout_weight="1"
+				    android:onClick="onBtnShare"
+				    android:contentDescription="@string/btn_sharetab"
+				    android:src="@drawable/img_share"
+				    style="@style/Borderless" />
+    	    
+    	    <ImageButton android:id="@+id/btn_newprivatetab"
+    	        	android:layout_width="wrap_content"
+				    android:layout_height="wrap_content"
+				    android:layout_weight="1"
+				    android:onClick="onBtnNewTab"
+				    android:contentDescription="@string/btn_newprivatetab"
+				    android:src="@drawable/img_newtab"
+				    style="@style/Borderless" />
     	    
     	    <ImageButton android:id="@+id/btn_newtab"
     	        	android:layout_width="wrap_content"
 				    android:layout_height="wrap_content"
-				    android:layout_margin="2dp"
+				    android:layout_weight="1"
 				    android:onClick="onBtnNewTab"
 				    android:contentDescription="@string/btn_newtab"
 				    android:src="@drawable/img_newtab"
-				    style="@style/Borderless"
-				    />
-    	    
-    	    <ImageButton android:id="@+id/btn_home"
-    	        	android:layout_width="wrap_content"
-				    android:layout_height="wrap_content"
-				    android:layout_margin="2dp"
-				    android:onClick="onBtnHome"
-				    android:contentDescription="@string/btn_home"
-				    android:src="@drawable/img_home"
-				    style="@style/Borderless"
-				    />
-    	    
+				    style="@style/Borderless" />
     	</LinearLayout>
     	
     	<!-- 

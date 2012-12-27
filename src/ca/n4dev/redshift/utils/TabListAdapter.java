@@ -24,11 +24,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 public class TabListAdapter extends ArrayAdapter<RsWebView> {
 	
 	private static class TabViewHolder {
+		ImageView imgssl;
 		TextView url;
 		ImageButton button;
 	}
@@ -41,7 +43,7 @@ public class TabListAdapter extends ArrayAdapter<RsWebView> {
 	 * @param textViewResourceId
 	 */
 	public TabListAdapter(Context context, List<RsWebView> listTab, OnListClickAware onListClickAware) {
-		super(context, android.R.layout.simple_list_item_1, listTab);
+		super(context, R.layout.list_item_tab, listTab);
 		this.onListClickAware = onListClickAware;
 	}
 	
@@ -55,6 +57,7 @@ public class TabListAdapter extends ArrayAdapter<RsWebView> {
 			holder = new TabViewHolder();
 			holder.url = (TextView) convertView.findViewById(R.id.li_txt_tab_url);
 			holder.button = (ImageButton) convertView.findViewById(R.id.btn_tab_close);
+			holder.imgssl = (ImageView) convertView.findViewById(R.id.li_txt_tab_ssl);
 			convertView.setTag(holder);
 			
 			// Close button
@@ -80,6 +83,7 @@ public class TabListAdapter extends ArrayAdapter<RsWebView> {
 			
 			((TabViewHolder)convertView.getTag()).url.setText(url);
 			((TabViewHolder)convertView.getTag()).button.setTag(r.getTabId());
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
