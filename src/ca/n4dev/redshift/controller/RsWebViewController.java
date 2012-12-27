@@ -37,12 +37,13 @@ import ca.n4dev.redshift.controller.api.TooManyTabException;
 import ca.n4dev.redshift.controller.api.WebController;
 import ca.n4dev.redshift.controller.container.RsWebView;
 import ca.n4dev.redshift.controller.web.RsWebViewClient;
+import ca.n4dev.redshift.events.CloseAware;
 import ca.n4dev.redshift.events.ProgressAware;
 import ca.n4dev.redshift.events.UrlModificationAware;
 import ca.n4dev.redshift.utils.UserAgent;
 
 @SuppressLint({ "UseSparseArrays", "SetJavaScriptEnabled" })
-public class RsWebViewController implements WebController {
+public class RsWebViewController implements WebController, CloseAware {
 	
 	private static final String TAG = "RsWebViewController";
 	public static final String HOME = "file:///android_asset/home.html";
@@ -63,15 +64,10 @@ public class RsWebViewController implements WebController {
 	private FrameLayout parentLayout;
 	private Context context;
 	
-	// Web Preferences
-	private SharedPreferences preferences;
-	private boolean prefCookie;
-	private boolean prefJavascript;
-	private boolean prefFormdata;
-	private boolean prefSavePasswd;
-	private boolean prefLoadImage;
-	private WebSettings.PluginState prefPlugin;
-	private UserAgent prefUserAgent;
+	
+	
+	private RsSettingsFactory settingsFactory = null;
+	
 	
 	public RsWebViewController(Context context, FrameLayout parentLayout, UrlModificationAware urlModificationAware, ProgressAware progressAware) {
 		this.parentLayout = parentLayout;
@@ -79,13 +75,13 @@ public class RsWebViewController implements WebController {
 		this.progressAware = progressAware;
 		this.context = context;
 		this.webviews = new ArrayList<RsWebView>();
-		this.preferences = PreferenceManager.getDefaultSharedPreferences(context);
 
-		loadWebSettings();
+		this.settingsFactory = RsSettingsFactory.getInstance(context);
+		this.settingsFactory.syncSettings();
 		
 		//this.withCookie = preferences.getBoolean("pref_cookie", true);
 		//this.withJs = preferences.getBoolean("pref_js", true);
-		
+		/*
 		syncManager = CookieSyncManager.createInstance(context);
 		cookieManager = CookieManager.getInstance();
 		cookieManager.setAcceptCookie(this.prefCookie);
@@ -93,7 +89,7 @@ public class RsWebViewController implements WebController {
 		if (this.prefCookie) {
 			syncManager.startSync();
 		}
-		
+		*/
 	}
 	
 	@Override
@@ -155,7 +151,7 @@ public class RsWebViewController implements WebController {
 										
 									}, privateBrowsing);
 		w.setTabId(id);
-		setupWebSettings(w);
+		settingsFactory.applySettings(w);
 		
 		activity.registerForContextMenu(w);
 		
@@ -303,65 +299,43 @@ public class RsWebViewController implements WebController {
 	public boolean isCurrentTabPrivate() {
 		return getCurrentView().isPrivateBrowsing();
 	}
+	
+	
+	public void pause() {
+		//this.syncManager.stopSync();
+	}
+	
+	public void resume() {
+		//this.syncManager.startSync();
+		//this.settingsFactory.syncSettings();
+	}
 
-	public void loadWebSettings() {
+	/* (non-Javadoc)
+	 * @see ca.n4dev.redshift.events.CloseAware#close()
+	 */
+	@Override
+	public void close() {
 		
-		if (this.preferences != null) {
-			prefCookie = preferences.getBoolean(SettingsActivity.KEY_COOKIE, true);
-			prefJavascript = preferences.getBoolean(SettingsActivity.KEY_JAVASCRIPT, true);
-			prefFormdata = preferences.getBoolean(SettingsActivity.KEY_FORMDATA, true);
-			prefSavePasswd = preferences.getBoolean(SettingsActivity.KEY_SAVEPASSWD, true);
-			prefLoadImage = preferences.getBoolean(SettingsActivity.KEY_LOADIMAGE, true);
-			
-			// Plug-ins
-			String plugin = preferences.getString(SettingsActivity.KEY_PLUGIN, "On Demand");
-			
-			if (plugin.equalsIgnoreCase("on demand")) {
-				prefPlugin = WebSettings.PluginState.ON_DEMAND;
-			} else if (plugin.equalsIgnoreCase("enable")) {
-				prefPlugin = WebSettings.PluginState.ON;
-			} else {
-				prefPlugin = WebSettings.PluginState.OFF;
-			}
-			
-			// User Agent
-			prefUserAgent = UserAgent.from(preferences.getString(SettingsActivity.KEY_USERAGENT, "Android"));
-			
+	}
+
+
+	/* (non-Javadoc)
+	 * @see ca.n4dev.redshift.controller.api.WebController#clearCache()
+	 */
+	@Override
+	public void clearCache() {
+		for (RsWebView w : this.webviews) {
+			w.clearCache(true);
 		}
 	}
-	
-	private void setupWebSettings(WebView view) {
-		WebSettings settings = view.getSettings();
-		settings.setRenderPriority(RenderPriority.HIGH);
-		settings.setJavaScriptEnabled(prefJavascript);
-		settings.setBuiltInZoomControls(true);
-		settings.setDisplayZoomControls(false);
-		settings.setGeolocationEnabled(false);
-		settings.setDefaultZoom(WebSettings.ZoomDensity.FAR);
-		settings.setUseWideViewPort(true);
-		settings.setLoadWithOverviewMode(true);
-		settings.setLoadsImagesAutomatically(prefLoadImage);
-		settings.setPluginState(prefPlugin);
-		settings.setSaveFormData(prefFormdata);
-		settings.setSavePassword(prefSavePasswd);
-		
-		if (prefUserAgent == UserAgent.ANDROID)
-			settings.setUserAgentString(settings.getUserAgentString() + " " + UserAgent.ANDROID.getString());
-		else if (prefUserAgent == UserAgent.DESKTOP) {
-			String u = settings.getUserAgentString();
-			u = u.replace("Mobile", "") + " " + UserAgent.ANDROID.getString();
-			settings.setUserAgentString(u);
-		} else {
-			settings.setUserAgentString(prefUserAgent.getString());
+
+	/* (non-Javadoc)
+	 * @see ca.n4dev.redshift.controller.api.WebController#clearformData()
+	 */
+	@Override
+	public void clearformData() {
+		for (RsWebView w : this.webviews) {
+			w.clearFormData();
 		}
-		
-	}
-	
-	public void stopCookieSync() {
-		this.syncManager.stopSync();
-	}
-	
-	public void startCookieSync() {
-		this.syncManager.startSync();
 	}
 }

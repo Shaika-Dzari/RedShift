@@ -1,5 +1,5 @@
 /*
- * WebController.java
+ * CloseAware.java
  * 
  * This program is free software. It comes without any warranty, to
  * the extent permitted by applicable law. You can redistribute it
@@ -9,9 +9,8 @@
  * 
  * @since 2012-12-26
  */ 
-package ca.n4dev.redshift.controller.api;
+package ca.n4dev.redshift.events;
 
-public interface WebController extends TabController, NavigationController {
-	public void clearCache();
-	public void clearformData();
+public interface CloseAware {
+	public void close();
 }

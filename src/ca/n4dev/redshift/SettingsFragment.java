@@ -11,9 +11,11 @@
  */ 
 package ca.n4dev.redshift;
 
+import ca.n4dev.redshift.controller.RsSettingsFactory;
 import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
 import android.content.DialogInterface;
+import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
@@ -35,12 +37,13 @@ public class SettingsFragment extends PreferenceFragment {
 			
 			@Override
 			public boolean onPreferenceClick(Preference preference) {
+				
 				Builder builder = new AlertDialog.Builder(getActivity());
 				builder.setTitle("Delete all cookies?");
 				
 				builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
 			           public void onClick(DialogInterface dialog, int id) {
-			              Log.d(TAG, "delete all!");
+			              RsSettingsFactory.getInstance(null).clearCookies();
 			           }
 			       });
 				
@@ -54,6 +57,7 @@ public class SettingsFragment extends PreferenceFragment {
 				dialog.show();
 				
 				return true;
+			
 			}
         });
         
@@ -67,7 +71,7 @@ public class SettingsFragment extends PreferenceFragment {
 				
 				builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
 			           public void onClick(DialogInterface dialog, int id) {
-			              Log.d(TAG, "delete all!");
+			        	   RsSettingsFactory.getInstance(null).clearCache();
 			           }
 			       });
 				

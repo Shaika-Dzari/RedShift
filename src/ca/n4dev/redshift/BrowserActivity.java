@@ -6,6 +6,7 @@ import ca.n4dev.redshift.bookmark.AddBookmarkDialog;
 import ca.n4dev.redshift.controller.RsWebViewController;
 import ca.n4dev.redshift.controller.api.TooManyTabException;
 import ca.n4dev.redshift.controller.container.RsWebView;
+import ca.n4dev.redshift.events.CloseAware;
 import ca.n4dev.redshift.events.OnListClickAware;
 import ca.n4dev.redshift.events.ProgressAware;
 import ca.n4dev.redshift.events.UrlModificationAware;
@@ -16,11 +17,13 @@ import ca.n4dev.redshift.utils.TabListAdapter;
 import ca.n4dev.redshift.utils.UrlUtils;
 import android.net.Uri;
 import android.os.Bundle;
+import android.preference.Preference;
 import android.preference.PreferenceManager;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.drawable.Drawable;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.KeyEvent;
@@ -42,7 +45,10 @@ import android.support.v4.app.FragmentActivity;
 
 
 @SuppressLint("SetJavaScriptEnabled")
-public class BrowserActivity extends FragmentActivity implements UrlModificationAware, ProgressAware, OnListClickAware {
+public class BrowserActivity extends FragmentActivity implements UrlModificationAware, 
+																	 ProgressAware, 
+																	 OnListClickAware, 
+																	 CloseAware {
 	
 	private static final String TAG = "BrowserActivity";
 	private static final int BOOKMARK_RESULT_ID = 9990;
@@ -57,7 +63,6 @@ public class BrowserActivity extends FragmentActivity implements UrlModification
 	private ListView tabList = null;
 	private LinearLayout tabLayout = null;
 	private SharedPreferences preferences;
-	
 	
 	// Some preferences
 	private String webHome = null;
@@ -104,6 +109,7 @@ public class BrowserActivity extends FragmentActivity implements UrlModification
         
         // Get progress bar to provide loading feedback
         progressBar = (ProgressBar) findViewById(R.id.browser_progressbar);
+        
         
         // Set submit event on edittext
         EditText txt = (EditText) findViewById(R.id.txtUrl);
@@ -400,7 +406,7 @@ public class BrowserActivity extends FragmentActivity implements UrlModification
 		super.onPause();
 		Log.d(TAG, "onPause()");
 		historyDatabase.close();
-		((RsWebViewController)this.webController).stopCookieSync();
+		this.webController.pause();
 	}
 	
 	@Override
@@ -408,14 +414,20 @@ public class BrowserActivity extends FragmentActivity implements UrlModification
 		super.onResume();
 		Log.d(TAG, "onResume()");
 		historyDatabase = this.historyHelper.getWritableDatabase();
-		this.webController.loadWebSettings();
-		((RsWebViewController)this.webController).startCookieSync();
+		
+		this.webController.resume();
 		
 		webHome = preferences.getString(SettingsActivity.KEY_HOMEPAGE, "redshift:home");
 		if (webHome.equals("redshift:home"))
         	webHome = RsWebViewController.HOME;
 		
 		prefHistory = preferences.getBoolean(SettingsActivity.KEY_HISTORY, true);
+	}
+	
+	@Override
+	public void onDestroy() {
+		super.onDestroy();
+		Log.d(TAG, "onDestroy");
 	}
 
 	/* (non-Javadoc)
@@ -431,6 +443,11 @@ public class BrowserActivity extends FragmentActivity implements UrlModification
     	} else {
     		((ArrayAdapter)tabList.getAdapter()).notifyDataSetChanged();
     	}
+	}
+	
+	public void close() {
+		// Cleanup cookie on exit
+		
 	}
 	
 }

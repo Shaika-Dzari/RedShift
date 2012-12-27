@@ -12,7 +12,8 @@
     	android:layout_width="fill_parent"
     	android:layout_height="2dp"
     	android:minHeight="2dp"
-    	android:maxHeight="2dp" />
+    	android:maxHeight="2dp"
+    	android:progressDrawable="@drawable/redshift_progress_horizontal" />
     
     <LinearLayout android:layout_width="fill_parent"
         		  android:id="@+id/controlbar"
