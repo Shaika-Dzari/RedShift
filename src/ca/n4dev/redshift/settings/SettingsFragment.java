@@ -9,8 +9,11 @@
  * 
  * @since 2012-12-08
  */ 
-package ca.n4dev.redshift;
+package ca.n4dev.redshift.settings;
 
+import ca.n4dev.redshift.R;
+import ca.n4dev.redshift.SettingsActivity;
+import ca.n4dev.redshift.R.xml;
 import ca.n4dev.redshift.controller.RsSettingsFactory;
 import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
@@ -32,7 +35,7 @@ public class SettingsFragment extends PreferenceFragment {
         // Load the preferences from an XML resource
         addPreferencesFromResource(R.xml.preference);
         
-        Preference clearCookiePref = (Preference) findPreference(SettingsActivity.KEY_CLEARCOOKIE);
+        Preference clearCookiePref = (Preference) findPreference(SettingsKeys.KEY_CLEARCOOKIE);
         clearCookiePref.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
 			
 			@Override
@@ -61,7 +64,7 @@ public class SettingsFragment extends PreferenceFragment {
 			}
         });
         
-        Preference clearCachePref = (Preference) findPreference(SettingsActivity.KEY_CLEARCACHE);
+        Preference clearCachePref = (Preference) findPreference(SettingsKeys.KEY_CLEARCACHE);
         clearCachePref.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
 			
 			@Override

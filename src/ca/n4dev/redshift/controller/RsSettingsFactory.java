@@ -13,6 +13,7 @@ package ca.n4dev.redshift.controller;
 
 import ca.n4dev.redshift.SettingsActivity;
 import ca.n4dev.redshift.controller.api.WebController;
+import ca.n4dev.redshift.settings.SettingsKeys;
 import ca.n4dev.redshift.utils.UserAgent;
 import android.annotation.SuppressLint;
 import android.content.ContentResolver;
@@ -104,16 +105,16 @@ public class RsSettingsFactory {
 	public void syncSettings() {
 		
 		if (this.preferences != null) {
-			prefCookie = preferences.getBoolean(SettingsActivity.KEY_COOKIE, true);
-			prefCookieOnExit = preferences.getBoolean(SettingsActivity.KEY_COOKIEEXIT, true);
-			prefJavascript = preferences.getBoolean(SettingsActivity.KEY_JAVASCRIPT, true);
-			prefFormdata = preferences.getBoolean(SettingsActivity.KEY_FORMDATA, true);
-			prefSavePasswd = preferences.getBoolean(SettingsActivity.KEY_SAVEPASSWD, true);
-			prefLoadImage = preferences.getBoolean(SettingsActivity.KEY_LOADIMAGE, true);
-			prefWebHome = preferences.getString(SettingsActivity.KEY_HOMEPAGE, REDSHIFT_HOMEPAGE);
+			prefCookie = preferences.getBoolean(SettingsKeys.KEY_COOKIE, true);
+			prefCookieOnExit = preferences.getBoolean(SettingsKeys.KEY_COOKIEEXIT, true);
+			prefJavascript = preferences.getBoolean(SettingsKeys.KEY_JAVASCRIPT, true);
+			prefFormdata = preferences.getBoolean(SettingsKeys.KEY_FORMDATA, true);
+			prefSavePasswd = preferences.getBoolean(SettingsKeys.KEY_SAVEPASSWD, true);
+			prefLoadImage = preferences.getBoolean(SettingsKeys.KEY_LOADIMAGE, true);
+			prefWebHome = preferences.getString(SettingsKeys.KEY_HOMEPAGE, REDSHIFT_HOMEPAGE);
 			
 			// Plug-ins
-			String plugin = preferences.getString(SettingsActivity.KEY_PLUGIN, "On Demand");
+			String plugin = preferences.getString(SettingsKeys.KEY_PLUGIN, "On Demand");
 			
 			if (plugin.equalsIgnoreCase("on demand")) {
 				prefPlugin = WebSettings.PluginState.ON_DEMAND;
@@ -124,7 +125,7 @@ public class RsSettingsFactory {
 			}
 			
 			// User Agent
-			prefUserAgent = UserAgent.from(preferences.getString(SettingsActivity.KEY_USERAGENT, "Android"));
+			prefUserAgent = UserAgent.from(preferences.getString(SettingsKeys.KEY_USERAGENT, "Android"));
 			
 			// Cookie 
 			if (this.syncManager == null)

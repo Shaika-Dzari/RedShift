@@ -3,10 +3,162 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent" >
     
-	<include layout="@layout/inc_main_content"
-	         android:layout_width="fill_parent" />
+    <!-- Content -->
+	<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    			android:id="@+id/layout_main_content"
+        		 android:layout_width="fill_parent"
+        		 android:layout_height="fill_parent"
+        		 android:layout_marginBottom="44dp">
+        
+	    <!-- Webview container -->
+	    <FrameLayout android:id="@+id/layout_content"
+	        		 android:layout_width="fill_parent"
+	        		 android:layout_height="fill_parent"
+	        		 android:layout_gravity="center_horizontal|top" />
+	    <!-- Floating Tab menu -->
+		<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    			android:id="@+id/layout_tabmenu"
+            	  android:layout_width="fill_parent"
+            	  android:layout_height="wrap_content"
+            	  android:orientation="vertical"
+            	  android:layout_gravity="center_horizontal|bottom"
+            	  android:gravity="bottom|center"
+            	  android:visibility="gone"
+            	  android:focusable="true"
+            	  android:padding="0dp"
+            	  android:layout_margin="0dp"
+            	  style="@style/TabMenu">
+            
+		    <!-- Tab List -->		  
+	    	<ListView android:id="@+id/list_tab" 
+	    	    	  android:layout_width="fill_parent"
+	    	    	  android:layout_height="wrap_content"
+	    	    	  android:layout_margin="4dp"
+	    	    	  />
+	    	
+	    	<ImageView android:background="@drawable/holo_separator_dark"
+	    	    	   android:layout_width="fill_parent"
+	            	   android:layout_height="1dp"
+	            	   android:contentDescription="@string/separator"
+	            	    />
+	    	
+	    	<LinearLayout android:layout_width="fill_parent"
+	            	  	  android:layout_margin="2dp"
+	            	  	  android:layout_height="32dp"
+	            	  	  android:orientation="horizontal"
+	            	  	  style="@style/TabMenuNavigation">
+	            	  	  
+	    	    <ImageButton android:id="@+id/btn_home"
+	    	        	android:layout_width="wrap_content"
+					    android:layout_height="wrap_content"
+					    android:layout_weight="1"
+					    android:onClick="onBtnHome"
+					    android:contentDescription="@string/btn_home"
+					    android:src="@drawable/img_home"
+					    style="@style/Borderless" />
+	    	    
+	    	    <ImageButton android:id="@+id/btn_booktab"
+	    	        	android:layout_width="wrap_content"
+					    android:layout_height="wrap_content"
+					    android:layout_weight="1"
+					    android:onClick="onBtnAddBookmark"
+					    android:contentDescription="@string/btn_booktab"
+					    android:src="@drawable/img_bookmark_add"
+					    style="@style/Borderless" />
+	    	    
+	    	    <ImageButton android:id="@+id/btn_sharetab"
+	    	        	android:layout_width="wrap_content"
+					    android:layout_height="wrap_content"
+					    android:layout_weight="1"
+					    android:onClick="onBtnShare"
+					    android:contentDescription="@string/btn_sharetab"
+					    android:src="@drawable/img_share"
+					    style="@style/Borderless" />
+	    	    
+	    	    <ImageButton android:id="@+id/btn_newprivatetab"
+	    	        	android:layout_width="wrap_content"
+					    android:layout_height="wrap_content"
+					    android:layout_weight="1"
+					    android:onClick="onBtnNewPrivateTab"
+					    android:contentDescription="@string/btn_newprivatetab"
+					    android:src="@drawable/img_newprivatetab"
+					    style="@style/Borderless" />
+	    	    
+	    	    <ImageButton android:id="@+id/btn_newtab"
+	    	        	android:layout_width="wrap_content"
+					    android:layout_height="wrap_content"
+					    android:layout_weight="1"
+					    android:onClick="onBtnNewTab"
+					    android:contentDescription="@string/btn_newtab"
+					    android:src="@drawable/img_newtab"
+					    style="@style/Borderless" />
+	    	</LinearLayout>
+	    	
+	    	
+	    </LinearLayout>  
 	    
-	<include layout="@layout/inc_main_menu"
-	         android:layout_width="fill_parent" />
+	</FrameLayout>
+	    
+	
+	<!-- Main Menu -->
+	<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    		  xmlns:tools="http://schemas.android.com/tools"
+    		  android:layout_width="fill_parent"
+		      android:layout_height="40dp"
+		      android:orientation="vertical"
+			  android:layout_alignParentBottom="true"
+			  android:layout_alignParentLeft="true"
+			  style="@style/MenuBar"
+			  android:padding="0dp"
+			  android:layout_margin="0dp"
+			  android:background="@color/holoDark">
+    
+	    <ProgressBar android:id="@+id/browser_progressbar"
+	        style="@android:style/Widget.ProgressBar.Horizontal"
+	    	android:layout_width="fill_parent"
+	    	android:layout_height="2dp"
+	    	android:minHeight="2dp"
+	    	android:maxHeight="2dp"
+	    	android:progressDrawable="@drawable/redshift_progress_horizontal" />
+	    
+	    <LinearLayout android:layout_width="fill_parent"
+	        		  android:id="@+id/controlbar"
+	        		  android:layout_height="38dp"
+			    	  android:orientation="horizontal"
+					  style="@style/MenuBar">
+	        
+		     <EditText android:id="@+id/txtUrl"
+		         	  android:layout_width="0dp"
+		         	  android:layout_weight="1"
+		         	  android:layout_height="match_parent" 
+		         	  android:layout_marginTop="1dp"
+		         	  android:layout_marginBottom="1dp"
+		         	  android:paddingLeft="4dp"
+		         	  android:paddingRight="2dp"
+		         	  android:hint="@string/hint_txtUrl"
+		         	  android:inputType="textUri|textAutoComplete"
+		         	  android:imeOptions="actionGo"
+		         	  android:selectAllOnFocus="true"
+		         	  style="MenuUrl"
+		         	  android:background="@drawable/redshift_menuurl_background_dark" />
+		     
+		     <ImageButton android:id="@+id/btnListTab"
+		         		 android:layout_height="match_parent"
+		         		 android:layout_width="wrap_content"
+		         		 android:onClick="onBtnListTab"
+		         		 android:src="@drawable/img_collectiontab"
+		         		 android:contentDescription="@string/desc_btnBack"
+		         		 style="@style/Borderless" />
+		     
+		     <ImageButton android:src="@drawable/img_setting"
+		         		 android:contentDescription="@string/desc_btnSetting"
+		         		 android:id="@+id/btnSetting"
+		         		 android:layout_width="wrap_content"
+		         	   	 android:layout_height="match_parent"
+		         	   	 android:onClick="onBtnShowPopup"
+		         	   	 style="@style/Borderless" />
+	
+		</LinearLayout>
+	</LinearLayout>
    
 </RelativeLayout>

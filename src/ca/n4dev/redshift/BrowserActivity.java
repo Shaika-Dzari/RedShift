@@ -12,6 +12,7 @@ import ca.n4dev.redshift.events.ProgressAware;
 import ca.n4dev.redshift.events.UrlModificationAware;
 import ca.n4dev.redshift.events.WebViewOnMenuItemClickListener;
 import ca.n4dev.redshift.history.HistoryDbHelper;
+import ca.n4dev.redshift.settings.SettingsKeys;
 import ca.n4dev.redshift.utils.DownloadRequest;
 import ca.n4dev.redshift.utils.TabListAdapter;
 import ca.n4dev.redshift.utils.UrlUtils;
@@ -41,6 +42,7 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.PopupMenu;
 import android.widget.ProgressBar;
+import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.support.v4.app.FragmentActivity;
@@ -430,7 +432,7 @@ public class BrowserActivity extends FragmentActivity implements UrlModification
 		super.onResume();
 		Log.d(TAG, "onResume()");
 		historyDatabase = this.historyHelper.getWritableDatabase();
-		prefHistory = preferences.getBoolean(SettingsActivity.KEY_HISTORY, true);
+		prefHistory = preferences.getBoolean(SettingsKeys.KEY_HISTORY, true);
 		
 		this.webController.resume();		
 	}
