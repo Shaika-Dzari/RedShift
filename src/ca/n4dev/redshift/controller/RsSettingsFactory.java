@@ -34,6 +34,7 @@ import android.webkit.WebSettings.RenderPriority;
 public class RsSettingsFactory {
 	
 	private static RsSettingsFactory instance = null;
+	public static final String REDSHIFT_HOMEPAGE = "redshift:home";
 
 	// Web Preferences
 	private SharedPreferences preferences;
@@ -48,6 +49,7 @@ public class RsSettingsFactory {
 	private Context context;
 	private WebController webController;
 	private CookieSyncManager syncManager;
+	private String prefWebHome;
 		
 	private RsSettingsFactory(Context context) {
 		this.context = context.getApplicationContext();
@@ -108,6 +110,7 @@ public class RsSettingsFactory {
 			prefFormdata = preferences.getBoolean(SettingsActivity.KEY_FORMDATA, true);
 			prefSavePasswd = preferences.getBoolean(SettingsActivity.KEY_SAVEPASSWD, true);
 			prefLoadImage = preferences.getBoolean(SettingsActivity.KEY_LOADIMAGE, true);
+			prefWebHome = preferences.getString(SettingsActivity.KEY_HOMEPAGE, REDSHIFT_HOMEPAGE);
 			
 			// Plug-ins
 			String plugin = preferences.getString(SettingsActivity.KEY_PLUGIN, "On Demand");
@@ -175,6 +178,21 @@ public class RsSettingsFactory {
 	 */
 	public void setWebController(WebController webController) {
 		this.webController = webController;
+	}
+
+	/**
+	 * @return the prefWebHome
+	 */
+	public String getPrefWebHome() {
+		return prefWebHome;
+	}
+	
+	public void pause() {
+		this.syncManager.stopSync();
+	}
+	
+	public void resume() {
+		syncSettings();
 	}
 	
 }

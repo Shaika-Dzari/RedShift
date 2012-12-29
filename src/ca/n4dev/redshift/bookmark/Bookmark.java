@@ -6,4 +6,6 @@ public class Bookmark {
 	public String url;
 	public String tag;
 	public String prettyDate;
+	public String insertdate;
+	public int showInhome;
 }

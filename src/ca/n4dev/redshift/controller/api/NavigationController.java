@@ -15,5 +15,6 @@ public interface NavigationController {
 	public boolean goBack();
 	public boolean goForward();
 	public void goTo(String url);
+	public void goToHome();
 	public void refresh();
 }

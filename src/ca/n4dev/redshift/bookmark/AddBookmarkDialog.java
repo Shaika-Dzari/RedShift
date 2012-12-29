@@ -21,6 +21,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.CheckBox;
 import android.widget.EditText;
 
 public class AddBookmarkDialog extends DialogFragment {
@@ -29,6 +30,7 @@ public class AddBookmarkDialog extends DialogFragment {
 	private String url = null;
 	private Long bookmarkId = null;
 	private String tags = null;
+	private boolean showInhome = false;
 	private View view;
 	
 	private BookmarkDbHelper dbHelper;
@@ -66,6 +68,11 @@ public class AddBookmarkDialog extends DialogFragment {
         	txtTags.setText(tags);
         }
         
+        if (showInhome != false) {
+        	CheckBox sih = (CheckBox) view.findViewById(R.id.ck_ab_showinhome);
+        	sih.setChecked(true);
+        }
+        
         
         builder.setView(view);
         
@@ -79,14 +86,17 @@ public class AddBookmarkDialog extends DialogFragment {
                 String t = ((EditText) view.findViewById(R.id.txt_ab_title)).getText().toString();
             	String u = ((EditText) view.findViewById(R.id.txt_ab_url)).getText().toString();
             	String a = ((EditText) view.findViewById(R.id.txt_ab_tag)).getText().toString();
+            	boolean c = ((CheckBox)view.findViewById(R.id.ck_ab_showinhome)).isChecked();
+            	String sih = (c) ? "1" : "0";
             	
             	if (bookmarkId == null)
-            		dbHelper.add(dbHelper.getWritableDatabase(), t, u, a); // insert
+            		dbHelper.add(dbHelper.getWritableDatabase(), t, u, a, sih); // insert
             	else {
             		ContentValues values = new ContentValues();
             		values.put(BookmarkDbHelper.BOOKMARK_TITLE, t);
             		values.put(BookmarkDbHelper.BOOKMARK_TAG, a);
             		values.put(BookmarkDbHelper.BOOKMARK_URL, u);
+            		values.put(BookmarkDbHelper.BOOKMARK_SHOWINHOME, sih);
             		
             		db.update(BookmarkDbHelper.BOOKMARK_TABLE_NAME, values, BookmarkDbHelper.BOOKMARK_ID + " = ?", new String[]{"" + bookmarkId});
             	}
@@ -172,5 +182,23 @@ public class AddBookmarkDialog extends DialogFragment {
 	 */
 	public void setTags(String tags) {
 		this.tags = tags;
+	}
+
+
+
+	/**
+	 * @return the showInhome
+	 */
+	public boolean isShowInhome() {
+		return showInhome;
+	}
+
+
+
+	/**
+	 * @param showInhome the showInhome to set
+	 */
+	public void setShowInhome(boolean showInhome) {
+		this.showInhome = showInhome;
 	}
 }

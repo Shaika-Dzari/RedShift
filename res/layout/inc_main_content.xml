@@ -3,7 +3,7 @@
     			android:id="@+id/layout_main_content"
         		 android:layout_width="fill_parent"
         		 android:layout_height="fill_parent"
-        		 android:layout_marginBottom="42dp">
+        		 android:layout_marginBottom="44dp">
         
     <FrameLayout android:id="@+id/layout_content"
         		 android:layout_width="fill_parent"

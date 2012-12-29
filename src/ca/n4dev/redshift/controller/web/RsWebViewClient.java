@@ -11,8 +11,6 @@ public class RsWebViewClient extends WebViewClient {
 	private static final String TAG = "RsWebViewClient";
 	
 	private UrlModificationAware urlModificationAware;
-	private boolean loadingPage = false;
-	private boolean redirect = false;
 	
 	public RsWebViewClient(UrlModificationAware urlModificationAware) {
 		this.urlModificationAware = urlModificationAware;
@@ -20,7 +18,6 @@ public class RsWebViewClient extends WebViewClient {
 	
 	@Override
     public boolean shouldOverrideUrlLoading(WebView view, String url) {
-		Log.d(TAG, "shouldOverrideUrlLoading: " + url);
 		this.urlModificationAware.urlHasChanged(url);
 		view.loadUrl(url);
 		return true;
@@ -28,13 +25,11 @@ public class RsWebViewClient extends WebViewClient {
 	
 	@Override
     public void onPageStarted(WebView view, String url, Bitmap favicon) {
-		loadingPage = true;
 		Log.d(TAG, "onPageStarted: " + url);
     }
 
     @Override
     public void onPageFinished(WebView view, String url) {
-    	loadingPage = false;
     	Log.d(TAG, "onPageFinished: " + url);
     }
 }

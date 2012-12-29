@@ -1,8 +1,4 @@
 <shape xmlns:android="http://schemas.android.com/apk/res/android">
-    <stroke android:width="1dp" android:color="#171b1e" />
-    <solid android:color="#ff2c333a" />
-    
-    <!-- 
-    <solid android:color="@android:color/transparent" /> 
-     -->
+    <stroke android:color="@color/holoDarkLight" android:width="3dp" />
+    <solid android:color="@color/holoDark" />
 </shape>

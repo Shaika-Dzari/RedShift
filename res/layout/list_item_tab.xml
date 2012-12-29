@@ -2,7 +2,8 @@
     		  android:orientation="horizontal"
     		  android:layout_width="fill_parent"
     		  android:layout_height="wrap_content"
-    		  android:gravity="center_vertical|left">
+    		  android:gravity="center_vertical|left"
+    		  android:padding="4dp">
    
     <ImageView android:id="@+id/li_txt_tab_ssl"
         	   android:layout_width="wrap_content"

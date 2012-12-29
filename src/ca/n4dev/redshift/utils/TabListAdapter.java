@@ -51,7 +51,7 @@ public class TabListAdapter extends ArrayAdapter<RsWebView> {
 	public View getView(int position, View convertView, ViewGroup parent) {
 		if (convertView == null) {
 			convertView = ((Activity)getContext()).getLayoutInflater().inflate(R.layout.list_item_tab, parent, false);
-			convertView.setBackgroundResource(R.drawable.redshift_tabmenu_item_dark);
+			convertView.setBackgroundResource(R.drawable.redshift_menuurl_background_dark);
 			
 			// Setup Holder
 			holder = new TabViewHolder();
@@ -74,14 +74,13 @@ public class TabListAdapter extends ArrayAdapter<RsWebView> {
 		try {
 			
 			RsWebView r = this.getItem(position);
-			String url = r.getUrl();
-			int urlSize = url.length();
+			String title = r.getTitle();
+			int titleSize = title.length();
 			
-			if (urlSize > 30) 
-				url = url.substring(0, 25) + "..." + url.substring(urlSize - 5, urlSize);
+			if (titleSize > 30)
+				title = title.substring(0, 25) + "..." + title.substring(titleSize - 5, titleSize);
 			
-			
-			((TabViewHolder)convertView.getTag()).url.setText(url);
+			((TabViewHolder)convertView.getTag()).url.setText(title);
 			((TabViewHolder)convertView.getTag()).button.setTag(r.getTabId());
 			
 		} catch (Exception e) {

@@ -3,30 +3,26 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content">
     
-    
-    <TextView android:text="@string/dia_txt_title"
-        	  android:layout_width="fill_parent"
-    		  android:layout_height="wrap_content" />
     <EditText android:id="@+id/txt_ab_title"
         	  android:layout_width="fill_parent"
     		  android:layout_height="wrap_content" 
     		  android:hint="@string/dia_txt_title_hint" />
     
-    <TextView android:text="@string/dia_txt_url"
-        	  android:layout_width="fill_parent"
-    		  android:layout_height="wrap_content" />
     <EditText android:id="@+id/txt_ab_url"
         	  android:inputType="textUri"
         	  android:layout_width="fill_parent"
     		  android:layout_height="wrap_content" 
     		  android:hint="@string/dia_txt_url_hint" />
     
-    <TextView android:text="@string/dia_txt_tag"
-        	  android:layout_width="fill_parent"
-    		  android:layout_height="wrap_content" />
     <EditText android:id="@+id/txt_ab_tag"
         	  android:layout_width="fill_parent"
     		  android:layout_height="wrap_content"
     		  android:hint="@string/dia_txt_tag_hint" />
+       
+	<CheckBox android:id="@+id/ck_ab_showinhome"
+        	  android:checked="false"
+        	  android:layout_width="wrap_content"
+       		  android:layout_height="wrap_content" 
+       		  android:text="@string/dia_txt_showinhome" />
     
 </LinearLayout>

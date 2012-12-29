@@ -36,6 +36,7 @@ import ca.n4dev.redshift.controller.api.TabController;
 import ca.n4dev.redshift.controller.api.TooManyTabException;
 import ca.n4dev.redshift.controller.api.WebController;
 import ca.n4dev.redshift.controller.container.RsWebView;
+import ca.n4dev.redshift.controller.web.HomeFactory;
 import ca.n4dev.redshift.controller.web.RsWebViewClient;
 import ca.n4dev.redshift.events.CloseAware;
 import ca.n4dev.redshift.events.ProgressAware;
@@ -49,8 +50,6 @@ public class RsWebViewController implements WebController, CloseAware {
 	public static final String HOME = "file:///android_asset/home.html";
 	private static final int MAX_OPEN_TAB = 6;
 	
-	private CookieSyncManager syncManager;
-	private CookieManager cookieManager;
 	public static final String SAVE_KEY = "key";
 	public static final String SAVE_WEBVIEW = "webview";
 	public static final String SAVE_CURRENT = "current";
@@ -79,17 +78,11 @@ public class RsWebViewController implements WebController, CloseAware {
 		this.settingsFactory = RsSettingsFactory.getInstance(context);
 		this.settingsFactory.syncSettings();
 		
-		//this.withCookie = preferences.getBoolean("pref_cookie", true);
-		//this.withJs = preferences.getBoolean("pref_js", true);
-		/*
-		syncManager = CookieSyncManager.createInstance(context);
-		cookieManager = CookieManager.getInstance();
-		cookieManager.setAcceptCookie(this.prefCookie);
+	}
 	
-		if (this.prefCookie) {
-			syncManager.startSync();
-		}
-		*/
+	public void load(String html) {
+		getCurrentView().loadDataWithBaseURL("file:///android_asset/", html, "text/html", "UTF-8", null);
+		//getCurrentView().loadData(html, "text/html; charset=UTF-8", null);
 	}
 	
 	@Override
@@ -302,12 +295,11 @@ public class RsWebViewController implements WebController, CloseAware {
 	
 	
 	public void pause() {
-		//this.syncManager.stopSync();
+		this.settingsFactory.pause();
 	}
 	
 	public void resume() {
-		//this.syncManager.startSync();
-		//this.settingsFactory.syncSettings();
+		this.settingsFactory.resume();
 	}
 
 	/* (non-Javadoc)
@@ -336,6 +328,21 @@ public class RsWebViewController implements WebController, CloseAware {
 	public void clearformData() {
 		for (RsWebView w : this.webviews) {
 			w.clearFormData();
+		}
+	}
+
+	/* (non-Javadoc)
+	 * @see ca.n4dev.redshift.controller.api.NavigationController#goToHome()
+	 */
+	@Override
+	public void goToHome() {
+		String h = this.settingsFactory.getPrefWebHome();
+		this.urlModificationAware.urlHasChanged(h);
+		
+		if (h.equalsIgnoreCase(RsSettingsFactory.REDSHIFT_HOMEPAGE)) {
+			load(HomeFactory.createhomeFromBookmark(null));
+		} else {
+			goTo(h);
 		}
 	}
 }

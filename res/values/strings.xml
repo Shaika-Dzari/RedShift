@@ -94,5 +94,6 @@
     <string name="dia_txt_title">Title</string>
     <string name="dia_txt_url">URL</string>
     <string name="dia_txt_tag">Tags</string>
+    <string name="dia_txt_showinhome">Show bookmark in homepage</string>
 
 </resources>

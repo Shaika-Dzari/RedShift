@@ -20,6 +20,7 @@ import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceManager;
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.sqlite.SQLiteDatabase;
@@ -30,6 +31,7 @@ import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.webkit.WebView.HitTestResult;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -65,7 +67,6 @@ public class BrowserActivity extends FragmentActivity implements UrlModification
 	private SharedPreferences preferences;
 	
 	// Some preferences
-	private String webHome = null;
 	private boolean prefHistory;
 	
 	private boolean tabLayoutVisible = false;
@@ -89,11 +90,6 @@ public class BrowserActivity extends FragmentActivity implements UrlModification
         historyHelper = new HistoryDbHelper(this);
         historyDatabase = historyHelper.getWritableDatabase();
         
-        // Setup homepage
-        webHome = preferences.getString(SettingsActivity.KEY_HOMEPAGE, "redshift:home");
-        
-        if (webHome.equals("redshift:home"))
-        	webHome = RsWebViewController.HOME;
         	
         String initUrl = null;
         Intent intent = getIntent();
@@ -103,9 +99,7 @@ public class BrowserActivity extends FragmentActivity implements UrlModification
         // Are we coming from another app with intent ?
         if (data != null && action.equalsIgnoreCase("android.intent.action.VIEW")) {
         	initUrl = data.toString();
-        } else {
-        	initUrl = webHome;
-        }
+        } 
         
         // Get progress bar to provide loading feedback
         progressBar = (ProgressBar) findViewById(R.id.browser_progressbar);
@@ -117,11 +111,9 @@ public class BrowserActivity extends FragmentActivity implements UrlModification
 			@Override
 			public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
 				if (actionId == EditorInfo.IME_ACTION_GO) {
-					
+					clearFocus(v);					
 					String url = v.getText().toString();
 					url = UrlUtils.sanitize(url);
-					Log.d(TAG, "UrlLoading [Action]: " + url);
-	
 					webController.goTo(url);
 					return true;
 				}
@@ -139,8 +131,13 @@ public class BrowserActivity extends FragmentActivity implements UrlModification
         		int homeTab;
 				try {
 					homeTab = this.webController.newTab(this, false);
-					this.webController.setCurrentTab(homeTab);        	
-					this.webController.goTo(initUrl);
+					this.webController.setCurrentTab(homeTab);  
+					
+					if (initUrl != null)
+						this.webController.goTo(initUrl);
+					else
+						this.webController.goToHome();
+					
 				} catch (TooManyTabException e) {
 					showToastMessage("Too Many Tabs");
 				}
@@ -151,6 +148,11 @@ public class BrowserActivity extends FragmentActivity implements UrlModification
         	}
         }
     }
+    
+    private void clearFocus(View v) {
+		InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
+	}
     
     private void showToastMessage(String msg) {
     	int duration = Toast.LENGTH_LONG;
@@ -280,6 +282,7 @@ public class BrowserActivity extends FragmentActivity implements UrlModification
 				@Override
 				public void onItemClick(AdapterView<?> arg0, View view, int position,	long id) {
 					RsWebView r = (RsWebView) tabList.getItemAtPosition(position);
+					urlHasChanged(r.getUrl());
 					webController.setCurrentTab(r.getTabId());
 					toggleTabLayout(LayoutVisibility.GONE);
 				}
@@ -301,7 +304,21 @@ public class BrowserActivity extends FragmentActivity implements UrlModification
 		try {
 			newTab = this.webController.newTab(this, false);
 			this.webController.setCurrentTab(newTab);
-			this.webController.goTo(webHome);
+			this.webController.goToHome();
+			((ArrayAdapter)tabList.getAdapter()).notifyDataSetChanged();
+			
+		} catch (TooManyTabException e) {
+			showToastMessage("Too many tab.");
+		}
+    }
+    
+    public void onBtnNewPrivateTab(View v) {
+    	toggleTabLayout(LayoutVisibility.GONE);
+    	int newTab;
+		try {
+			newTab = this.webController.newTab(this, true);
+			this.webController.setCurrentTab(newTab);
+			this.webController.goToHome();
 			((ArrayAdapter)tabList.getAdapter()).notifyDataSetChanged();
 			
 		} catch (TooManyTabException e) {
@@ -331,9 +348,8 @@ public class BrowserActivity extends FragmentActivity implements UrlModification
 
     public void onBtnHome(View v) {
     	toggleTabLayout(LayoutVisibility.GONE);
-    	webController.goTo(this.webHome);
+    	webController.goToHome();
     }
-    
     
     private void toggleTabLayout(LayoutVisibility visibility) {
     	
@@ -397,7 +413,7 @@ public class BrowserActivity extends FragmentActivity implements UrlModification
 	 */
 	@Override
 	public void pageReceived(String url, String title) {
-		if (prefHistory && !url.equalsIgnoreCase(webHome) && !this.webController.isCurrentTabPrivate())
+		if (prefHistory && !this.webController.isCurrentTabPrivate())
 			historyHelper.add(this.historyDatabase, title, url);
 	}
 	
@@ -414,14 +430,9 @@ public class BrowserActivity extends FragmentActivity implements UrlModification
 		super.onResume();
 		Log.d(TAG, "onResume()");
 		historyDatabase = this.historyHelper.getWritableDatabase();
-		
-		this.webController.resume();
-		
-		webHome = preferences.getString(SettingsActivity.KEY_HOMEPAGE, "redshift:home");
-		if (webHome.equals("redshift:home"))
-        	webHome = RsWebViewController.HOME;
-		
 		prefHistory = preferences.getBoolean(SettingsActivity.KEY_HISTORY, true);
+		
+		this.webController.resume();		
 	}
 	
 	@Override
