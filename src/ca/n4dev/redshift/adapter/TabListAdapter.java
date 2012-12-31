@@ -35,7 +35,6 @@ public class TabListAdapter extends ArrayAdapter<RsWebView> {
 		ImageButton button;
 	}
 	
-	private TabViewHolder holder;
 	private OnListClickAware onListClickAware;
 	
 	/**
@@ -54,7 +53,7 @@ public class TabListAdapter extends ArrayAdapter<RsWebView> {
 			convertView.setBackgroundResource(R.drawable.redshift_menuurl_background_dark);
 			
 			// Setup Holder
-			holder = new TabViewHolder();
+			TabViewHolder holder = new TabViewHolder();
 			holder.url = (TextView) convertView.findViewById(R.id.li_txt_tab_url);
 			holder.button = (ImageButton) convertView.findViewById(R.id.btn_tab_close);
 			holder.imgssl = (ImageView) convertView.findViewById(R.id.li_txt_tab_ssl);

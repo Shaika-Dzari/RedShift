@@ -29,11 +29,19 @@ public class HistoryAdapter extends CursorAdapter {
 
 	private static final String TAG = "HistoryAdapter";
 	
-	private int titleIdx = -1;
+	private static class HistoryHolder {
+		TextView hTitle;
+		TextView hDate;
+		TextView hUrl;
+		ImageButton hClose;
+	}
+	
+	private int titleIdx;
 	private int urlIdx;
 	private int dateIdx;
 	private int idIdx;
 	private OnListClickAware onListClickAware;
+	private boolean noIdx = true;
 	
 	/**
 	 * @param context
@@ -50,7 +58,11 @@ public class HistoryAdapter extends CursorAdapter {
 	 */
 	@Override
 	public void bindView(View view, Context context, Cursor cursor) {
-		if (titleIdx == -1) {
+		Log.d(TAG, "bindView");
+		
+		HistoryHolder holder = (HistoryHolder)view.getTag();
+		if (noIdx) {
+			noIdx = false;
 			titleIdx = cursor.getColumnIndex(HistoryDbHelper.HISTORY_TITLE);
 			urlIdx = cursor.getColumnIndex(HistoryDbHelper.HISTORY_URL);
 			dateIdx = cursor.getColumnIndex(HistoryDbHelper.HISTORY_PRETTYDATE);
@@ -63,14 +75,10 @@ public class HistoryAdapter extends CursorAdapter {
 			url = url.substring(0, 25) + "..." + url.substring(urlSize - 5, urlSize);
 		
 		
-		((TextView)view.findViewById(R.id.li_txt_hist_title)).setText(cursor.getString(titleIdx));
-		((TextView)view.findViewById(R.id.li_txt_hist_date)).setText(cursor.getString(dateIdx));
-		((TextView)view.findViewById(R.id.li_txt_hist_url)).setText(url);
-		
-		ImageButton btn = (ImageButton) view.findViewById(R.id.btn_hist_delete);
-		btn.setTag(cursor.getInt(idIdx));
-		
-		
+		holder.hTitle.setText(cursor.getString(titleIdx));
+		holder.hDate.setText(cursor.getString(dateIdx));
+		holder.hUrl.setText(url);
+		holder.hClose.setTag(cursor.getInt(idIdx));
 	}
 
 	/* (non-Javadoc)
@@ -78,18 +86,27 @@ public class HistoryAdapter extends CursorAdapter {
 	 */
 	@Override
 	public View newView(Context context, Cursor cursor, ViewGroup parent) {
+		Log.d(TAG, "newView");
 		LayoutInflater inflater = LayoutInflater.from(context);
 		View v = inflater.inflate(R.layout.list_item_history, parent, false);
 		
-		ImageButton button = (ImageButton) v.findViewById(R.id.btn_hist_delete);
-		button.setFocusable(false);
-		button.setOnClickListener(new View.OnClickListener() {
+		HistoryHolder holder = new HistoryHolder();
+		holder.hTitle = (TextView)v.findViewById(R.id.li_txt_hist_title);
+		holder.hDate = (TextView)v.findViewById(R.id.li_txt_hist_date);
+		holder.hUrl = (TextView)v.findViewById(R.id.li_txt_hist_url);
+		holder.hClose = (ImageButton) v.findViewById(R.id.btn_hist_delete);
+		
+		
+		holder.hClose.setFocusable(false);
+		holder.hClose.setOnClickListener(new View.OnClickListener() {
 			
 			@Override
 			public void onClick(View v) {
 				onListClickAware.onListClickEvent(v);
 			}
 		});
+		
+		v.setTag(holder);
 		
 		v.setBackgroundResource(R.drawable.redshift_tabmenu_item_dark);
 		

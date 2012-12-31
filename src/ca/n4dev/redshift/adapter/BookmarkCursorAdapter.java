@@ -19,10 +19,17 @@ import android.widget.TextView;
  */
 public class BookmarkCursorAdapter extends CursorAdapter {
 
-	private int titleIdx = -1;
+	private boolean noIdx = true;
+	private int titleIdx;
 	private int urlIdx;
-	//private int tagIdx;
 	private int dateIdx;
+	
+	private static class BookmarkHolder {
+		TextView bTitle;
+		TextView bUrl;
+		TextView bDate;
+		TextView bTags;
+	}
 	
 	public BookmarkCursorAdapter(Context context, Cursor c) {
 		super(context, c);
@@ -30,21 +37,29 @@ public class BookmarkCursorAdapter extends CursorAdapter {
 
 	@Override
 	public void bindView(View view, Context context, Cursor cursor) {
-		if (titleIdx == -1) {
+		BookmarkHolder holder = (BookmarkHolder) view.getTag();
+		if (noIdx) {
+			noIdx = false;
 			titleIdx = cursor.getColumnIndex(BookmarkDbHelper.BOOKMARK_TITLE);
 			urlIdx = cursor.getColumnIndex(BookmarkDbHelper.BOOKMARK_URL);
 			dateIdx = cursor.getColumnIndex(BookmarkDbHelper.BOOKMARK_PRETTYDATE);
 		}
 		
-		((TextView)view.findViewById(R.id.li_txt_title)).setText(cursor.getString(titleIdx));
-		((TextView)view.findViewById(R.id.li_txt_url)).setText(cursor.getString(urlIdx));
-		
+		holder.bTitle.setText(cursor.getString(titleIdx));
+		holder.bUrl.setText(cursor.getString(urlIdx));
 	}
 
 	@Override
 	public View newView(Context context, Cursor cursor, ViewGroup parent) {
 		LayoutInflater inflater = LayoutInflater.from(context);
 		View v = inflater.inflate(R.layout.list_item_bookmark, parent, false);
+		
+		BookmarkHolder holder = new BookmarkHolder();
+		holder.bTitle = (TextView)v.findViewById(R.id.li_txt_title);
+		holder.bUrl = (TextView)v.findViewById(R.id.li_txt_url);
+		
+		v.setTag(holder);
+		
 		v.setBackgroundResource(R.drawable.redshift_tabmenu_item_dark);
 		
 		return v;
