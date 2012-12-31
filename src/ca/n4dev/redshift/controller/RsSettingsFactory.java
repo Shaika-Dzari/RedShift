@@ -70,13 +70,14 @@ public class RsSettingsFactory {
 		
 		WebSettings settings = webview.getSettings();
 		settings.setRenderPriority(RenderPriority.HIGH);
-		settings.setJavaScriptEnabled(prefJavascript);
-		settings.setBuiltInZoomControls(true);
-		settings.setDisplayZoomControls(false);
+		applyRotationSetting(settings);
+		//settings.setJavaScriptEnabled(prefJavascript);
+		//settings.setBuiltInZoomControls(true);
+		//settings.setDisplayZoomControls(false);
+		//settings.setDefaultZoom(WebSettings.ZoomDensity.FAR);
+		//settings.setUseWideViewPort(true);
+		//settings.setLoadWithOverviewMode(true);
 		settings.setGeolocationEnabled(false);
-		settings.setDefaultZoom(WebSettings.ZoomDensity.FAR);
-		settings.setUseWideViewPort(true);
-		settings.setLoadWithOverviewMode(true);
 		settings.setLoadsImagesAutomatically(prefLoadImage);
 		settings.setPluginState(prefPlugin);
 		settings.setSaveFormData(prefFormdata);
@@ -100,6 +101,15 @@ public class RsSettingsFactory {
 		} else {
 			settings.setUserAgentString(prefUserAgent.getString());
 		}
+	}
+	
+	public void applyRotationSetting(WebSettings settings) {
+		settings.setBuiltInZoomControls(true);
+		settings.setDisplayZoomControls(false);
+		settings.setDefaultZoom(WebSettings.ZoomDensity.FAR);
+		settings.setUseWideViewPort(true);
+		settings.setLoadWithOverviewMode(true);
+		settings.setJavaScriptEnabled(prefJavascript);
 	}
 	
 	public void syncSettings() {
