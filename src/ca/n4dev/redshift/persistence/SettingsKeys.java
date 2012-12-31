@@ -9,7 +9,7 @@
  * 
  * @since 2012-12-29
  */ 
-package ca.n4dev.redshift.settings;
+package ca.n4dev.redshift.persistence;
 
 public class SettingsKeys {
 	

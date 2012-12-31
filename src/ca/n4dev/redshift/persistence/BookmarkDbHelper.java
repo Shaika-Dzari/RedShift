@@ -1,12 +1,12 @@
 /**
  * 
  */
-package ca.n4dev.redshift.bookmark;
+package ca.n4dev.redshift.persistence;
 
 import java.util.Date;
 
-import ca.n4dev.redshift.events.Searchable;
-import ca.n4dev.redshift.history.HistoryDbHelper;
+import ca.n4dev.redshift.persistence.api.DatabaseConnection;
+import ca.n4dev.redshift.persistence.api.Searchable;
 import ca.n4dev.redshift.utils.PeriodUtils;
 import ca.n4dev.redshift.utils.PeriodUtils.Period;
 
@@ -22,7 +22,7 @@ import android.util.Log;
  * @author rguillemette
  *
  */
-public class BookmarkDbHelper extends SQLiteOpenHelper implements Searchable {
+public class BookmarkDbHelper extends SQLiteOpenHelper implements Searchable, DatabaseConnection {
 
 	private static final int DATABASE_VERSION = 1;
 	private static final String DATABASE_NAME = "redshift.bookmark.db";
@@ -35,9 +35,7 @@ public class BookmarkDbHelper extends SQLiteOpenHelper implements Searchable {
     public static final String BOOKMARK_PRETTYDATE = "prettydate";
     public static final String BOOKMARK_SHOWINHOME = "showinhome";
     
-    public enum Sort {
-    	BYTITLE, BYURL, BYDATE
-    }
+    private SQLiteDatabase db = null;
     
     private static final String BOOKMARK_TABLE_CREATE =
                 "CREATE TABLE " + BOOKMARK_TABLE_NAME + " (" +
@@ -69,7 +67,7 @@ public class BookmarkDbHelper extends SQLiteOpenHelper implements Searchable {
 		
 	}
 
-	public long add(SQLiteDatabase db, String title, String url, String tags, String showinhome) {
+	public long add(String title, String url, String tags, String showinhome) {
 		ContentValues values = new ContentValues();
 		Date d = new Date();
 		values.put(BOOKMARK_TITLE, title);
@@ -82,14 +80,14 @@ public class BookmarkDbHelper extends SQLiteOpenHelper implements Searchable {
 		return db.insert(BOOKMARK_TABLE_NAME, null, values);
 	}
 	
-	public void delete(SQLiteDatabase db, long id) {
+	public void delete(long id) {
 		db.delete(BOOKMARK_TABLE_NAME, BOOKMARK_ID + "=?", new String[]{"" + id});
 	}
 	
-	public void insertTestData(SQLiteDatabase db) {
+	public void insertTestData() {
 		
 		for (int i = 0; i < 10; i ++) {
-			add(db, "Web Title - test data " + i, "http://www.duckduckgo.com/?q=1+" + i, "Android, Test", "" + (i % 2));			
+			add("Web Title - test data " + i, "http://www.duckduckgo.com/?q=1+" + i, "Android, Test", "" + (i % 2));			
 		}
 	}
 	
@@ -106,7 +104,11 @@ public class BookmarkDbHelper extends SQLiteOpenHelper implements Searchable {
 		return s;
 	}
 	
-	public Cursor queryAll(SQLiteDatabase db, Sort sort) {
+	public int update(ContentValues values, String whereClause, String[] whereArgs) {
+		return this.db.update(BOOKMARK_TABLE_NAME, values, whereClause, whereArgs);
+	}
+	
+	public Cursor queryAll(Sort sort) {
 		
 		String sortClause;
 		
@@ -126,8 +128,8 @@ public class BookmarkDbHelper extends SQLiteOpenHelper implements Searchable {
 				sortClause);
 	}
 	
-	public Cursor queryAll(SQLiteDatabase db) {
-		return queryAll(db, Sort.BYDATE);
+	public Cursor queryAll() {
+		return queryAll(Sort.BYDATE);
 	}
 	
 
@@ -135,7 +137,7 @@ public class BookmarkDbHelper extends SQLiteOpenHelper implements Searchable {
 	 * @see ca.n4dev.redshift.events.Searchable#search(java.lang.String, ca.n4dev.redshift.utils.PeriodUtils.Period)
 	 */
 	@Override
-	public Cursor search(SQLiteDatabase db, String query, Period period) {
+	public Cursor search(String query, Period period) {
 		String whereClause = BOOKMARK_CREATIONDATE + " >= ? " +
 							" and (" + BOOKMARK_TAG + " like ? or " +
 									   BOOKMARK_TITLE + " like ? or " +
@@ -156,7 +158,18 @@ public class BookmarkDbHelper extends SQLiteOpenHelper implements Searchable {
 		
 	}
 	
-	public void delete(SQLiteDatabase db, Long bookmarkId) {
+	public void delete(Long bookmarkId) {
 		db.delete(BOOKMARK_TABLE_NAME, BOOKMARK_ID + " = ?", new String[]{"" + bookmarkId});
+	}
+
+	@Override
+	public void openDb() {
+		this.db = getWritableDatabase();
+	}
+
+	@Override
+	public void closeDb() {
+		if (this.db != null)
+			this.db.close();
 	}
 }

@@ -1,10 +1,10 @@
 package ca.n4dev.redshift;
 
-import ca.n4dev.redshift.bookmark.AddBookmarkDialog;
-import ca.n4dev.redshift.bookmark.BookmarkDbHelper;
-import ca.n4dev.redshift.bookmark.BookmarksList;
-import ca.n4dev.redshift.bookmark.BookmarkDbHelper.Sort;
 import ca.n4dev.redshift.events.OnListClickAware;
+import ca.n4dev.redshift.fragment.AddBookmarkDialog;
+import ca.n4dev.redshift.fragment.BookmarksList;
+import ca.n4dev.redshift.persistence.BookmarkDbHelper;
+import ca.n4dev.redshift.persistence.Sort;
 import android.os.Bundle;
 import android.app.Activity;
 import android.app.Fragment;

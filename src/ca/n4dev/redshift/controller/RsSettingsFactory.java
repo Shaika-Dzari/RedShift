@@ -13,7 +13,7 @@ package ca.n4dev.redshift.controller;
 
 import ca.n4dev.redshift.SettingsActivity;
 import ca.n4dev.redshift.controller.api.WebController;
-import ca.n4dev.redshift.settings.SettingsKeys;
+import ca.n4dev.redshift.persistence.SettingsKeys;
 import ca.n4dev.redshift.utils.UserAgent;
 import android.annotation.SuppressLint;
 import android.content.ContentResolver;

@@ -1,6 +1,6 @@
 package ca.n4dev.redshift;
 
-import ca.n4dev.redshift.settings.SettingsFragment;
+import ca.n4dev.redshift.fragment.SettingsFragment;
 import android.content.Intent;
 import android.os.Bundle;
 import android.preference.PreferenceActivity;

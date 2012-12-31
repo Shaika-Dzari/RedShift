@@ -1,9 +1,10 @@
 /**
  * 
  */
-package ca.n4dev.redshift.bookmark;
+package ca.n4dev.redshift.adapter;
 
 import ca.n4dev.redshift.R;
+import ca.n4dev.redshift.persistence.BookmarkDbHelper;
 import android.content.Context;
 import android.database.Cursor;
 import android.view.LayoutInflater;

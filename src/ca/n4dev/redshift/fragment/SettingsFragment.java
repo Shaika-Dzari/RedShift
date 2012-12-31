@@ -9,12 +9,13 @@
  * 
  * @since 2012-12-08
  */ 
-package ca.n4dev.redshift.settings;
+package ca.n4dev.redshift.fragment;
 
 import ca.n4dev.redshift.R;
 import ca.n4dev.redshift.SettingsActivity;
 import ca.n4dev.redshift.R.xml;
 import ca.n4dev.redshift.controller.RsSettingsFactory;
+import ca.n4dev.redshift.persistence.SettingsKeys;
 import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
 import android.content.DialogInterface;

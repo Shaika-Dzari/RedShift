@@ -9,15 +9,15 @@
  * 
  * @since 2012-12-20
  */ 
-package ca.n4dev.redshift.bookmark;
+package ca.n4dev.redshift.fragment;
 
 import ca.n4dev.redshift.R;
+import ca.n4dev.redshift.persistence.BookmarkDbHelper;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
 import android.content.ContentValues;
 import android.content.DialogInterface;
-import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -34,14 +34,13 @@ public class AddBookmarkDialog extends DialogFragment {
 	private View view;
 	
 	private BookmarkDbHelper dbHelper;
-	private SQLiteDatabase db;
 	
 	
 	@Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
 		
 		dbHelper = new BookmarkDbHelper(getActivity());
-		db = dbHelper.getWritableDatabase();
+		this.dbHelper.openDb();
 		
 		// Use the Builder class for convenient dialog construction
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
@@ -90,7 +89,7 @@ public class AddBookmarkDialog extends DialogFragment {
             	String sih = (c) ? "1" : "0";
             	
             	if (bookmarkId == null)
-            		dbHelper.add(dbHelper.getWritableDatabase(), t, u, a, sih); // insert
+            		dbHelper.add(t, u, a, sih); // insert
             	else {
             		ContentValues values = new ContentValues();
             		values.put(BookmarkDbHelper.BOOKMARK_TITLE, t);
@@ -98,7 +97,7 @@ public class AddBookmarkDialog extends DialogFragment {
             		values.put(BookmarkDbHelper.BOOKMARK_URL, u);
             		values.put(BookmarkDbHelper.BOOKMARK_SHOWINHOME, sih);
             		
-            		db.update(BookmarkDbHelper.BOOKMARK_TABLE_NAME, values, BookmarkDbHelper.BOOKMARK_ID + " = ?", new String[]{"" + bookmarkId});
+            		dbHelper.update(values, BookmarkDbHelper.BOOKMARK_ID + " = ?", new String[]{"" + bookmarkId});
             	}
             	close();
             }
@@ -116,10 +115,21 @@ public class AddBookmarkDialog extends DialogFragment {
 	
 	
 	public void close() {
-		db.close();
-		db = null;
+		this.dbHelper.closeDb();
 		dbHelper = null;
 	}
+	
+	@Override
+	public void onResume(){
+        super.onResume();
+        this.dbHelper.openDb();
+    }
+    
+    @Override
+	public void onPause(){
+        super.onPause();
+        this.dbHelper.closeDb();
+    }
 
 	/**
 	 * @return the title

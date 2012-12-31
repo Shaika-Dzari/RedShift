@@ -9,7 +9,7 @@
  * 
  * @since 2012-12-20
  */ 
-package ca.n4dev.redshift.utils;
+package ca.n4dev.redshift.adapter;
 
 import java.util.List;
 

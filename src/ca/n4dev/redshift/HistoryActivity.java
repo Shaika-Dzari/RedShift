@@ -1,12 +1,10 @@
 package ca.n4dev.redshift;
 
-import java.util.Date;
 
-import ca.n4dev.redshift.bookmark.BookmarkDbHelper.Sort;
+import ca.n4dev.redshift.adapter.HistoryAdapter;
 import ca.n4dev.redshift.events.OnListClickAware;
-import ca.n4dev.redshift.history.HistoryAdapter;
-import ca.n4dev.redshift.history.HistoryDbHelper;
-import ca.n4dev.redshift.utils.PeriodUtils;
+import ca.n4dev.redshift.persistence.HistoryDbHelper;
+import ca.n4dev.redshift.persistence.Sort;
 import ca.n4dev.redshift.utils.PeriodUtils.Period;
 import android.os.Bundle;
 import android.app.Activity;
@@ -19,12 +17,10 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.SearchView;
-import android.widget.TextView;
 
 public class HistoryActivity extends Activity implements SearchView.OnQueryTextListener, OnListClickAware {
 	
 	private HistoryDbHelper historyHelper;
-	private SQLiteDatabase historyDatabase;
 	private ListView lv;
 	
 
@@ -35,7 +31,7 @@ public class HistoryActivity extends Activity implements SearchView.OnQueryTextL
         getActionBar().setDisplayHomeAsUpEnabled(true);
         
         historyHelper = new HistoryDbHelper(this);
-        historyDatabase = historyHelper.getReadableDatabase();
+        historyHelper.openDb();
         
         // Load List
         lv = (ListView) findViewById(R.id.lstHistory);
@@ -56,7 +52,7 @@ public class HistoryActivity extends Activity implements SearchView.OnQueryTextL
 		
         });
         
-        Cursor c = historyHelper.query(historyDatabase, Period.YESTERDAY, Sort.BYDATE);
+        Cursor c = historyHelper.query(Period.YESTERDAY, Sort.BYDATE);
         lv.setAdapter(new HistoryAdapter(this, c, this));
         
     }
@@ -84,12 +80,12 @@ public class HistoryActivity extends Activity implements SearchView.OnQueryTextL
                 return true;
            
             case R.id.menu_clearhistory:
-            	historyHelper.clear(historyDatabase);
-            	c = historyHelper.query(historyDatabase, Period.INFINITY, Sort.BYDATE);
+            	historyHelper.clear();
+            	c = historyHelper.query(Period.INFINITY, Sort.BYDATE);
             	((HistoryAdapter)lv.getAdapter()).changeCursor(c);
             	
             case R.id.menu_history_last7days:
-            	c = historyHelper.query(historyDatabase, Period.LAST7DAYS, Sort.BYDATE);
+            	c = historyHelper.query(Period.LAST7DAYS, Sort.BYDATE);
             	((HistoryAdapter)lv.getAdapter()).changeCursor(c);
             
             default:
@@ -102,13 +98,13 @@ public class HistoryActivity extends Activity implements SearchView.OnQueryTextL
 	@Override
 	public void onPause() {
 		super.onPause();
-		historyDatabase.close();
+		this.historyHelper.closeDb();
 	}
 	
 	@Override
 	public void onResume() {
 		super.onResume();
-		historyDatabase = this.historyHelper.getReadableDatabase();
+		this.historyHelper.openDb();
 	}
 
 	/* (non-Javadoc)
@@ -131,7 +127,7 @@ public class HistoryActivity extends Activity implements SearchView.OnQueryTextL
 	
 	private void filterSearchResult(String query) {
 		
-		Cursor c = this.historyHelper.search(this.historyDatabase, query, Period.LAST7DAYS);
+		Cursor c = this.historyHelper.search(query, Period.LAST7DAYS);
 		
 		((HistoryAdapter)lv.getAdapter()).changeCursor(c);
 	}
@@ -142,8 +138,8 @@ public class HistoryActivity extends Activity implements SearchView.OnQueryTextL
 	@Override
 	public void onListClickEvent(View v) {
 		String id = v.getTag().toString();
-		this.historyHelper.delete(historyDatabase, Long.parseLong(id));
-		Cursor c = historyHelper.query(historyDatabase, Period.YESTERDAY, Sort.BYDATE);
+		this.historyHelper.delete(Long.parseLong(id));
+		Cursor c = historyHelper.query(Period.YESTERDAY, Sort.BYDATE);
 		((HistoryAdapter)lv.getAdapter()).changeCursor(c);
 	}
 }

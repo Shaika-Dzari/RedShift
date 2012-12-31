@@ -4,7 +4,7 @@ package ca.n4dev.redshift;
 import java.util.List;
 
 import ca.n4dev.redshift.R;
-import ca.n4dev.redshift.bookmark.AddBookmarkDialog;
+import ca.n4dev.redshift.adapter.TabListAdapter;
 import ca.n4dev.redshift.controller.RsWebViewController;
 import ca.n4dev.redshift.controller.api.TooManyTabException;
 import ca.n4dev.redshift.controller.container.RsWebView;
@@ -13,10 +13,10 @@ import ca.n4dev.redshift.events.OnListClickAware;
 import ca.n4dev.redshift.events.ProgressAware;
 import ca.n4dev.redshift.events.UrlModificationAware;
 import ca.n4dev.redshift.events.WebViewOnMenuItemClickListener;
-import ca.n4dev.redshift.history.HistoryDbHelper;
-import ca.n4dev.redshift.settings.SettingsKeys;
+import ca.n4dev.redshift.fragment.AddBookmarkDialog;
+import ca.n4dev.redshift.persistence.HistoryDbHelper;
+import ca.n4dev.redshift.persistence.SettingsKeys;
 import ca.n4dev.redshift.utils.DownloadRequest;
-import ca.n4dev.redshift.utils.TabListAdapter;
 import ca.n4dev.redshift.utils.UrlUtils;
 import android.net.Uri;
 import android.os.Bundle;
@@ -66,7 +66,6 @@ public class BrowserActivity extends FragmentActivity implements UrlModification
 	private RsWebViewController webController;
 	private ProgressBar progressBar;
 	private HistoryDbHelper historyHelper;
-	private SQLiteDatabase historyDatabase;
 	private BrowserActivity browserActivity;
 	private ListView tabList = null;
 	private LinearLayout tabLayout = null;
@@ -94,8 +93,7 @@ public class BrowserActivity extends FragmentActivity implements UrlModification
         
         preferences = PreferenceManager.getDefaultSharedPreferences(this);
         historyHelper = new HistoryDbHelper(this);
-        historyDatabase = historyHelper.getWritableDatabase();
-        
+        historyHelper.openDb();
         	
         String initUrl = null;
         Intent intent = getIntent();
@@ -422,7 +420,7 @@ public class BrowserActivity extends FragmentActivity implements UrlModification
 	@Override
 	public void pageReceived(String url, String title) {
 		if (prefHistory && url.indexOf("about:") == -1 && url.indexOf("redshift:") == -1 && !this.webController.isCurrentTabPrivate())
-			historyHelper.add(this.historyDatabase, title, url);
+			historyHelper.add(title, url);
 		
 	}
 	
@@ -430,7 +428,7 @@ public class BrowserActivity extends FragmentActivity implements UrlModification
 	public void onPause() {
 		super.onPause();
 		Log.d(TAG, "onPause()");
-		historyDatabase.close();
+		this.historyHelper.closeDb();
 		this.webController.pause();
 	}
 	
@@ -438,7 +436,7 @@ public class BrowserActivity extends FragmentActivity implements UrlModification
 	public void onResume() {
 		super.onResume();
 		Log.d(TAG, "onResume()");
-		historyDatabase = this.historyHelper.getWritableDatabase();
+		this.historyHelper.openDb();
 		prefHistory = preferences.getBoolean(SettingsKeys.KEY_HISTORY, true);
 		
 		this.webController.resume();		

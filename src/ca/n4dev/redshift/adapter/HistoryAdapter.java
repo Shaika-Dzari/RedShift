@@ -9,10 +9,11 @@
  * 
  * @since 2012-12-16
  */ 
-package ca.n4dev.redshift.history;
+package ca.n4dev.redshift.adapter;
 
 import ca.n4dev.redshift.R;
 import ca.n4dev.redshift.events.OnListClickAware;
+import ca.n4dev.redshift.persistence.HistoryDbHelper;
 
 import android.content.Context;
 import android.database.Cursor;

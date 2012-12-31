@@ -9,12 +9,14 @@
  * 
  * @since 2012-12-10
  */ 
-package ca.n4dev.redshift.bookmark;
+package ca.n4dev.redshift.fragment;
 
 import ca.n4dev.redshift.R;
-import ca.n4dev.redshift.bookmark.BookmarkDbHelper.Sort;
+import ca.n4dev.redshift.adapter.BookmarkCursorAdapter;
 import ca.n4dev.redshift.events.OnListClickAware;
-import ca.n4dev.redshift.history.HistoryDbHelper;
+import ca.n4dev.redshift.persistence.BookmarkDbHelper;
+import ca.n4dev.redshift.persistence.HistoryDbHelper;
+import ca.n4dev.redshift.persistence.Sort;
 import ca.n4dev.redshift.utils.PeriodUtils.Period;
 import android.app.AlertDialog;
 import android.app.ListFragment;
@@ -38,7 +40,6 @@ public class BookmarksList extends ListFragment {
 	private static final String TAG = "BookmarksList";
 	
 	private BookmarkDbHelper dbHelper;
-	private SQLiteDatabase db;
 
 	private OnListClickAware onListClickAware;
 	
@@ -48,9 +49,9 @@ public class BookmarksList extends ListFragment {
         super.onActivityCreated(savedInstanceState);
         registerForContextMenu(getListView());
                 
-        dbHelper = new BookmarkDbHelper(getActivity());
-        db = dbHelper.getReadableDatabase();
-        Cursor c = dbHelper.queryAll(db);
+        this.dbHelper = new BookmarkDbHelper(getActivity());
+        this.dbHelper.openDb();
+        Cursor c = dbHelper.queryAll();
         
         setListAdapter(new BookmarkCursorAdapter(getActivity(), c));
      
@@ -112,7 +113,7 @@ public class BookmarksList extends ListFragment {
 		
 		builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
 	           public void onClick(DialogInterface dialog, int id) {
-	              dbHelper.delete(db, bookmarkId);
+	              dbHelper.delete(bookmarkId);
 	           }
 	       });
 		
@@ -134,30 +135,25 @@ public class BookmarksList extends ListFragment {
     }
     
     public void filterSearchResult(String query) {
-		Cursor c = this.dbHelper.search(db, query, Period.INFINITY);
+		Cursor c = this.dbHelper.search(query, Period.INFINITY);
 		((BookmarkCursorAdapter)getListAdapter()).changeCursor(c);
 	}
     
     public void sortData(Sort sort) {
-    	Cursor c = dbHelper.queryAll(db, sort);
+    	Cursor c = dbHelper.queryAll(sort);
     	((BookmarkCursorAdapter)getListAdapter()).changeCursor(c);
     }
     
     @Override
 	public void onResume(){
         super.onResume();
-        db = dbHelper.getReadableDatabase();
+        this.dbHelper.openDb();
     }
     
     @Override
 	public void onPause(){
         super.onPause();
-        db.close();
+        this.dbHelper.closeDb();
     }
 
-    @Override
-	public void onDestroy() {
-        super.onDestroy();
-        db.close();
-    }
 }

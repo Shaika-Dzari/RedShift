@@ -9,12 +9,11 @@
  * 
  * @since 2012-12-21
  */ 
-package ca.n4dev.redshift.events;
+package ca.n4dev.redshift.persistence.api;
 
 import ca.n4dev.redshift.utils.PeriodUtils.Period;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 
 public interface Searchable {
-	public Cursor search(SQLiteDatabase db, String query, Period period);
+	public Cursor search(String query, Period period);
 }

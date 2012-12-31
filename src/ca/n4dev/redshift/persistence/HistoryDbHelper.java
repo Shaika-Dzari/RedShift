@@ -1,12 +1,12 @@
 /**
  * 
  */
-package ca.n4dev.redshift.history;
+package ca.n4dev.redshift.persistence;
 
 import java.util.Date;
 
-import ca.n4dev.redshift.bookmark.BookmarkDbHelper.Sort;
-import ca.n4dev.redshift.events.Searchable;
+import ca.n4dev.redshift.persistence.api.DatabaseConnection;
+import ca.n4dev.redshift.persistence.api.Searchable;
 import ca.n4dev.redshift.utils.PeriodUtils;
 import ca.n4dev.redshift.utils.PeriodUtils.Period;
 
@@ -21,7 +21,7 @@ import android.text.format.DateFormat;
  * @author rguillemette
  *
  */
-public class HistoryDbHelper extends SQLiteOpenHelper implements Searchable {
+public class HistoryDbHelper extends SQLiteOpenHelper implements Searchable, DatabaseConnection {
 
 	private static final int 	DATABASE_VERSION = 1;
 	private static final String DATABASE_NAME = "redshift.history.db";
@@ -39,6 +39,8 @@ public class HistoryDbHelper extends SQLiteOpenHelper implements Searchable {
             		HISTORY_URL + " TEXT, " +
             		HISTORY_PRETTYDATE + " TEXT, " +
             		HISTORY_CREATIONDATE + " INTEGER);"; 
+    
+    private SQLiteDatabase db = null;
     
 	public HistoryDbHelper(Context context) {
 		super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -92,7 +94,7 @@ public class HistoryDbHelper extends SQLiteOpenHelper implements Searchable {
 		return s;
 	}
 	
-	public long add(SQLiteDatabase db, String title, String url) {
+	public long add(String title, String url) {
 		
 		ContentValues values = new ContentValues();
 		Date d = new Date();
@@ -105,15 +107,15 @@ public class HistoryDbHelper extends SQLiteOpenHelper implements Searchable {
 		return db.insert(HISTORY_TABLE_NAME, null, values);
 	}
 	
-	public void delete(SQLiteDatabase db, long id) {
+	public void delete(long id) {
 		db.delete(HISTORY_TABLE_NAME, HISTORY_ID + "=?", new String[]{"" + id});
 	}
 	
-	public void clear(SQLiteDatabase db) {
+	public void clear() {
 		db.delete(HISTORY_TABLE_NAME, null, null);
 	}
 
-	public Cursor query(SQLiteDatabase db, Period period, Sort sort) {
+	public Cursor query(Period period, Sort sort) {
 		String sortClause;
 		
 		if (sort == Sort.BYTITLE)
@@ -139,7 +141,7 @@ public class HistoryDbHelper extends SQLiteOpenHelper implements Searchable {
 	 * @see ca.n4dev.redshift.events.Searchable#search(java.lang.String, ca.n4dev.redshift.utils.PeriodUtils.Period)
 	 */
 	@Override
-	public Cursor search(SQLiteDatabase db, String query, Period period) {
+	public Cursor search(String query, Period period) {
 		
 		String whereClause = HISTORY_CREATIONDATE + " >= ? " +
 						" and ( " + HISTORY_TITLE + " like ? or " + HISTORY_URL + " like ? )";
@@ -158,5 +160,15 @@ public class HistoryDbHelper extends SQLiteOpenHelper implements Searchable {
 				HISTORY_CREATIONDATE + " DESC");
 		
 	}
-	
+
+	@Override
+	public void openDb() {
+		this.db = getWritableDatabase();
+	}
+
+	@Override
+	public void closeDb() {
+		if (this.db != null)
+			this.db.close();
+	}
 }
