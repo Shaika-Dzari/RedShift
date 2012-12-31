@@ -139,8 +139,10 @@ public class BrowserActivity extends FragmentActivity implements UrlModification
 					homeTab = this.webController.newTab(this, false);
 					this.webController.setCurrentTab(homeTab);  
 					
-					if (initUrl != null)
+					if (initUrl != null) {
+						urlHasChanged(initUrl);
 						this.webController.goTo(initUrl);
+					}
 					else
 						this.webController.goToHome();
 					
