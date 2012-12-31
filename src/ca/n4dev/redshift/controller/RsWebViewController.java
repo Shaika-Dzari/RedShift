@@ -242,7 +242,6 @@ public class RsWebViewController implements WebController, CloseAware {
 						});
 				w.setTabId(b.getInt("redshift.tabId"));
 				w.restoreState(b);
-				//this.settingsFactory.applySettings(w);
 				this.settingsFactory.applyRotationSetting(w.getSettings());
 				this.webviews.add(w);
 			}
@@ -309,7 +308,7 @@ public class RsWebViewController implements WebController, CloseAware {
 	 */
 	@Override
 	public void close() {
-		
+		this.settingsFactory.deleteCookieOnExit();
 	}
 
 

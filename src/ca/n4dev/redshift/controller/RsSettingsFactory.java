@@ -11,19 +11,15 @@
  */ 
 package ca.n4dev.redshift.controller;
 
-import ca.n4dev.redshift.SettingsActivity;
 import ca.n4dev.redshift.controller.api.WebController;
 import ca.n4dev.redshift.persistence.SettingsKeys;
 import ca.n4dev.redshift.utils.UserAgent;
 import android.annotation.SuppressLint;
-import android.content.ContentResolver;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
-import android.provider.Browser;
 import android.webkit.CookieManager;
 import android.webkit.CookieSyncManager;
-import android.webkit.GeolocationPermissions;
 import android.webkit.WebIconDatabase;
 import android.webkit.WebSettings;
 import android.webkit.WebStorage;
@@ -206,4 +202,9 @@ public class RsSettingsFactory {
 		syncSettings();
 	}
 	
+	public void deleteCookieOnExit() {
+		if (prefCookieOnExit) {
+			clearCookies();
+		}
+	}
 }

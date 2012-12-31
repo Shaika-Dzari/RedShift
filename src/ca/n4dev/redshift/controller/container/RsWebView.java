@@ -11,7 +11,6 @@
  */ 
 package ca.n4dev.redshift.controller.container;
 
-import ca.n4dev.redshift.utils.Logger;
 import android.content.Context;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
@@ -19,9 +18,6 @@ import android.webkit.WebViewClient;
 
 
 public class RsWebView extends WebView {
-
-	private static final String TAG = "RsWebView";
-	
 	private Integer tabId;
 	private boolean privateBrowsing;
 	
