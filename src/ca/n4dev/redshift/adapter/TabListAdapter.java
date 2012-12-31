@@ -82,6 +82,12 @@ public class TabListAdapter extends ArrayAdapter<RsWebView> {
 			((TabViewHolder)convertView.getTag()).url.setText(title);
 			((TabViewHolder)convertView.getTag()).button.setTag(r.getTabId());
 			
+			// SSL
+			if (r.getCertificate() != null)
+				((TabViewHolder)convertView.getTag()).imgssl.setImageResource(R.drawable.img_ssl);
+			else 
+				((TabViewHolder)convertView.getTag()).imgssl.setImageResource(R.drawable.img_nossl);
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

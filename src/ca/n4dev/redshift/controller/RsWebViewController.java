@@ -23,6 +23,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
+import android.view.View;
 import android.webkit.CookieManager;
 import android.webkit.CookieSyncManager;
 import android.webkit.WebChromeClient;
@@ -147,6 +148,14 @@ public class RsWebViewController implements WebController, CloseAware {
 		settingsFactory.applySettings(w);
 		
 		activity.registerForContextMenu(w);
+		
+		w.setOnClickListener(new View.OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				Log.d(TAG, "onClick");
+			}
+		});
 		
 		this.webviews.add(w);
 		

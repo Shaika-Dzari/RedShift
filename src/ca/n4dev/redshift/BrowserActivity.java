@@ -8,7 +8,6 @@ import ca.n4dev.redshift.adapter.TabListAdapter;
 import ca.n4dev.redshift.controller.RsWebViewController;
 import ca.n4dev.redshift.controller.api.TooManyTabException;
 import ca.n4dev.redshift.controller.container.RsWebView;
-import ca.n4dev.redshift.events.CloseAware;
 import ca.n4dev.redshift.events.OnListClickAware;
 import ca.n4dev.redshift.events.ProgressAware;
 import ca.n4dev.redshift.events.UrlModificationAware;
@@ -20,7 +19,7 @@ import ca.n4dev.redshift.utils.DownloadRequest;
 import ca.n4dev.redshift.utils.UrlUtils;
 import android.net.Uri;
 import android.os.Bundle;
-import android.preference.Preference;
+import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -28,8 +27,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
-import android.database.sqlite.SQLiteDatabase;
-import android.graphics.drawable.Drawable;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.KeyEvent;
@@ -46,7 +43,6 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.PopupMenu;
 import android.widget.ProgressBar;
-import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.support.v4.app.FragmentActivity;
@@ -55,8 +51,7 @@ import android.support.v4.app.FragmentActivity;
 @SuppressLint("SetJavaScriptEnabled")
 public class BrowserActivity extends FragmentActivity implements UrlModificationAware, 
 																	 ProgressAware, 
-																	 OnListClickAware, 
-																	 CloseAware {
+																	 OnListClickAware {
 	
 	private static final String TAG = "BrowserActivity";
 	private static final int BOOKMARK_RESULT_ID = 9990;
@@ -70,6 +65,14 @@ public class BrowserActivity extends FragmentActivity implements UrlModification
 	private ListView tabList = null;
 	private LinearLayout tabLayout = null;
 	private SharedPreferences preferences;
+	
+	private Handler runnableHandler;
+	private Runnable hideMenu = new Runnable() {
+		@Override
+		public void run() {
+			toggleTabLayout(LayoutVisibility.GONE);
+		}
+	};
 	
 	// Some preferences
 	private boolean prefHistory;
@@ -90,6 +93,7 @@ public class BrowserActivity extends FragmentActivity implements UrlModification
         // No ActionBar in browser
         getActionBar().hide();
         
+        runnableHandler = new Handler();
         
         preferences = PreferenceManager.getDefaultSharedPreferences(this);
         historyHelper = new HistoryDbHelper(this);
@@ -221,7 +225,7 @@ public class BrowserActivity extends FragmentActivity implements UrlModification
 						break;
 						
 			        case R.id.menu_quit:
-			        	finish();
+			        	cleanAndFinish();
 			        	break;
 			 
 				}
@@ -277,29 +281,34 @@ public class BrowserActivity extends FragmentActivity implements UrlModification
     /* Activity Events */
     public void onBtnListTab(View v) {
     	
-    	if (tabList == null) {
+    	if (tabLayoutVisible == true) {
+    		toggleTabLayout(LayoutVisibility.GONE);
     		
-    		tabList = (ListView) findViewById(R.id.list_tab);
-    		tabLayout = (LinearLayout) findViewById(R.id.layout_tabmenu);
-    		
-    		tabList.setAdapter(new TabListAdapter(this, this.webController.listTab(), this));
-    		tabList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-
-				@Override
-				public void onItemClick(AdapterView<?> arg0, View view, int position,	long id) {
-					RsWebView r = (RsWebView) tabList.getItemAtPosition(position);
-					urlHasChanged(r.getUrl());
-					webController.setCurrentTab(r.getTabId());
-					toggleTabLayout(LayoutVisibility.GONE);
-				}
-    			
-    		});
-    		
+    	} else {
+    	
+	    	if (tabList == null) {
+	    		
+	    		tabList = (ListView) findViewById(R.id.list_tab);
+	    		tabLayout = (LinearLayout) findViewById(R.id.layout_tabmenu);
+	    		
+	    		tabList.setAdapter(new TabListAdapter(this, this.webController.listTab(), this));
+	    		tabList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+	
+					@Override
+					public void onItemClick(AdapterView<?> arg0, View view, int position,	long id) {
+						RsWebView r = (RsWebView) tabList.getItemAtPosition(position);
+						urlHasChanged(r.getUrl());
+						webController.setCurrentTab(r.getTabId());
+						toggleTabLayout(LayoutVisibility.GONE);
+					}
+	    			
+	    		});
+	    		
+	    	}
+    	
+	    	((ArrayAdapter)tabList.getAdapter()).notifyDataSetChanged();
+	    	toggleTabLayout(LayoutVisibility.VISIBLE);
     	}
-    	
-    	((ArrayAdapter)tabList.getAdapter()).notifyDataSetChanged();
-    	
-    	toggleTabLayout(LayoutVisibility.TOGGLE);
     }
     
     
@@ -360,15 +369,13 @@ public class BrowserActivity extends FragmentActivity implements UrlModification
     private void toggleTabLayout(LayoutVisibility visibility) {
     	
     	if (visibility == LayoutVisibility.VISIBLE && !tabLayoutVisible) {
+    		runnableHandler.postDelayed(hideMenu, 5000);
     		tabLayout.setVisibility(View.VISIBLE);
     		tabLayoutVisible = true;
     	} else if (visibility == LayoutVisibility.GONE && tabLayoutVisible) {
+    		runnableHandler.removeCallbacks(hideMenu);
     		tabLayout.setVisibility(View.GONE);
     		tabLayoutVisible = false;
-    	} else {
-    		// Toggle
-    		tabLayout.setVisibility((tabLayoutVisible) ? View.GONE : View.VISIBLE);
-    		tabLayoutVisible = !tabLayoutVisible;
     	}
     }
 
@@ -441,12 +448,7 @@ public class BrowserActivity extends FragmentActivity implements UrlModification
 		
 		this.webController.resume();		
 	}
-	
-	@Override
-	public void onDestroy() {
-		super.onDestroy();
-		Log.d(TAG, "onDestroy");
-	}
+
 
 	/* (non-Javadoc)
 	 * @see ca.n4dev.redshift.events.OnListClickAware#onListClickEvent(android.view.View)
@@ -457,15 +459,15 @@ public class BrowserActivity extends FragmentActivity implements UrlModification
 		this.webController.closeTab(Integer.parseInt(id));
 		
     	if (this.webController.currentId() == -1) {
-    		finish();
+    		cleanAndFinish();
     	} else {
     		((ArrayAdapter)tabList.getAdapter()).notifyDataSetChanged();
     	}
 	}
 	
-	public void close() {
-		// Cleanup cookie on exit
-		
+	private void cleanAndFinish() {
+		this.webController.close();
+		finish();
 	}
 
 	/* (non-Javadoc)

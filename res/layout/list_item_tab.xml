@@ -16,16 +16,14 @@
         	  android:layout_width="0dp"
         	  android:layout_height="wrap_content"
         	  android:layout_weight="1"
-        	  style="@style/TextLink"
-        	   />
+        	  style="@style/TextLink" />
   		  
     <ImageButton android:id="@+id/btn_tab_close"
         		 android:layout_width="wrap_content"
 	        	 android:layout_height="wrap_content"
 	        	 android:src="@drawable/img_content_remove"
 	        	 android:contentDescription="@string/btn_tab_close_cd"
-	        	 style="@style/Borderless"
-	        	 />
+	        	 style="@style/Borderless" />
       
 </LinearLayout>
     
