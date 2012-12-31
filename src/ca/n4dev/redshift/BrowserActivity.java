@@ -1,6 +1,8 @@
 package ca.n4dev.redshift;
 
 
+import java.util.List;
+
 import ca.n4dev.redshift.R;
 import ca.n4dev.redshift.bookmark.AddBookmarkDialog;
 import ca.n4dev.redshift.controller.RsWebViewController;
@@ -24,6 +26,8 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.drawable.Drawable;
 import android.util.Log;
@@ -415,8 +419,9 @@ public class BrowserActivity extends FragmentActivity implements UrlModification
 	 */
 	@Override
 	public void pageReceived(String url, String title) {
-		if (prefHistory && !this.webController.isCurrentTabPrivate())
+		if (prefHistory && url.indexOf("about:") == -1 && url.indexOf("redshift:") == -1 && !this.webController.isCurrentTabPrivate())
 			historyHelper.add(this.historyDatabase, title, url);
+		
 	}
 	
 	@Override
@@ -461,6 +466,67 @@ public class BrowserActivity extends FragmentActivity implements UrlModification
 	public void close() {
 		// Cleanup cookie on exit
 		
+	}
+
+	/* (non-Javadoc)
+	 * @see ca.n4dev.redshift.events.UrlModificationAware#requestYoutubeOpening(java.lang.String)
+	 */
+	@Override
+	public boolean requestYoutubeOpening(String videoId) {
+		
+		if (videoId != null) {
+			Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse("vnd.youtube:" + videoId)); 
+	    	List<ResolveInfo> list = getPackageManager().queryIntentActivities(i, PackageManager.MATCH_DEFAULT_ONLY); 
+	    	if (list.size() == 0)
+	    		return false;
+	   
+	    	startActivity(i);
+	    	return true;
+		} else {
+			Intent i = new Intent(Intent.ACTION_MAIN);
+			i.setPackage("com.google.android.youtube");
+			i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+			
+			try {	
+			    startActivity(i);
+			    return true;
+			} catch (android.content.ActivityNotFoundException anfe) {
+			    return false;
+			}
+		}
+		
+		
+		/*
+		String vnd = "vnd.youtube" + ((videoId != null) ? ":" + videoId : "");
+		
+		Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse(vnd)); 
+    	
+    	List<ResolveInfo> list = getPackageManager().queryIntentActivities(i, PackageManager.MATCH_DEFAULT_ONLY); 
+    	if (list.size() == 0) { 
+    		i = new Intent(Intent.ACTION_VIEW, Uri.parse("http://www.youtube.com")); 
+    		list = getPackageManager().queryIntentActivities(i, PackageManager.MATCH_DEFAULT_ONLY);
+    		
+    		return false;
+    	}
+    	
+    	startActivity(i);
+		return true;
+		
+		*/
+		
+	}
+
+	/* (non-Javadoc)
+	 * @see ca.n4dev.redshift.events.UrlModificationAware#requestPlayOpening(java.lang.String)
+	 */
+	@Override
+	public boolean requestPlayOpening(String packageName) {
+		try {			
+		    startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + packageName)));
+		    return false;
+		} catch (android.content.ActivityNotFoundException anfe) {
+		    return false;
+		}
 	}
 	
 }
