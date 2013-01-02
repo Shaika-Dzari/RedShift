@@ -31,6 +31,7 @@ import android.util.Log;
 import android.view.ContextMenu;
 import android.view.KeyEvent;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
@@ -61,7 +62,6 @@ public class BrowserActivity extends FragmentActivity implements UrlModification
 	private RsWebViewController webController;
 	private ProgressBar progressBar;
 	private HistoryDbHelper historyHelper;
-	private BrowserActivity browserActivity;
 	private ListView tabList = null;
 	private LinearLayout tabLayout = null;
 	private SharedPreferences preferences;
@@ -82,13 +82,17 @@ public class BrowserActivity extends FragmentActivity implements UrlModification
 	private enum LayoutVisibility {
 		VISIBLE, GONE, TOGGLE
 	}
+	
+	private BrowserUi ui;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Log.d(TAG, "onCreate()");
-        browserActivity = this;
+        
         setContentView(R.layout.activity_browser);
+        this.webController = new RsWebViewController(this, (FrameLayout) findViewById(R.id.layout_content), this, this);
+        this.ui = new BrowserUi(this, this.webController);
                 
         // No ActionBar in browser
         getActionBar().hide();
@@ -112,7 +116,6 @@ public class BrowserActivity extends FragmentActivity implements UrlModification
         // Get progress bar to provide loading feedback
         progressBar = (ProgressBar) findViewById(R.id.browser_progressbar);
         
-        
         // Set submit event on edittext
         EditText txt = (EditText) findViewById(R.id.txtUrl);
         txt.setOnEditorActionListener(new TextView.OnEditorActionListener() {
@@ -129,12 +132,14 @@ public class BrowserActivity extends FragmentActivity implements UrlModification
 			}
 		});
         
+        /*
         // create WebController
         if (this.webController == null) {
-        	Log.d(TAG, "Creating WebController.");
+        	//Log.d(TAG, "Creating WebController.");
         	//this.webController = new RsWebController(R.id.layout_content, getFragmentManager(), this, this);
-        	this.webController = new RsWebViewController(this, (FrameLayout) findViewById(R.id.layout_content), this, this);
         	
+        	this.webController = new RsWebViewController(this, (FrameLayout) findViewById(R.id.layout_content), this, this);
+        	*/
         	if (savedInstanceState == null) {
         		int homeTab;
 				try {
@@ -149,26 +154,20 @@ public class BrowserActivity extends FragmentActivity implements UrlModification
 						this.webController.goToHome();
 					
 				} catch (TooManyTabException e) {
-					showToastMessage("Too Many Tabs");
+					ui.showToastMessage("Too Many Tabs");
 				}
         	} else {
         		Log.d(TAG, "onCreate#restoreState");
             	this.webController.restoreState(savedInstanceState);
             	this.webController.setCurrentTab(this.webController.currentId());
         	}
-        }
+        /*}*/
     }
     
     private void clearFocus(View v) {
 		InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
 	}
-    
-    private void showToastMessage(String msg) {
-    	int duration = Toast.LENGTH_LONG;
-    	Toast t = Toast.makeText(this, msg, duration);
-    	t.show();
-    }
     
     @Override
     protected void onSaveInstanceState (Bundle outState) {
@@ -200,43 +199,7 @@ public class BrowserActivity extends FragmentActivity implements UrlModification
     }
     
     public void onBtnShowPopup(View v) {
-    	PopupMenu popup = new PopupMenu(this, v);
-        popup.getMenuInflater().inflate(R.menu.activity_browser, popup.getMenu());
-        
-        popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-			
-			@Override
-			public boolean onMenuItemClick(MenuItem item) {
-				Intent intent;
-				
-				switch (item.getItemId()) {
-					
-					case R.id.menu_settings:
-						startPreferenceActivity();
-						break;
-					case R.id.menu_bookmark:
-						intent = new Intent(browserActivity, BookmarkActivity.class);
-				    	startActivityForResult(intent, BOOKMARK_RESULT_ID);
-						break;
-						
-					case R.id.menu_history:
-						intent = new Intent(browserActivity, HistoryActivity.class);
-				    	startActivityForResult(intent, HISTORY_RESULT_ID);
-						break;
-						
-			        case R.id.menu_quit:
-			        	cleanAndFinish();
-			        	break;
-			 
-				}
-				
-				return true;
-			}
-		});
-        
-        popup.show();
-        
-        //return true;
+    	ui.showPopupmenu(v);
     }
     
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -247,34 +210,7 @@ public class BrowserActivity extends FragmentActivity implements UrlModification
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
     	super.onCreateContextMenu(menu, v, menuInfo);
-    	HitTestResult result = ((RsWebView)v).getHitTestResult();
-    	
-    	if (result.getType() == HitTestResult.SRC_ANCHOR_TYPE) {
-    		menu.setHeaderTitle(result.getExtra());
-    		
-    		menu.add(0, 0, 1, "Open new Tab")
-    			.setOnMenuItemClickListener(
-    					new WebViewOnMenuItemClickListener(this, this.webController, result.getExtra()));
-    		
-    		menu.add(0, 1, 2, "Open new Private Tab")
-    			.setOnMenuItemClickListener(
-    					new WebViewOnMenuItemClickListener(this, this.webController, result.getExtra(), true));
-    	
-    	} else if (result.getType() == HitTestResult.IMAGE_TYPE || result.getType() == HitTestResult.SRC_IMAGE_ANCHOR_TYPE) {
-    		final DownloadRequest downloadRequest = new DownloadRequest(browserActivity, result.getExtra());
-    		menu.setHeaderTitle(result.getExtra());
-    		menu.add(0, 0, 1, "Save image")
-			.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
-				
-				@Override
-				public boolean onMenuItemClick(MenuItem item) {
-					downloadRequest.start();
-					return true;
-				}
-			});
-		
-    	}
-    	
+    	ui.createContextMenu(menu, v, menuInfo);
     }
     
     
@@ -323,7 +259,7 @@ public class BrowserActivity extends FragmentActivity implements UrlModification
 			((ArrayAdapter)tabList.getAdapter()).notifyDataSetChanged();
 			
 		} catch (TooManyTabException e) {
-			showToastMessage("Too many tab.");
+			ui.showToastMessage("Too many tab.");
 		}
     }
     
@@ -337,7 +273,7 @@ public class BrowserActivity extends FragmentActivity implements UrlModification
 			((ArrayAdapter)tabList.getAdapter()).notifyDataSetChanged();
 			
 		} catch (TooManyTabException e) {
-			showToastMessage("Too many tab.");
+			ui.showToastMessage("Too many tab.");
 		}
     }
     
@@ -465,7 +401,7 @@ public class BrowserActivity extends FragmentActivity implements UrlModification
     	}
 	}
 	
-	private void cleanAndFinish() {
+	void cleanAndFinish() {
 		this.webController.close();
 		finish();
 	}

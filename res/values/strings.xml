@@ -35,6 +35,13 @@
     <string name="menu_history_thismonth">This month</string>
     <string name="menu_history_infinity">Infinity</string>
     
+    <!-- Webview Context Menu -->
+    <string name="menu_wl_newtab_desc">Open in new tab</string>
+    <string name="menu_wl_newprivtab_desc">Open in new private tab</string>
+    <string name="menu_wl_share_desc">Share</string>
+    <string name="menu_wi_saveimage_desc">Save image</string>
+    
+    
     <string name="menu_bo_edit">Edit</string>
     <string name="menu_bo_delete">Delete</string>
 

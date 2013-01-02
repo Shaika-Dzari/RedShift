@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <group android:id="@+id/menu_web_link">
+        <item android:id="@+id/menu_wl_newtab" android:title="@string/menu_wl_newtab_desc" />
+        <item android:id="@+id/menu_wl_newprivtab" android:title="@string/menu_wl_newprivtab_desc" />
+        <item android:id="@+id/menu_wl_share" android:title="@string/menu_wl_share_desc" />
+    </group>
+    <group android:id="@+id/menu_web_image"> 
+        <item android:id="@+id/menu_wi_save" android:title="@string/menu_wi_saveimage_desc" />
+    </group>
+</menu>

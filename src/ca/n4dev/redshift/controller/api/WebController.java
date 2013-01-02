@@ -11,7 +11,10 @@
  */ 
 package ca.n4dev.redshift.controller.api;
 
+import android.os.Message;
+
 public interface WebController extends TabController, NavigationController {
 	public void clearCache();
 	public void clearformData();
+	public void handleMessage(Message msg);
 }

@@ -14,7 +14,8 @@
 	    <FrameLayout android:id="@+id/layout_content"
 	        		 android:layout_width="fill_parent"
 	        		 android:layout_height="fill_parent"
-	        		 android:layout_gravity="center_horizontal|top" />
+	        		 android:layout_gravity="center_horizontal|top"
+	        		 android:clickable="true" />
 	    <!-- Floating Tab menu -->
 		<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     			android:id="@+id/layout_tabmenu"

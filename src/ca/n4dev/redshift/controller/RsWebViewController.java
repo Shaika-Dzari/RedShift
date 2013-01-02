@@ -21,6 +21,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Message;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.View;
@@ -31,6 +32,7 @@ import android.webkit.WebSettings;
 import android.webkit.WebSettings.RenderPriority;
 import android.webkit.WebView;
 import android.widget.FrameLayout;
+import android.widget.ProgressBar;
 import ca.n4dev.redshift.SettingsActivity;
 import ca.n4dev.redshift.controller.api.NavigationController;
 import ca.n4dev.redshift.controller.api.TabController;
@@ -64,6 +66,7 @@ public class RsWebViewController implements WebController, CloseAware {
 	private FrameLayout parentLayout;
 	private Context context;
 	
+	private ProgressBar bar;
 	
 	
 	private RsSettingsFactory settingsFactory = null;
@@ -78,7 +81,6 @@ public class RsWebViewController implements WebController, CloseAware {
 
 		this.settingsFactory = RsSettingsFactory.getInstance(context);
 		this.settingsFactory.syncSettings();
-		
 	}
 	
 	public void load(String html) {
@@ -354,5 +356,13 @@ public class RsWebViewController implements WebController, CloseAware {
 		} else {
 			goTo(h);
 		}
+	}
+
+	/* (non-Javadoc)
+	 * @see ca.n4dev.redshift.controller.api.WebController#handleMessage(android.os.Message)
+	 */
+	@Override
+	public void handleMessage(Message msg) {
+		getCurrentView().requestFocusNodeHref(msg);
 	}
 }
