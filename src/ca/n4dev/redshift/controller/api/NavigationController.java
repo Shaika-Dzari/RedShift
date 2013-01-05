@@ -14,7 +14,7 @@ package ca.n4dev.redshift.controller.api;
 public interface NavigationController {
 	public boolean goBack();
 	public boolean goForward();
-	public void goTo(String url);
+	public void goTo(String url, boolean notify);
 	public void goToHome();
 	public void refresh();
 }

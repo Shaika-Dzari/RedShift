@@ -66,16 +66,14 @@ public class RsWebViewController implements WebController, CloseAware {
 	private FrameLayout parentLayout;
 	private Context context;
 	
-	private ProgressBar bar;
-	
 	
 	private RsSettingsFactory settingsFactory = null;
 	
 	
-	public RsWebViewController(Context context, FrameLayout parentLayout, UrlModificationAware urlModificationAware, ProgressAware progressAware) {
+	public RsWebViewController(Context context, FrameLayout parentLayout, UrlModificationAware urlModificationAware) {
 		this.parentLayout = parentLayout;
 		this.urlModificationAware = urlModificationAware;
-		this.progressAware = progressAware;
+		
 		this.context = context;
 		this.webviews = new ArrayList<RsWebView>();
 
@@ -113,7 +111,9 @@ public class RsWebViewController implements WebController, CloseAware {
 	}
 
 	@Override
-	public void goTo(String url) {
+	public void goTo(String url, boolean notify) {
+		if (notify)
+			urlModificationAware.urlHasChanged(url);
 		getCurrentView().loadUrl(url);
 	}
 
@@ -354,7 +354,7 @@ public class RsWebViewController implements WebController, CloseAware {
 		if (h.equalsIgnoreCase(RsSettingsFactory.REDSHIFT_HOMEPAGE)) {
 			load(HomeFactory.createhomeFromBookmark(null));
 		} else {
-			goTo(h);
+			goTo(h, false);
 		}
 	}
 
@@ -364,5 +364,12 @@ public class RsWebViewController implements WebController, CloseAware {
 	@Override
 	public void handleMessage(Message msg) {
 		getCurrentView().requestFocusNodeHref(msg);
+	}
+
+	/**
+	 * @param progressAware the progressAware to set
+	 */
+	public void setProgressAware(ProgressAware progressAware) {
+		this.progressAware = progressAware;
 	}
 }

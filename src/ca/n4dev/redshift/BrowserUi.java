@@ -11,13 +11,16 @@
  */ 
 package ca.n4dev.redshift;
 
+import java.lang.ref.WeakReference;
 import java.util.HashMap;
 
 import ca.n4dev.redshift.R;
+import ca.n4dev.redshift.controller.RsWebViewController;
 import ca.n4dev.redshift.controller.api.NavigationController;
 import ca.n4dev.redshift.controller.api.TooManyTabException;
 import ca.n4dev.redshift.controller.api.WebController;
 import ca.n4dev.redshift.controller.container.RsWebView;
+import ca.n4dev.redshift.events.ProgressAware;
 import ca.n4dev.redshift.events.WebViewOnMenuItemClickListener;
 import ca.n4dev.redshift.utils.DownloadRequest;
 import android.app.Activity;
@@ -33,7 +36,7 @@ import android.widget.PopupMenu;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
-public class BrowserUi {
+public class BrowserUi implements ProgressAware {
 	
 	private static final int BOOKMARK_RESULT_ID = 9990;
 	private static final int HISTORY_RESULT_ID = 9991;
@@ -49,6 +52,12 @@ public class BrowserUi {
 	private WebController controller;
 	
 	private class MyHandler extends Handler {
+		private WeakReference<WebController> reference;
+		
+		public MyHandler(WebController web) {
+			this.reference = new WeakReference<WebController>(web);
+		}
+		
 		@Override
 	    public void handleMessage(Message msg) {
 			super.handleMessage(msg);
@@ -57,10 +66,10 @@ public class BrowserUi {
             boolean privateBrowing = msg.what == REQUEST_NEW_PRIVATE_TAB;
             
 			try {
-				int id = controller.newTab(parent, privateBrowing);
-				controller.setCurrentTab(id);
-				controller.goTo(url);
-				parent.urlHasChanged(url);
+				int id = this.reference.get().newTab(parent, privateBrowing);
+				this.reference.get().setCurrentTab(id);
+				this.reference.get().goTo(url, true);
+				//parent.urlHasChanged(url);
 				
 			} catch (TooManyTabException e) {
 				showToastMessage(TOOMANYTAB);
@@ -73,7 +82,8 @@ public class BrowserUi {
 	public BrowserUi(BrowserActivity parent, WebController controller) {
 		this.parent = parent;
 		this.controller = controller;
-		handler = new MyHandler();
+		((RsWebViewController)this.controller).setProgressAware(this);
+		handler = new MyHandler(controller);
 	}
 	
 	public void showPopupmenu(View v) {
@@ -141,7 +151,7 @@ public class BrowserUi {
 					try {
 						int id = controller.newTab(parent, false);
 						controller.setCurrentTab(id);
-						controller.goTo(extra);
+						controller.goTo(extra, false);
 					} catch (TooManyTabException e) {
 						showToastMessage(TOOMANYTAB);
 					}
@@ -155,7 +165,7 @@ public class BrowserUi {
 					try {
 						int id = controller.newTab(parent, true);
 						controller.setCurrentTab(id);
-						controller.goTo(extra);
+						controller.goTo(extra, false);
 					} catch (TooManyTabException e) {
 						showToastMessage(TOOMANYTAB);
 					}
@@ -233,4 +243,18 @@ public class BrowserUi {
     	Toast t = Toast.makeText(parent, msg, duration);
     	t.show();
     }
+
+	@Override
+	public void hasProgressTo(int progress) {
+		
+		if (progress < 100 && progressBar.getVisibility() == ProgressBar.INVISIBLE){
+			progressBar.setVisibility(ProgressBar.VISIBLE);
+        }
+		
+		progressBar.setProgress(progress);
+		
+        if(progress == 100) {
+        	progressBar.setVisibility(ProgressBar.INVISIBLE);
+        }
+	}
 }

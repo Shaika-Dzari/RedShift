@@ -46,13 +46,13 @@ public class WebViewOnMenuItemClickListener implements MenuItem.OnMenuItemClickL
 				
 				int id = webController.newTab(this.parent, false);
 				webController.setCurrentTab(id);
-				webController.goTo(url);
+				webController.goTo(url, false);
 				
 			} else {
 				
 				int id = webController.newTab(this.parent, true);
 				webController.setCurrentTab(id);
-				webController.goTo(url);
+				webController.goTo(url, false);
 			}
 			
 		} catch (TooManyTabException e) {

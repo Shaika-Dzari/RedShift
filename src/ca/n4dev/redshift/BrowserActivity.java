@@ -50,8 +50,7 @@ import android.support.v4.app.FragmentActivity;
 
 
 @SuppressLint("SetJavaScriptEnabled")
-public class BrowserActivity extends FragmentActivity implements UrlModificationAware, 
-																	 ProgressAware, 
+public class BrowserActivity extends FragmentActivity implements UrlModificationAware,
 																	 OnListClickAware {
 	
 	private static final String TAG = "BrowserActivity";
@@ -91,7 +90,7 @@ public class BrowserActivity extends FragmentActivity implements UrlModification
         Log.d(TAG, "onCreate()");
         
         setContentView(R.layout.activity_browser);
-        this.webController = new RsWebViewController(this, (FrameLayout) findViewById(R.id.layout_content), this, this);
+        this.webController = new RsWebViewController(this, (FrameLayout) findViewById(R.id.layout_content), this);
         this.ui = new BrowserUi(this, this.webController);
                 
         // No ActionBar in browser
@@ -125,7 +124,7 @@ public class BrowserActivity extends FragmentActivity implements UrlModification
 					clearFocus(v);					
 					String url = v.getText().toString();
 					url = UrlUtils.sanitize(url);
-					webController.goTo(url);
+					webController.goTo(url, false);
 					return true;
 				}
 				return false;
@@ -147,8 +146,8 @@ public class BrowserActivity extends FragmentActivity implements UrlModification
 					this.webController.setCurrentTab(homeTab);  
 					
 					if (initUrl != null) {
-						urlHasChanged(initUrl);
-						this.webController.goTo(initUrl);
+						//urlHasChanged(initUrl);
+						this.webController.goTo(initUrl, true);
 					}
 					else
 						this.webController.goToHome();
@@ -191,8 +190,8 @@ public class BrowserActivity extends FragmentActivity implements UrlModification
     			url = data.getStringExtra("url");
     		
 	    		if (url != null && !"".equals(url)) {
-	    			urlHasChanged(url);
-	    			webController.goTo(url);
+	    			//urlHasChanged(url);
+	    			webController.goTo(url, true);
 	    		}
     		}
     	}
@@ -333,24 +332,6 @@ public class BrowserActivity extends FragmentActivity implements UrlModification
         // system behavior (probably exit the activity)
         return super.onKeyDown(keyCode, event);
     }
-
-	/* (non-Javadoc)
-	 * @see ca.n4dev.redshift.events.ProgressAware#hasProgressTo(int)
-	 */
-	@Override
-	public void hasProgressTo(int progress) {
-		
-		if (progress < 100 && progressBar.getVisibility() == ProgressBar.INVISIBLE){
-			progressBar.setVisibility(ProgressBar.VISIBLE);
-        }
-		
-		progressBar.setProgress(progress);
-		
-        if(progress == 100) {
-        	progressBar.setVisibility(ProgressBar.INVISIBLE);
-        }
-	}
-	
 	
 	private void startPreferenceActivity() {
 		Intent intent = new Intent(this, SettingsActivity.class);
