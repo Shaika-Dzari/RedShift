@@ -9,13 +9,10 @@ import ca.n4dev.redshift.controller.RsWebViewController;
 import ca.n4dev.redshift.controller.api.TooManyTabException;
 import ca.n4dev.redshift.controller.container.RsWebView;
 import ca.n4dev.redshift.events.OnListClickAware;
-import ca.n4dev.redshift.events.ProgressAware;
 import ca.n4dev.redshift.events.UrlModificationAware;
-import ca.n4dev.redshift.events.WebViewOnMenuItemClickListener;
 import ca.n4dev.redshift.fragment.AddBookmarkDialog;
 import ca.n4dev.redshift.persistence.HistoryDbHelper;
 import ca.n4dev.redshift.persistence.SettingsKeys;
-import ca.n4dev.redshift.utils.DownloadRequest;
 import ca.n4dev.redshift.utils.UrlUtils;
 import android.net.Uri;
 import android.os.Bundle;
@@ -31,21 +28,16 @@ import android.util.Log;
 import android.view.ContextMenu;
 import android.view.KeyEvent;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
-import android.webkit.WebView.HitTestResult;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.PopupMenu;
-import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 import android.support.v4.app.FragmentActivity;
 
 
@@ -59,7 +51,6 @@ public class BrowserActivity extends FragmentActivity implements UrlModification
 	public static final boolean LOG_ENABLE = true;
 	
 	private RsWebViewController webController;
-	private ProgressBar progressBar;
 	private HistoryDbHelper historyHelper;
 	private ListView tabList = null;
 	private LinearLayout tabLayout = null;
@@ -112,9 +103,6 @@ public class BrowserActivity extends FragmentActivity implements UrlModification
         	initUrl = data.toString();
         } 
         
-        // Get progress bar to provide loading feedback
-        progressBar = (ProgressBar) findViewById(R.id.browser_progressbar);
-        
         // Set submit event on edittext
         EditText txt = (EditText) findViewById(R.id.txtUrl);
         txt.setOnEditorActionListener(new TextView.OnEditorActionListener() {
@@ -131,36 +119,28 @@ public class BrowserActivity extends FragmentActivity implements UrlModification
 			}
 		});
         
-        /*
-        // create WebController
-        if (this.webController == null) {
-        	//Log.d(TAG, "Creating WebController.");
-        	//this.webController = new RsWebController(R.id.layout_content, getFragmentManager(), this, this);
-        	
-        	this.webController = new RsWebViewController(this, (FrameLayout) findViewById(R.id.layout_content), this, this);
-        	*/
-        	if (savedInstanceState == null) {
-        		int homeTab;
-				try {
-					homeTab = this.webController.newTab(this, false);
-					this.webController.setCurrentTab(homeTab);  
-					
-					if (initUrl != null) {
-						//urlHasChanged(initUrl);
-						this.webController.goTo(initUrl, true);
-					}
-					else
-						this.webController.goToHome();
-					
-				} catch (TooManyTabException e) {
-					ui.showToastMessage("Too Many Tabs");
+    	if (savedInstanceState == null) {
+    		int homeTab;
+			try {
+				homeTab = this.webController.newTab(this, false);
+				this.webController.setCurrentTab(homeTab);  
+				
+				if (initUrl != null) {
+					//urlHasChanged(initUrl);
+					this.webController.goTo(initUrl, true);
 				}
-        	} else {
-        		Log.d(TAG, "onCreate#restoreState");
-            	this.webController.restoreState(savedInstanceState);
-            	this.webController.setCurrentTab(this.webController.currentId());
-        	}
-        /*}*/
+				else
+					this.webController.goToHome();
+				
+			} catch (TooManyTabException e) {
+				ui.showToastMessage("Too Many Tabs");
+			}
+    	} else {
+    		Log.d(TAG, "onCreate#restoreState");
+        	this.webController.restoreState(savedInstanceState);
+        	this.webController.setCurrentTab(this.webController.currentId());
+    	}
+        
     }
     
     private void clearFocus(View v) {
@@ -387,65 +367,4 @@ public class BrowserActivity extends FragmentActivity implements UrlModification
 		finish();
 	}
 
-	/* (non-Javadoc)
-	 * @see ca.n4dev.redshift.events.UrlModificationAware#requestYoutubeOpening(java.lang.String)
-	 */
-	@Override
-	public boolean requestYoutubeOpening(String videoId) {
-		
-		if (videoId != null) {
-			Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse("vnd.youtube:" + videoId)); 
-	    	List<ResolveInfo> list = getPackageManager().queryIntentActivities(i, PackageManager.MATCH_DEFAULT_ONLY); 
-	    	if (list.size() == 0)
-	    		return false;
-	   
-	    	startActivity(i);
-	    	return true;
-		} else {
-			Intent i = new Intent(Intent.ACTION_MAIN);
-			i.setPackage("com.google.android.youtube");
-			i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-			
-			try {	
-			    startActivity(i);
-			    return true;
-			} catch (android.content.ActivityNotFoundException anfe) {
-			    return false;
-			}
-		}
-		
-		
-		/*
-		String vnd = "vnd.youtube" + ((videoId != null) ? ":" + videoId : "");
-		
-		Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse(vnd)); 
-    	
-    	List<ResolveInfo> list = getPackageManager().queryIntentActivities(i, PackageManager.MATCH_DEFAULT_ONLY); 
-    	if (list.size() == 0) { 
-    		i = new Intent(Intent.ACTION_VIEW, Uri.parse("http://www.youtube.com")); 
-    		list = getPackageManager().queryIntentActivities(i, PackageManager.MATCH_DEFAULT_ONLY);
-    		
-    		return false;
-    	}
-    	
-    	startActivity(i);
-		return true;
-		
-		*/
-		
-	}
-
-	/* (non-Javadoc)
-	 * @see ca.n4dev.redshift.events.UrlModificationAware#requestPlayOpening(java.lang.String)
-	 */
-	@Override
-	public boolean requestPlayOpening(String packageName) {
-		try {			
-		    startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + packageName)));
-		    return false;
-		} catch (android.content.ActivityNotFoundException anfe) {
-		    return false;
-		}
-	}
-	
 }

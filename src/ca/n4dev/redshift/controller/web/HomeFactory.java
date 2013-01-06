@@ -13,25 +13,56 @@ package ca.n4dev.redshift.controller.web;
 
 import java.util.List;
 
+import android.content.Context;
+
 import ca.n4dev.redshift.bookmark.Bookmark;
+import ca.n4dev.redshift.persistence.BookmarkDbHelper;
 
 public class HomeFactory {
 	
+	private String homePage = null;
+	private Context context = null;
+	
 	private static final String HOME = "<!DOCTYPE html>" +
 										  "<html>" +
-										  "<head><title>about:home</title></head>" +
+										  "<head>" +
+										  "<title>redshift:home</title>" +
+										  "<meta name='viewport' content='width=800' />" +
+										  "<link type='text/css' rel='stylesheet' href='home.css' />" +
+										  "</head>" +
 										  "<body>" +
 										  "<div id='main'>" +
 										  "<img id='imglogo' src='redShift_logo.png' alt='logo' />" +
 										  "<br />" +
-										  "home..." +
+										  "__BOOKMARK__" +
 										  "</div>" +
 										  "</body>"+
 										  "</html>";
 
-	public static String createhomeFromBookmark(List<Bookmark> bookmarks) {
-		String home = HOME;
+	public HomeFactory(Context context) {
+		this.context = context;
+	}
+	
+	public String getHomePage(boolean refresh) {
 		
-		return home;
+		if (homePage == null || refresh) {
+			StringBuilder str = new StringBuilder();
+			BookmarkDbHelper helper = new BookmarkDbHelper(context);
+			helper.openDb();
+			List<Bookmark> lb = helper.getHomeBookmark();
+			helper.closeDb();
+			
+			for (Bookmark b : lb) {
+				str.append("<a href='" + b.url + "' class='dial'>");
+				str.append("<span class='title'>" + b.title + "</span><br />");
+				str.append("<span class='url'>" + b.url + "</span>");
+				str.append("</a>");
+				
+			}
+			
+			homePage = HOME.replace("__BOOKMARK__", str.toString());
+		}
+		
+		return homePage;
 	}
 }

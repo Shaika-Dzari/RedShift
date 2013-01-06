@@ -12,25 +12,19 @@
 package ca.n4dev.redshift;
 
 import java.lang.ref.WeakReference;
-import java.util.HashMap;
 
 import ca.n4dev.redshift.R;
 import ca.n4dev.redshift.controller.RsWebViewController;
-import ca.n4dev.redshift.controller.api.NavigationController;
 import ca.n4dev.redshift.controller.api.TooManyTabException;
 import ca.n4dev.redshift.controller.api.WebController;
 import ca.n4dev.redshift.controller.container.RsWebView;
 import ca.n4dev.redshift.events.ProgressAware;
-import ca.n4dev.redshift.events.WebViewOnMenuItemClickListener;
-import ca.n4dev.redshift.utils.DownloadRequest;
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Handler;
 import android.os.Message;
 import android.view.ContextMenu;
 import android.view.MenuItem;
 import android.view.View;
-import android.webkit.WebView;
 import android.webkit.WebView.HitTestResult;
 import android.widget.PopupMenu;
 import android.widget.ProgressBar;
@@ -84,6 +78,8 @@ public class BrowserUi implements ProgressAware {
 		this.controller = controller;
 		((RsWebViewController)this.controller).setProgressAware(this);
 		handler = new MyHandler(controller);
+		
+		progressBar = (ProgressBar)parent.findViewById(R.id.browser_progressbar);
 	}
 	
 	public void showPopupmenu(View v) {
@@ -195,47 +191,6 @@ public class BrowserUi implements ProgressAware {
 			});
 		}
 		
-		/*
-    	if (type == HitTestResult.SRC_ANCHOR_TYPE) {
-    		
-    		menu.add(0, 0, 1, "Open new Tab")
-    			.setOnMenuItemClickListener(
-    					new WebViewOnMenuItemClickListener(parent, controller, result.getExtra()));
-    		
-    		menu.add(0, 1, 2, "Open new Private Tab")
-    			.setOnMenuItemClickListener(
-    					new WebViewOnMenuItemClickListener(parent, controller, result.getExtra(), true));
-    	
-    	} else if (type == HitTestResult.IMAGE_TYPE || type == HitTestResult.SRC_IMAGE_ANCHOR_TYPE) {
-    		
-    		final DownloadRequest downloadRequest = new DownloadRequest(parent, result.getExtra());
-    		
-    		menu.add(0, 0, 1, "Save image")
-			.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
-				
-				@Override
-				public boolean onMenuItemClick(MenuItem item) {
-					downloadRequest.start();
-					return true;
-				}
-			});
-		
-    		menu.add(0, 1, 2, "test").setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
-				
-				@Override
-				public boolean onMenuItemClick(MenuItem item) {
-					
-					Message msg = handler.obtainMessage(FOCUS_NODE_HREF);
-					msg.setTarget(handler);
-					
-					controller.handleMessage(msg);
-					
-					return true;
-					
-				}
-			});
-    	}
-    	*/
 	}
 	
 	public void showToastMessage(String msg) {

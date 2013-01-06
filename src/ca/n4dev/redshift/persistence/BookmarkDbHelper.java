@@ -3,8 +3,11 @@
  */
 package ca.n4dev.redshift.persistence;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
+import ca.n4dev.redshift.bookmark.Bookmark;
 import ca.n4dev.redshift.persistence.api.DatabaseConnection;
 import ca.n4dev.redshift.persistence.api.Searchable;
 import ca.n4dev.redshift.utils.PeriodUtils;
@@ -158,6 +161,34 @@ public class BookmarkDbHelper extends SQLiteOpenHelper implements Searchable, Da
 		
 	}
 	
+	public List<Bookmark> getHomeBookmark() {
+		List<Bookmark> l = new ArrayList<Bookmark>();
+		Bookmark b;
+		Cursor c = db.query(BookmarkDbHelper.BOOKMARK_TABLE_NAME,
+				BookmarkDbHelper.getBookmarkTableColumns(), 
+				BOOKMARK_SHOWINHOME + "=?", 
+				new String[]{"1"}, 
+				null, 
+				null, 
+				BOOKMARK_CREATIONDATE + " DESC");
+		
+		if (c.getCount() > 0) {
+			
+			
+			
+			while (c.moveToNext()) {
+				b = new Bookmark();
+				b.title = c.getString(c.getColumnIndex(BOOKMARK_TITLE));
+				b.url = c.getString(c.getColumnIndex(BOOKMARK_URL));
+				l.add(b);
+			}
+			c.close();
+		}
+		
+		
+		return l;
+	}
+	
 	public void delete(Long bookmarkId) {
 		db.delete(BOOKMARK_TABLE_NAME, BOOKMARK_ID + " = ?", new String[]{"" + bookmarkId});
 	}
@@ -169,7 +200,7 @@ public class BookmarkDbHelper extends SQLiteOpenHelper implements Searchable, Da
 
 	@Override
 	public void closeDb() {
-		if (this.db != null)
+		if (this.db != null && this.db.isOpen())
 			this.db.close();
 	}
 }

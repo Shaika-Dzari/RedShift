@@ -122,13 +122,15 @@ public class AddBookmarkDialog extends DialogFragment {
 	@Override
 	public void onResume(){
         super.onResume();
-        this.dbHelper.openDb();
+        if (this.dbHelper != null)
+        	this.dbHelper.openDb();
     }
     
     @Override
 	public void onPause(){
         super.onPause();
-        this.dbHelper.closeDb();
+        if (this.dbHelper != null)
+        	this.dbHelper.closeDb();
     }
 
 	/**

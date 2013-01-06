@@ -4,4 +4,7 @@
     <color name="holoDarkLight">#ff292929</color>
     <color name="transparent">#00000000</color>
     <color name="red">#f40000</color>
+    <color name="blue">#0090ba</color>
+    <color name="green">#00ba1f</color>
+    <color name="yellow">#e7ef00</color>
 </resources>

@@ -19,23 +19,15 @@ import java.util.List;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Message;
-import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.View;
-import android.webkit.CookieManager;
-import android.webkit.CookieSyncManager;
+import android.webkit.WebBackForwardList;
 import android.webkit.WebChromeClient;
-import android.webkit.WebSettings;
-import android.webkit.WebSettings.RenderPriority;
+import android.webkit.WebHistoryItem;
 import android.webkit.WebView;
 import android.widget.FrameLayout;
-import android.widget.ProgressBar;
-import ca.n4dev.redshift.SettingsActivity;
-import ca.n4dev.redshift.controller.api.NavigationController;
-import ca.n4dev.redshift.controller.api.TabController;
 import ca.n4dev.redshift.controller.api.TooManyTabException;
 import ca.n4dev.redshift.controller.api.WebController;
 import ca.n4dev.redshift.controller.container.RsWebView;
@@ -44,7 +36,7 @@ import ca.n4dev.redshift.controller.web.RsWebViewClient;
 import ca.n4dev.redshift.events.CloseAware;
 import ca.n4dev.redshift.events.ProgressAware;
 import ca.n4dev.redshift.events.UrlModificationAware;
-import ca.n4dev.redshift.utils.UserAgent;
+import ca.n4dev.redshift.utils.SpecialUrlSupport;
 
 @SuppressLint({ "UseSparseArrays", "SetJavaScriptEnabled" })
 public class RsWebViewController implements WebController, CloseAware {
@@ -65,7 +57,9 @@ public class RsWebViewController implements WebController, CloseAware {
 	private ProgressAware progressAware;
 	private FrameLayout parentLayout;
 	private Context context;
-	
+	private HomeFactory homeFactory;
+	private boolean refreshingHome = false;
+	private SpecialUrlSupport specialUrlSupport = null;
 	
 	private RsSettingsFactory settingsFactory = null;
 	
@@ -79,10 +73,13 @@ public class RsWebViewController implements WebController, CloseAware {
 
 		this.settingsFactory = RsSettingsFactory.getInstance(context);
 		this.settingsFactory.syncSettings();
+		
+		this.homeFactory = new HomeFactory(context);
+		this.specialUrlSupport = new SpecialUrlSupport(context);
 	}
 	
 	public void load(String html) {
-		getCurrentView().loadDataWithBaseURL("file:///android_asset/", html, "text/html", "UTF-8", null);
+		getCurrentView().loadDataWithBaseURL("file:///android_asset/", html, "text/html", "UTF-8", "redshift:home");
 		//getCurrentView().loadData(html, "text/html; charset=UTF-8", null);
 	}
 	
@@ -90,8 +87,18 @@ public class RsWebViewController implements WebController, CloseAware {
 	public boolean goBack() {
 		RsWebView w = getCurrentView();
 		if (w.canGoBack()) {
-			w.goBack();
-			notifyUrlChange(w);
+			
+			// Check if we need to call homepage
+			WebBackForwardList bflist = w.copyBackForwardList();
+			WebHistoryItem i = bflist.getItemAtIndex(bflist.getCurrentIndex()-1);
+			
+			if (i.getUrl().equalsIgnoreCase("redshift:home")) {
+				goToHome();
+				this.urlModificationAware.urlHasChanged("redshift:home");
+			} else {
+				w.goBack();
+				notifyUrlChange(w);
+			}
 			return true;
 		}
 
@@ -130,7 +137,7 @@ public class RsWebViewController implements WebController, CloseAware {
 		
 		int id = ++counter;
 		RsWebView w = new RsWebView(context, 
-									new RsWebViewClient(this.urlModificationAware), 
+									new RsWebViewClient(this.urlModificationAware, this.specialUrlSupport), 
 									new WebChromeClient() {
 										@Override
 										public void onProgressChanged(WebView view, int progress) {
@@ -235,7 +242,7 @@ public class RsWebViewController implements WebController, CloseAware {
 				
 				
 				w = new RsWebView(context, 
-						new RsWebViewClient(this.urlModificationAware), 
+						new RsWebViewClient(this.urlModificationAware, this.specialUrlSupport), 
 						new WebChromeClient() {
 							@Override
 							public void onProgressChanged(WebView view, int progress) {
@@ -312,6 +319,7 @@ public class RsWebViewController implements WebController, CloseAware {
 	
 	public void resume() {
 		this.settingsFactory.resume();
+		refreshingHome = true;
 	}
 
 	/* (non-Javadoc)
@@ -352,7 +360,7 @@ public class RsWebViewController implements WebController, CloseAware {
 		this.urlModificationAware.urlHasChanged(h);
 		
 		if (h.equalsIgnoreCase(RsSettingsFactory.REDSHIFT_HOMEPAGE)) {
-			load(HomeFactory.createhomeFromBookmark(null));
+			load(homeFactory.getHomePage(refreshingHome));
 		} else {
 			goTo(h, false);
 		}
@@ -372,4 +380,5 @@ public class RsWebViewController implements WebController, CloseAware {
 	public void setProgressAware(ProgressAware progressAware) {
 		this.progressAware = progressAware;
 	}
+
 }
