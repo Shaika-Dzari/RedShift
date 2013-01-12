@@ -1,8 +1,6 @@
 package ca.n4dev.redshift;
 
 
-import java.util.List;
-
 import ca.n4dev.redshift.R;
 import ca.n4dev.redshift.adapter.TabListAdapter;
 import ca.n4dev.redshift.controller.RsWebViewController;
@@ -22,8 +20,6 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
-import android.content.pm.ResolveInfo;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.KeyEvent;
@@ -99,10 +95,13 @@ public class BrowserActivity extends FragmentActivity implements UrlModification
         String action = intent.getAction();
         Uri data = intent.getData();
         
+        
         // Are we coming from another app with intent ?
         if (data != null && action.equalsIgnoreCase("android.intent.action.VIEW")) {
         	initUrl = data.toString();
         } 
+        
+        
         
         // Set submit event on edittext
         EditText txt = (EditText) findViewById(R.id.txtUrl);
@@ -126,12 +125,25 @@ public class BrowserActivity extends FragmentActivity implements UrlModification
 				homeTab = this.webController.newTab(this, false);
 				this.webController.setCurrentTab(homeTab);  
 				
+				
+				if (initUrl == null) {
+					this.webController.goToHome();
+				} else if (initUrl.equalsIgnoreCase("redshift:about")) {
+					urlHasChanged("redshift:about");
+					this.webController.goTo("file:///android_asset/about.html", false);
+				} else {
+					this.webController.goTo(initUrl, true);
+				} 
+				
+				/*
 				if (initUrl != null) {
+					
 					//urlHasChanged(initUrl);
 					this.webController.goTo(initUrl, true);
 				}
 				else
 					this.webController.goToHome();
+				*/
 				
 			} catch (TooManyTabException e) {
 				ui.showToastMessage("Too Many Tabs");
@@ -343,12 +355,33 @@ public class BrowserActivity extends FragmentActivity implements UrlModification
 	}
 	
 	@Override
+	public void onNewIntent(Intent intent) {
+		Log.d(TAG, "onnewIntent");
+		String exd = intent.getStringExtra("url");
+        
+        // Are we coming from another app with intent ?
+        if (exd != null && exd.equals("redshift:about")) {
+        	
+        	try {
+        		
+				int t = this.webController.newTab(this, false);
+				this.webController.setCurrentTab(t);
+				this.webController.goTo("file:///android_asset/about.html", false);
+				urlHasChanged("redshift:about");
+			} catch (TooManyTabException e) {
+				e.printStackTrace();
+			}
+        	
+        } 
+	}
+	
+	@Override
 	public void onResume() {
 		super.onResume();
 		this.historyHelper.openDb();
 		prefHistory = preferences.getBoolean(SettingsKeys.KEY_HISTORY, true);
 		
-		this.webController.resume();		
+		this.webController.resume();	
 	}
 
 

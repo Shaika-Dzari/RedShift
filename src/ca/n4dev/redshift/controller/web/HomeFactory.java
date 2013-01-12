@@ -28,7 +28,7 @@ public class HomeFactory {
 										  "<head>" +
 										  "<title>redshift:home</title>" +
 										  "<meta name='viewport' content='width=800' />" +
-										  "<link type='text/css' rel='stylesheet' href='home.css' />" +
+										  "<link type='text/css' rel='stylesheet' href='style.css' />" +
 										  "</head>" +
 										  "<body>" +
 										  "<div id='main'>" +

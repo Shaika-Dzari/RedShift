@@ -11,7 +11,7 @@
     <!-- Content Description -->
     <string name="desc_btnBack">Back</string>
     <string name="desc_btnSetting">Settings</string>
-    <string name="hint_txtUrl">about:home</string>
+    <string name="hint_txtUrl">redshift:home</string>
     <string name="separator">separator</string>
     <string name="btn_hist_delete_cd">Delete</string>
     <string name="btn_tab_close_cd">Close</string>

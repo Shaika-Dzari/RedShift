@@ -11,6 +11,8 @@
  */ 
 package ca.n4dev.redshift.fragment;
 
+import ca.n4dev.redshift.BrowserActivity;
+import ca.n4dev.redshift.HistoryActivity;
 import ca.n4dev.redshift.R;
 import ca.n4dev.redshift.SettingsActivity;
 import ca.n4dev.redshift.R.xml;
@@ -19,11 +21,14 @@ import ca.n4dev.redshift.persistence.SettingsKeys;
 import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
+import android.net.Uri;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.util.Log;
+import android.widget.SeekBar;
 
 public class SettingsFragment extends PreferenceFragment {
 	
@@ -88,6 +93,22 @@ public class SettingsFragment extends PreferenceFragment {
 				AlertDialog dialog = builder.create();
 				dialog.show();
 				
+				return true;
+			}
+        });
+        
+        Preference about = (Preference) findPreference(SettingsKeys.KEY_ABOUT);
+        about.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+			@Override
+			public boolean onPreferenceClick(Preference preference) {
+				
+				Intent i = new Intent(getActivity(), BrowserActivity.class);
+				
+				i.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+				i.putExtra("url","redshift:about");
+				startActivity(i);
+				
+				//getActivity().finish();
 				return true;
 			}
         });

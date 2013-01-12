@@ -350,6 +350,7 @@ public class RsWebViewController implements WebController, CloseAware {
 			w.clearFormData();
 		}
 	}
+	
 
 	/* (non-Javadoc)
 	 * @see ca.n4dev.redshift.controller.api.NavigationController#goToHome()

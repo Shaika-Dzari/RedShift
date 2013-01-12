@@ -89,10 +89,14 @@
 	    
     </PreferenceCategory>
     
-    <Preference android:title="@string/pref_about">
-        <intent android:action="android.intent.action.MAIN"
+    <Preference android:title="@string/pref_about" android:key="pref_about">
+        <!-- 
+        <intent android:action="android.intent.action.VIEW"
         		android:targetPackage="ca.n4dev.redshift"
-        		android:targetClass="ca.n4dev.redshift.AboutActivity" />
+        		android:targetClass="ca.n4dev.redshift.BrowserActivity"
+        		android:data="redshift:about"
+        		android:mimeType="text/html" />
+        		 -->
     </Preference>
 
 </PreferenceScreen>

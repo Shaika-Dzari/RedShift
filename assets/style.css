@@ -23,9 +23,28 @@ a.dial .title {
 	font-size:2em;
 	color:#ddd;
 }
-a.dial .url {
+.url {
 	font-size:1.2em;
 	color:#33B5E5;
 }
 
+div.about {
+	text-align:left;
+}
 
+span.title {
+	font-size:2em;
+	color:#fff;
+	text-decoration:underline;
+}
+
+span.titlevalue {
+	font-size:3em;
+	color:#fff;
+}
+
+div.text {
+	font-size:1.4em;
+	color:#fff;
+	width:700px;
+}

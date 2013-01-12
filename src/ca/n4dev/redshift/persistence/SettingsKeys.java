@@ -24,6 +24,8 @@ public class SettingsKeys {
 	public static final String KEY_LOADIMAGE = "pref_image"; 
 	public static final String KEY_PLUGIN = "pref_plugin";
 	
+	public static final String KEY_ABOUT = "pref_about";
+	
 	public static final String KEY_CLEARCOOKIE = "pref_clearcookie";
 	public static final String KEY_CLEARCACHE = "pref_clearcache";
 }
