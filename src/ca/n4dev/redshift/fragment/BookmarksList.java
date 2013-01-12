@@ -92,10 +92,13 @@ public class BookmarksList extends ListFragment {
     private void showEditBookmark(Cursor citem) {
     	AddBookmarkDialog dialog = new AddBookmarkDialog();
 		
+    	int sh = citem.getInt(citem.getColumnIndex(BookmarkDbHelper.BOOKMARK_SHOWINHOME));
+    	
 		dialog.setBookmarkId(citem.getLong(citem.getColumnIndex(BookmarkDbHelper.BOOKMARK_ID)));
 		dialog.setUrl(citem.getString(citem.getColumnIndex(BookmarkDbHelper.BOOKMARK_URL)));
 		dialog.setTitle(citem.getString(citem.getColumnIndex(BookmarkDbHelper.BOOKMARK_TITLE)));
 		dialog.setTags(citem.getString(citem.getColumnIndex(BookmarkDbHelper.BOOKMARK_TAG)));
+		dialog.setShowInhome((sh == 0) ? false : true);
 		
 		dialog.show(getFragmentManager(), "AddBookmarkDialog");
     }
