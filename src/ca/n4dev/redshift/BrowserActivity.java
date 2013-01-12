@@ -64,6 +64,7 @@ public class BrowserActivity extends FragmentActivity implements UrlModification
 		}
 	};
 	
+	
 	// Some preferences
 	private boolean prefHistory;
 	
@@ -312,26 +313,31 @@ public class BrowserActivity extends FragmentActivity implements UrlModification
         // system behavior (probably exit the activity)
         return super.onKeyDown(keyCode, event);
     }
-	
-	private void startPreferenceActivity() {
-		Intent intent = new Intent(this, SettingsActivity.class);
-		startActivity(intent);
-	}
 
 	/* (non-Javadoc)
 	 * @see ca.n4dev.redshift.events.UrlModificationAware#pageReceived(java.lang.String, java.lang.String)
 	 */
 	@Override
 	public void pageReceived(String url, String title) {
-		if (prefHistory && url.indexOf("about:") == -1 && url.indexOf("redshift:") == -1 && !this.webController.isCurrentTabPrivate())
-			historyHelper.add(title, url);
+		if (prefHistory && url.indexOf("about:") == -1 && url.indexOf("redshift:") == -1 && !this.webController.isCurrentTabPrivate()) {
+			
+			final String t = title; 
+			final String u = url;
+			
+			runnableHandler.post(new Runnable() {
+				@Override
+				public void run() {
+					historyHelper.add(t, u);
+				}
+			});
+			
+		}
 		
 	}
 	
 	@Override
 	public void onPause() {
 		super.onPause();
-		Log.d(TAG, "onPause()");
 		this.historyHelper.closeDb();
 		this.webController.pause();
 	}
@@ -339,7 +345,6 @@ public class BrowserActivity extends FragmentActivity implements UrlModification
 	@Override
 	public void onResume() {
 		super.onResume();
-		Log.d(TAG, "onResume()");
 		this.historyHelper.openDb();
 		prefHistory = preferences.getBoolean(SettingsKeys.KEY_HISTORY, true);
 		
