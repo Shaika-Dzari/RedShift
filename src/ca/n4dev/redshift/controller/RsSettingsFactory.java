@@ -22,6 +22,7 @@ import android.webkit.CookieManager;
 import android.webkit.CookieSyncManager;
 import android.webkit.WebIconDatabase;
 import android.webkit.WebSettings;
+import android.webkit.WebSettings.LayoutAlgorithm;
 import android.webkit.WebStorage;
 import android.webkit.WebView;
 import android.webkit.WebViewDatabase;
@@ -81,6 +82,7 @@ public class RsSettingsFactory {
 		settings.setAllowFileAccess(false);
 		settings.setEnableSmoothTransition(true);
 		
+		
 		// HTML5 API flags
         settings.setAppCacheEnabled(true);
         settings.setDatabaseEnabled(true);
@@ -99,6 +101,7 @@ public class RsSettingsFactory {
 		}
 	}
 	
+	@SuppressWarnings("deprecation")
 	public void applyRotationSetting(WebSettings settings) {
 		settings.setBuiltInZoomControls(true);
 		settings.setDisplayZoomControls(false);
@@ -106,6 +109,7 @@ public class RsSettingsFactory {
 		settings.setUseWideViewPort(true);
 		settings.setLoadWithOverviewMode(true);
 		settings.setJavaScriptEnabled(prefJavascript);
+		settings.setLayoutAlgorithm(LayoutAlgorithm.NORMAL);
 	}
 	
 	public void syncSettings() {

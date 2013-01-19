@@ -34,15 +34,19 @@
 	    	<ListView android:id="@+id/list_tab" 
 	    	    	  android:layout_width="fill_parent"
 	    	    	  android:layout_height="wrap_content"
-	    	    	  android:layout_margin="4dp"
+	    	    	  android:layout_marginBottom="10dp"
+	    	    	  android:layout_marginTop="10dp"
+	    	    	  android:layout_marginLeft="5dp"
+	    	    	  android:layout_marginRight="5dp"
 	    	    	  />
-	    	
+	    	<!-- 
 	    	<ImageView android:background="@drawable/holo_separator_dark"
 	    	    	   android:layout_width="fill_parent"
 	            	   android:layout_height="1dp"
 	            	   android:contentDescription="@string/separator"
 	            	    />
-	    	
+	    	 -->
+	    	 
 	    	<LinearLayout android:layout_width="fill_parent"
 	            	  	  android:layout_margin="2dp"
 	            	  	  android:layout_height="32dp"
@@ -140,7 +144,7 @@
 		         	  android:inputType="textUri|textAutoComplete"
 		         	  android:imeOptions="actionGo"
 		         	  android:selectAllOnFocus="true"
-		         	  style="MenuUrl"
+		         	  style="@style/MenuUrl"
 		         	  android:background="@drawable/redshift_menuurl_background_dark" />
 		     
 		     <ImageButton android:id="@+id/btnListTab"

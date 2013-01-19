@@ -1,5 +1,6 @@
 body {
-	background-color:#0f0f0f;
+	/*background-color:#0f0f0f;*/
+	background-color:#fff;
 }
 #main {
 	text-align:center;
@@ -12,16 +13,14 @@ body {
 a.dial { 
 	display:block;
 	text-align:left;
-	padding:10px;
-	border:2px solid #000;
-	text-decoration: none;
-	background-color:#141414;
-	margin:5px 0;
+	padding:20px;
+	border-top:1px solid #ccc;
 }
+
 
 a.dial .title {
 	font-size:2em;
-	color:#ddd;
+	color:#444;
 }
 .url {
 	font-size:1.2em;
@@ -35,7 +34,6 @@ div.about {
 span.title {
 	font-size:2em;
 	color:#fff;
-	text-decoration:underline;
 }
 
 span.titlevalue {
@@ -47,4 +45,11 @@ div.text {
 	font-size:1.4em;
 	color:#fff;
 	width:700px;
+}
+
+div.list-container {
+	border:2px solid #ccc;
+	text-decoration: none;
+	background-color:#f1f1f1;
+	margin:5px 0;
 }

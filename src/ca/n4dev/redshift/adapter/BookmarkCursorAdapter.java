@@ -60,7 +60,7 @@ public class BookmarkCursorAdapter extends CursorAdapter {
 		
 		v.setTag(holder);
 		
-		v.setBackgroundResource(R.drawable.redshift_tabmenu_item_dark);
+		//v.setBackgroundResource(R.drawable.redshift_tabmenu_item_dark);
 		
 		return v;
 	}

@@ -27,14 +27,13 @@ public class HomeFactory {
 										  "<html>" +
 										  "<head>" +
 										  "<title>redshift:home</title>" +
-										  "<meta name='viewport' content='width=800' />" +
 										  "<link type='text/css' rel='stylesheet' href='style.css' />" +
 										  "</head>" +
 										  "<body>" +
 										  "<div id='main'>" +
 										  "<img id='imglogo' src='redShift_logo.png' alt='logo' />" +
 										  "<br />" +
-										  "__BOOKMARK__" +
+										  "<div class='list-container'> __BOOKMARK__ </div>" +
 										  "</div>" +
 										  "</body>"+
 										  "</html>";
@@ -51,6 +50,7 @@ public class HomeFactory {
 			helper.openDb();
 			List<Bookmark> lb = helper.getHomeBookmark();
 			helper.closeDb();
+			
 			
 			for (Bookmark b : lb) {
 				str.append("<a href='" + b.url + "' class='dial'>");
